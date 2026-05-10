@@ -7,17 +7,11 @@ export function Nav() {
         <Link href="/" className="text-xl font-bold text-brand-600">
           SignDay
         </Link>
-        <div className="hidden md:flex items-center gap-8 text-sm">
-          <a href="/#features" className="text-gray-600 hover:text-brand-600">Features</a>
-          <a href="/#pricing" className="text-gray-600 hover:text-brand-600">Pricing</a>
-          <a href="/#faq" className="text-gray-600 hover:text-brand-600">FAQ</a>
+        <div className="hidden md:flex items-center gap-6 text-sm text-gray-600">
+          <Link href="/privacy" className="hover:text-brand-600">Privacy</Link>
+          <Link href="/terms" className="hover:text-brand-600">Terms</Link>
+          <a href="mailto:tony@signdayapp.com" className="hover:text-brand-600">Contact</a>
         </div>
-        <a
-          href="#download"
-          className="bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
-        >
-          Download
-        </a>
       </div>
     </nav>
   );

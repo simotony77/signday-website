@@ -18,15 +18,7 @@ export function Footer() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-8 text-sm">
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-3">Product</h4>
-              <ul className="space-y-2 text-gray-600">
-                <li><a href="#features" className="hover:text-brand-600">Features</a></li>
-                <li><a href="#pricing" className="hover:text-brand-600">Pricing</a></li>
-                <li><a href="#faq" className="hover:text-brand-600">FAQ</a></li>
-              </ul>
-            </div>
+          <div className="grid grid-cols-2 gap-8 text-sm">
             <div>
               <h4 className="font-semibold text-gray-900 mb-3">Legal</h4>
               <ul className="space-y-2 text-gray-600">
@@ -38,7 +30,7 @@ export function Footer() {
             <div>
               <h4 className="font-semibold text-gray-900 mb-3">Contact</h4>
               <ul className="space-y-2 text-gray-600">
-                <li><a href="mailto:support@signdayapp.com" className="hover:text-brand-600">support@signdayapp.com</a></li>
+                <li><a href="mailto:tony@signdayapp.com" className="hover:text-brand-600">tony@signdayapp.com</a></li>
                 <li><a href="mailto:privacy@signdayapp.com" className="hover:text-brand-600">privacy@signdayapp.com</a></li>
               </ul>
             </div>
