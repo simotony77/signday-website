@@ -12,6 +12,7 @@ export async function POST(req: Request) {
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const resendApiKey = process.env.RESEND_API_KEY;
   const fromAddress = process.env.WAITLIST_FROM_EMAIL || "Tony <tony@signdayapp.com>";
+  const notifyAddress = process.env.WAITLIST_NOTIFY_EMAIL || "tony@signdayapp.com";
 
   if (!supabaseUrl || !supabaseServiceKey || !resendApiKey) {
     console.error("waitlist route: missing required env vars");
@@ -45,8 +46,9 @@ export async function POST(req: Request) {
       );
     }
 
+    const resend = new Resend(resendApiKey);
+
     try {
-      const resend = new Resend(resendApiKey);
       await resend.emails.send({
         from: fromAddress,
         to: email,
@@ -54,7 +56,30 @@ export async function POST(req: Request) {
         text: buildAutoReplyText(),
       });
     } catch (emailErr) {
-      console.error("resend send error:", emailErr);
+      console.error("resend send error (auto-reply):", emailErr);
+    }
+
+    // Notify Tony of every new signup
+    try {
+      await resend.emails.send({
+        from: fromAddress,
+        to: notifyAddress,
+        subject: `🎯 New SignDay signup: ${email}`,
+        text: `New waitlist signup on signdayapp.com
+
+Email:       ${email}
+Time:        ${new Date().toISOString()}
+Source:      ${req.headers.get("referer") || "signdayapp.com"}
+User-Agent:  ${userAgent || "(unknown)"}
+IP:          ${ip || "(unknown)"}
+
+Next step: watch for their reply to the auto-reply with grad year / position / biggest headache. If they don't reply within 48h, send a personal follow-up.
+
+See all signups: https://supabase.com/dashboard/project/teamquykkznndcmknvpy/editor
+`,
+      });
+    } catch (notifyErr) {
+      console.error("resend send error (notify):", notifyErr);
     }
 
     return NextResponse.json({ ok: true });
