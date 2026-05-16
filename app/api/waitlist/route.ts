@@ -52,7 +52,7 @@ export async function POST(req: Request) {
       await resend.emails.send({
         from: fromAddress,
         to: email,
-        subject: "You're on the SignDay waitlist — quick favor",
+        subject: "You're on the SignDay waitlist. Quick favor",
         text: buildAutoReplyText(),
       });
     } catch (emailErr) {
@@ -92,9 +92,9 @@ See all signups: https://supabase.com/dashboard/project/teamquykkznndcmknvpy/edi
 function buildAutoReplyText() {
   return `Hey,
 
-Thanks for joining the SignDay waitlist. I'm Tony — soccer dad in the middle of my daughter Chloe's D3 keeper recruiting, building this for the work I couldn't keep up with.
+Thanks for joining the SignDay waitlist. I'm Tony, a soccer dad in the middle of my own daughter's D3 recruiting, building this for the work I couldn't keep up with.
 
-Quick favor — reply to this email with three things so I can build for your situation specifically:
+Quick favor. Reply to this email with three things so I can build for your situation specifically:
 
 1) What grad year is your athlete?
 2) What position?
@@ -104,6 +104,6 @@ Doesn't have to be polished. One line each is plenty.
 
 I read every reply personally. Will get back to you within 24h.
 
-— Tony
+Tony
 `;
 }

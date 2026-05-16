@@ -11,12 +11,12 @@ const BULLETS = [
   {
     icon: "✉️",
     title: "We draft personalized outreach",
-    body: "Coach by coach, tailored to each program — graduating positions, recent results, the program's style. Drafts arrive in your inbox, ready for your approval, sent from your athlete's own email so coaches actually read them.",
+    body: "Coach by coach, tailored to each program. We pull graduating positions, recent results, the program's style. Drafts arrive in your inbox, ready for your approval, sent from your athlete's own email so coaches actually read them.",
   },
   {
     icon: "🔁",
     title: "We chase the follow-ups",
-    body: "Every stalled thread, every Sunday digest. We track what coaches say, when they go silent, and queue the right follow-up at the right time — until your daughter commits.",
+    body: "Every stalled thread, every Sunday digest. We track what coaches say, when they go silent, and queue the right follow-up at the right time. Until your daughter commits.",
   },
 ];
 
@@ -27,11 +27,11 @@ const FAQ = [
   },
   {
     q: "Who actually sends the emails?",
-    a: "You do. Drafts arrive in your inbox; you click \"Send via Gmail\" from your athlete's account. That's why coaches actually read them — mail from a real Gmail address gets through, mail from broadcast platforms gets buried.",
+    a: "You do. Drafts arrive in your inbox; you click \"Send via Gmail\" from your athlete's account. That's why coaches actually read them. Mail from a real Gmail address gets through. Mail from broadcast platforms gets buried.",
   },
   {
     q: "Won't coaches notice it's templated?",
-    a: "Each draft is researched per coach and program — graduating positions, recent results, the program's style. You always edit before sending. The point isn't to fake personal — it's to make personal fast.",
+    a: "Each draft is researched per coach and program: graduating positions, recent results, the program's style. You always edit before sending. The point isn't to fake personal. It's to make personal fast.",
   },
   {
     q: "What happens when my kid commits?",
@@ -59,18 +59,18 @@ export default function Home() {
             For parents of D3 women&apos;s soccer recruits
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight tracking-tight">
-            The recruiting work<br />you don&apos;t have time to do —<br />
+            The recruiting work<br />you don&apos;t have time to do.<br />
             <span className="text-brand-600">done for you.</span>
           </h1>
           <p className="text-lg md:text-xl text-gray-600 mt-6 max-w-2xl mx-auto leading-relaxed">
             An AI assistant for parents of D3 women&apos;s soccer recruits. We monitor your target schools,
-            draft outreach to coaches, and chase follow-ups — so you can stop spending Sundays in your daughter&apos;s recruiting spreadsheet.
+            draft outreach to coaches, and chase follow-ups, so you can stop spending Sundays in your daughter&apos;s recruiting spreadsheet.
           </p>
 
           <div className="mt-10">
             <WaitlistForm />
             <p className="text-xs text-gray-500 mt-4">
-              Drop your email — I&apos;ll reply with 3 quick questions so I can build for your situation specifically.
+              Drop your email. I&apos;ll reply with 3 quick questions so I can build for your situation specifically.
             </p>
           </div>
         </div>
@@ -117,7 +117,7 @@ export default function Home() {
                     <div className="text-xs text-gray-500">to me · Sun May 17, 7:00 AM</div>
                   </div>
                 </div>
-                <div className="mt-3 text-base font-semibold text-gray-900">Your weekly digest — Maya, 4 weeks to summer ID camps</div>
+                <div className="mt-3 text-base font-semibold text-gray-900">Your weekly digest: Maya, 4 weeks to summer ID camps</div>
               </div>
               <div className="p-6 space-y-5 text-sm">
                 <div>
@@ -131,16 +131,16 @@ export default function Home() {
                 <div>
                   <div className="font-semibold text-gray-900 mb-2">3 drafts waiting for your approval</div>
                   <ul className="space-y-1.5 text-gray-700 leading-relaxed">
-                    <li>• Williams — congrats-on-win follow-up</li>
-                    <li>• Tufts — position-transition interest</li>
-                    <li>• Carleton — 21-day re-engagement</li>
+                    <li>• Williams: congrats-on-win follow-up</li>
+                    <li>• Tufts: position-transition interest</li>
+                    <li>• Carleton: 21-day re-engagement</li>
                   </ul>
                 </div>
                 <div>
                   <div className="font-semibold text-gray-900 mb-2">2 schools quiet (21+ days)</div>
                   <ul className="space-y-1.5 text-gray-700 leading-relaxed">
-                    <li>• Pomona — no reply since April 14. Suggest dropping or one more attempt.</li>
-                    <li>• Amherst — coach changed last month. Restart sequence?</li>
+                    <li>• Pomona: no reply since April 14. Suggest dropping or one more attempt.</li>
+                    <li>• Amherst: coach changed last month. Restart sequence?</li>
                   </ul>
                 </div>
               </div>
@@ -189,7 +189,7 @@ export default function Home() {
             </h3>
             <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
               <div className="bg-gray-50 border-b border-gray-100 px-6 py-3 flex items-center justify-between">
-                <div className="text-sm font-semibold text-gray-900">Maya&apos;s schools — 8 active</div>
+                <div className="text-sm font-semibold text-gray-900">Maya&apos;s schools (8 active)</div>
                 <div className="text-xs text-gray-500">Updated Sun May 17, 7:00 AM</div>
               </div>
               <div className="divide-y divide-gray-100">
@@ -294,7 +294,7 @@ export default function Home() {
                 <span className="text-4xl font-extrabold">$799</span>
                 <span className="text-base opacity-80 ml-1">/yr</span>
               </div>
-              <p className="text-sm text-blue-100 mt-2">~$66/month — save $389/year.</p>
+              <p className="text-sm text-blue-100 mt-2">~$66/month. Save $389/year.</p>
             </div>
           </div>
 
@@ -317,14 +317,12 @@ export default function Home() {
         <div className="max-w-3xl mx-auto px-6 text-center">
           <div className="text-4xl mb-4">⚽</div>
           <h2 className="text-2xl md:text-3xl font-bold mb-6">
-            Built by a dad in the middle of his daughter&apos;s D3 keeper recruiting.
+            Built by a dad in the middle of his own daughter&apos;s D3 recruiting.
           </h2>
           <blockquote className="text-lg md:text-xl leading-relaxed text-blue-100 italic">
-            &quot;I&apos;m a soccer dad. My daughter Chloe is Class of 2027, a keeper, with a 30 ACT and 12+ programs on her list.
-            I built SignDay because I couldn&apos;t keep up with the work — the rosters, the emails, the follow-ups.
-            This is the tool I needed.&quot;
+            &quot;I&apos;m a soccer dad. My daughter is Class of 2027, deep in D3 recruiting right now. I built SignDay because I couldn&apos;t keep up with the work. The rosters, the emails, the follow-ups. This is the tool I needed.&quot;
           </blockquote>
-          <p className="text-sm text-blue-200 mt-4">— Tony, Future Think LLC</p>
+          <p className="text-sm text-blue-200 mt-4">Tony, Future Think LLC</p>
         </div>
       </section>
 

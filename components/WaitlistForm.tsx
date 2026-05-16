@@ -44,7 +44,7 @@ export function WaitlistForm() {
         <div className="text-3xl mb-2">✅</div>
         <h3 className="text-lg font-semibold text-gray-900 mb-1">You&apos;re on the list.</h3>
         <p className="text-sm text-gray-700">
-          Check your inbox in a minute — I sent you a quick reply with 3 questions so I can build for your situation specifically.
+          Check your inbox in a minute. I sent you a quick reply with 3 questions so I can build for your situation specifically.
         </p>
       </div>
     );
