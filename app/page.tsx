@@ -91,8 +91,184 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing */}
+      {/* How it works mockups */}
       <section className="py-20 md:py-24 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+              Here&apos;s what your inbox will look like.
+            </h2>
+            <p className="text-base text-gray-600 mt-3 max-w-2xl mx-auto">
+              Three things, every week. No notifications between. No dashboard you have to remember to check.
+            </p>
+          </div>
+
+          {/* Mockup 1 — Sunday digest */}
+          <div className="mb-12">
+            <h3 className="text-xs font-bold text-brand-600 uppercase tracking-wider mb-3 ml-1">
+              1. Sunday morning digest
+            </h3>
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+              <div className="border-b border-gray-100 px-6 py-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">SD</div>
+                  <div className="flex-1">
+                    <div className="text-sm font-semibold text-gray-900">SignDay</div>
+                    <div className="text-xs text-gray-500">to me · Sun May 17, 7:00 AM</div>
+                  </div>
+                </div>
+                <div className="mt-3 text-base font-semibold text-gray-900">Your weekly digest — Chloe, 4 weeks to next US visit</div>
+              </div>
+              <div className="p-6 space-y-5 text-sm">
+                <div>
+                  <div className="font-semibold text-gray-900 mb-2">3 things changed this week</div>
+                  <ul className="space-y-1.5 text-gray-700 leading-relaxed">
+                    <li>• Williams head coach posted Saturday&apos;s 4-1 win. Good moment to reach out.</li>
+                    <li>• Tufts senior keeper graduating spring 2027. They&apos;ll be looking at the position.</li>
+                    <li>• Bowdoin announced 2 new keeper commits for Class of 2026. May slow our timeline there.</li>
+                  </ul>
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-900 mb-2">3 drafts waiting for your approval</div>
+                  <ul className="space-y-1.5 text-gray-700 leading-relaxed">
+                    <li>• Williams (Coach Adams) — congrats-on-win follow-up</li>
+                    <li>• Tufts (Coach Reed) — keeper-transition interest</li>
+                    <li>• Carleton (Coach Cole) — 21-day re-engagement</li>
+                  </ul>
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-900 mb-2">2 schools quiet (21+ days)</div>
+                  <ul className="space-y-1.5 text-gray-700 leading-relaxed">
+                    <li>• Pomona — no reply since April 14. Suggest dropping or one more attempt.</li>
+                    <li>• Amherst — coach changed last month. Restart sequence?</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Mockup 2 — Coach draft */}
+          <div className="mb-12">
+            <h3 className="text-xs font-bold text-brand-600 uppercase tracking-wider mb-3 ml-1">
+              2. Drafts your athlete approves and sends
+            </h3>
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+              <div className="bg-gray-50 border-b border-gray-100 px-6 py-3 text-sm space-y-1">
+                <div><span className="text-gray-500 w-16 inline-block">From:</span><span className="text-gray-900">chloe.simo@gmail.com</span></div>
+                <div><span className="text-gray-500 w-16 inline-block">To:</span><span className="text-gray-900">wsoccer@williams.edu</span></div>
+                <div><span className="text-gray-500 w-16 inline-block">Subject:</span><span className="text-gray-900 font-semibold">Saturday&apos;s win + Class of 2027 keeper follow-up</span></div>
+              </div>
+              <div className="p-6 text-sm text-gray-700 leading-relaxed space-y-3">
+                <p>Hi Coach Adams,</p>
+                <p>Congrats on Saturday&apos;s 4-1 win against Wesleyan. Saw the second-half stretch where your defense locked it down at 3-1. Composed under pressure.</p>
+                <p>I&apos;m Chloe Simo, a 2027 goalkeeper currently training in Sydney&apos;s NPL system (Year 12, ACT 30). I emailed in March about Williams and your reply mentioned the keeper transition coming with your senior graduating spring 2027. That stayed with me. I&apos;ve been working specifically on aerial command and distribution to feet, areas your team&apos;s defensive style leans into.</p>
+                <p>Updated reel and academic transcript here: [link]. I&apos;ll be in Boston June 14–16 and could come up to campus if your schedule allows. Otherwise happy to Zoom whenever works.</p>
+                <p>Best,<br />Chloe</p>
+              </div>
+              <div className="bg-gray-50 border-t border-gray-100 px-6 py-3 flex flex-wrap gap-2">
+                <button className="bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2 rounded-lg">
+                  Edit &amp; send via Gmail
+                </button>
+                <button className="bg-white border border-gray-200 hover:border-gray-300 text-sm text-gray-700 px-4 py-2 rounded-lg">
+                  Re-draft
+                </button>
+                <button className="bg-white border border-gray-200 hover:border-gray-300 text-sm text-gray-700 px-4 py-2 rounded-lg">
+                  Skip this week
+                </button>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 mt-3 ml-1 leading-relaxed">
+              Every draft pulls real research: graduating seniors at the position, the program&apos;s recent results, the coach&apos;s recent commits. Then your athlete edits in her voice and sends from her own Gmail. No SignDay tracking URL. No generic boilerplate. No unfilled brackets.
+            </p>
+          </div>
+
+          {/* Mockup 3 — School tracker */}
+          <div>
+            <h3 className="text-xs font-bold text-brand-600 uppercase tracking-wider mb-3 ml-1">
+              3. Your school tracker
+            </h3>
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+              <div className="bg-gray-50 border-b border-gray-100 px-6 py-3 flex items-center justify-between">
+                <div className="text-sm font-semibold text-gray-900">Chloe&apos;s schools — 8 active</div>
+                <div className="text-xs text-gray-500">Updated Sun May 17, 7:00 AM</div>
+              </div>
+              <div className="divide-y divide-gray-100">
+                <div className="px-6 py-3 flex items-center gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-gray-900">Williams</div>
+                    <div className="text-xs text-gray-500">Coach Adams</div>
+                  </div>
+                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-700 whitespace-nowrap">Replied 4d ago</span>
+                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Send win follow-up</div>
+                </div>
+                <div className="px-6 py-3 flex items-center gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-gray-900">Tufts</div>
+                    <div className="text-xs text-gray-500">Coach Reed</div>
+                  </div>
+                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-blue-100 text-blue-700 whitespace-nowrap">Waiting 4d</span>
+                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Hold until Friday</div>
+                </div>
+                <div className="px-6 py-3 flex items-center gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-gray-900">Bowdoin</div>
+                    <div className="text-xs text-gray-500">Coach Park</div>
+                  </div>
+                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-700 whitespace-nowrap">Replied</span>
+                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Confirm June visit</div>
+                </div>
+                <div className="px-6 py-3 flex items-center gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-gray-900">Carleton</div>
+                    <div className="text-xs text-gray-500">Coach Cole</div>
+                  </div>
+                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-orange-100 text-orange-700 whitespace-nowrap">Silent 21d</span>
+                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Re-engagement draft ready</div>
+                </div>
+                <div className="px-6 py-3 flex items-center gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-gray-900">Middlebury</div>
+                    <div className="text-xs text-gray-500">Coach Chen</div>
+                  </div>
+                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-blue-100 text-blue-700 whitespace-nowrap">Waiting 8d</span>
+                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Auto follow-up Tuesday</div>
+                </div>
+                <div className="px-6 py-3 flex items-center gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-gray-900">Pomona</div>
+                    <div className="text-xs text-gray-500">Coach Garcia</div>
+                  </div>
+                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-red-100 text-red-700 whitespace-nowrap">Silent 33d</span>
+                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Suggest dropping</div>
+                </div>
+                <div className="px-6 py-3 flex items-center gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-gray-900">Amherst</div>
+                    <div className="text-xs text-gray-500">Coach Cantos</div>
+                  </div>
+                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-purple-100 text-purple-700 whitespace-nowrap">Coach changed</span>
+                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Restart sequence</div>
+                </div>
+                <div className="px-6 py-3 flex items-center gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-gray-900">Macalester</div>
+                    <div className="text-xs text-gray-500">Coach Lee</div>
+                  </div>
+                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-gray-100 text-gray-700 whitespace-nowrap">Not yet contacted</span>
+                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">First-touch draft ready</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-center text-xs text-gray-400 mt-10 max-w-xl mx-auto">
+            Previews of the experience. SignDay is in early access, onboarding the first families this month.
+          </p>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section className="py-20 md:py-24 bg-white">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Simple pricing.</h2>
           <p className="text-lg text-gray-600 mb-10">One agent. One athlete. One subscription.</p>
