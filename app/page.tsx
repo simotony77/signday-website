@@ -43,7 +43,7 @@ const FAQ = [
   },
   {
     q: "Why $99/month?",
-    a: "Recruiting is already costing your family $10K+/year in club fees, ID camps, and travel. SignDay turns 5 hours of weekly admin work into 15 minutes of approving drafts. If we don't get you at least 5 substantive coach responses in 90 days, we refund every dollar.",
+    a: "Recruiting is already costing your family $10K+/year in club fees, ID camps, and travel. SignDay turns 5 hours of weekly admin work into 15 minutes of approving drafts. If it's not saving you time after the first month, cancel in one click.",
   },
 ];
 
@@ -298,13 +298,13 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-8 bg-green-50 border border-green-200 rounded-2xl p-5 text-left">
+          <div className="mt-8 bg-gray-50 border border-gray-200 rounded-2xl p-5 text-left">
             <div className="flex items-start gap-3">
-              <span className="text-2xl">🛡️</span>
+              <span className="text-2xl">✓</span>
               <div>
-                <h3 className="text-sm font-semibold text-gray-900">90-day outcome guarantee</h3>
+                <h3 className="text-sm font-semibold text-gray-900">Cancel anytime.</h3>
                 <p className="text-sm text-gray-700 mt-1">
-                  If we don&apos;t get you at least 5 substantive coach responses in 90 days, full refund. No questions asked.
+                  No commitments, no contracts. One click. Monthly billing means you only pay for what you use. If the agent isn&apos;t saving you time, you stop.
                 </p>
               </div>
             </div>
