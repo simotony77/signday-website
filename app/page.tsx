@@ -117,23 +117,23 @@ export default function Home() {
                     <div className="text-xs text-gray-500">to me · Sun May 17, 7:00 AM</div>
                   </div>
                 </div>
-                <div className="mt-3 text-base font-semibold text-gray-900">Your weekly digest — Chloe, 4 weeks to next US visit</div>
+                <div className="mt-3 text-base font-semibold text-gray-900">Your weekly digest — Maya, 4 weeks to summer ID camps</div>
               </div>
               <div className="p-6 space-y-5 text-sm">
                 <div>
                   <div className="font-semibold text-gray-900 mb-2">3 things changed this week</div>
                   <ul className="space-y-1.5 text-gray-700 leading-relaxed">
                     <li>• Williams head coach posted Saturday&apos;s 4-1 win. Good moment to reach out.</li>
-                    <li>• Tufts senior keeper graduating spring 2027. They&apos;ll be looking at the position.</li>
-                    <li>• Bowdoin announced 2 new keeper commits for Class of 2026. May slow our timeline there.</li>
+                    <li>• Tufts senior center-mid graduating spring 2027. They&apos;ll be looking at the position.</li>
+                    <li>• Bowdoin announced 2 new midfielder commits for Class of 2026. May slow our timeline there.</li>
                   </ul>
                 </div>
                 <div>
                   <div className="font-semibold text-gray-900 mb-2">3 drafts waiting for your approval</div>
                   <ul className="space-y-1.5 text-gray-700 leading-relaxed">
-                    <li>• Williams (Coach Adams) — congrats-on-win follow-up</li>
-                    <li>• Tufts (Coach Reed) — keeper-transition interest</li>
-                    <li>• Carleton (Coach Cole) — 21-day re-engagement</li>
+                    <li>• Williams — congrats-on-win follow-up</li>
+                    <li>• Tufts — position-transition interest</li>
+                    <li>• Carleton — 21-day re-engagement</li>
                   </ul>
                 </div>
                 <div>
@@ -154,16 +154,16 @@ export default function Home() {
             </h3>
             <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
               <div className="bg-gray-50 border-b border-gray-100 px-6 py-3 text-sm space-y-1">
-                <div><span className="text-gray-500 w-16 inline-block">From:</span><span className="text-gray-900">chloe.simo@gmail.com</span></div>
+                <div><span className="text-gray-500 w-16 inline-block">From:</span><span className="text-gray-900">maya.chen.27@gmail.com</span></div>
                 <div><span className="text-gray-500 w-16 inline-block">To:</span><span className="text-gray-900">wsoccer@williams.edu</span></div>
-                <div><span className="text-gray-500 w-16 inline-block">Subject:</span><span className="text-gray-900 font-semibold">Saturday&apos;s win + Class of 2027 keeper follow-up</span></div>
+                <div><span className="text-gray-500 w-16 inline-block">Subject:</span><span className="text-gray-900 font-semibold">Saturday&apos;s win + Class of 2027 midfielder follow-up</span></div>
               </div>
               <div className="p-6 text-sm text-gray-700 leading-relaxed space-y-3">
-                <p>Hi Coach Adams,</p>
-                <p>Congrats on Saturday&apos;s 4-1 win against Wesleyan. Saw the second-half stretch where your defense locked it down at 3-1. Composed under pressure.</p>
-                <p>I&apos;m Chloe Simo, a 2027 goalkeeper currently training in Sydney&apos;s NPL system (Year 12, ACT 30). I emailed in March about Williams and your reply mentioned the keeper transition coming with your senior graduating spring 2027. That stayed with me. I&apos;ve been working specifically on aerial command and distribution to feet, areas your team&apos;s defensive style leans into.</p>
-                <p>Updated reel and academic transcript here: [link]. I&apos;ll be in Boston June 14–16 and could come up to campus if your schedule allows. Otherwise happy to Zoom whenever works.</p>
-                <p>Best,<br />Chloe</p>
+                <p>Hi Coach,</p>
+                <p>Congrats on Saturday&apos;s 4-1 win against Wesleyan. Saw the second-half stretch where your midfield locked it down at 3-1. Composed under pressure.</p>
+                <p>I&apos;m Maya Chen, a 2027 central midfielder with a 3.8 GPA and 1380 SAT, playing club in the ECNL. I emailed in March about Williams and your reply mentioned the midfield transition coming with your senior graduating spring 2027. That stayed with me. I&apos;ve been working specifically on tempo control and switching the field, areas your team&apos;s style leans into.</p>
+                <p>Updated reel and academic transcript here: [link]. I&apos;ll be at the New England ID Camp June 14–16 and could come up to campus if your schedule allows. Otherwise happy to Zoom whenever works.</p>
+                <p>Best,<br />Maya</p>
               </div>
               <div className="bg-gray-50 border-t border-gray-100 px-6 py-3 flex flex-wrap gap-2">
                 <button className="bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2 rounded-lg">
@@ -189,22 +189,22 @@ export default function Home() {
             </h3>
             <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
               <div className="bg-gray-50 border-b border-gray-100 px-6 py-3 flex items-center justify-between">
-                <div className="text-sm font-semibold text-gray-900">Chloe&apos;s schools — 8 active</div>
+                <div className="text-sm font-semibold text-gray-900">Maya&apos;s schools — 8 active</div>
                 <div className="text-xs text-gray-500">Updated Sun May 17, 7:00 AM</div>
               </div>
               <div className="divide-y divide-gray-100">
                 <div className="px-6 py-3 flex items-center gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900">Williams</div>
-                    <div className="text-xs text-gray-500">Coach Adams</div>
+                    <div className="text-xs text-gray-500">Last reply: 4 days ago</div>
                   </div>
-                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-700 whitespace-nowrap">Replied 4d ago</span>
+                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-700 whitespace-nowrap">Replied</span>
                   <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Send win follow-up</div>
                 </div>
                 <div className="px-6 py-3 flex items-center gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900">Tufts</div>
-                    <div className="text-xs text-gray-500">Coach Reed</div>
+                    <div className="text-xs text-gray-500">Awaiting response</div>
                   </div>
                   <span className="text-xs font-semibold px-2 py-1 rounded-full bg-blue-100 text-blue-700 whitespace-nowrap">Waiting 4d</span>
                   <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Hold until Friday</div>
@@ -212,7 +212,7 @@ export default function Home() {
                 <div className="px-6 py-3 flex items-center gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900">Bowdoin</div>
-                    <div className="text-xs text-gray-500">Coach Park</div>
+                    <div className="text-xs text-gray-500">Visit invite received</div>
                   </div>
                   <span className="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-700 whitespace-nowrap">Replied</span>
                   <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Confirm June visit</div>
@@ -220,7 +220,7 @@ export default function Home() {
                 <div className="px-6 py-3 flex items-center gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900">Carleton</div>
-                    <div className="text-xs text-gray-500">Coach Cole</div>
+                    <div className="text-xs text-gray-500">Sent April 23</div>
                   </div>
                   <span className="text-xs font-semibold px-2 py-1 rounded-full bg-orange-100 text-orange-700 whitespace-nowrap">Silent 21d</span>
                   <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Re-engagement draft ready</div>
@@ -228,7 +228,7 @@ export default function Home() {
                 <div className="px-6 py-3 flex items-center gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900">Middlebury</div>
-                    <div className="text-xs text-gray-500">Coach Chen</div>
+                    <div className="text-xs text-gray-500">Awaiting response</div>
                   </div>
                   <span className="text-xs font-semibold px-2 py-1 rounded-full bg-blue-100 text-blue-700 whitespace-nowrap">Waiting 8d</span>
                   <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Auto follow-up Tuesday</div>
@@ -236,7 +236,7 @@ export default function Home() {
                 <div className="px-6 py-3 flex items-center gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900">Pomona</div>
-                    <div className="text-xs text-gray-500">Coach Garcia</div>
+                    <div className="text-xs text-gray-500">Sent April 14</div>
                   </div>
                   <span className="text-xs font-semibold px-2 py-1 rounded-full bg-red-100 text-red-700 whitespace-nowrap">Silent 33d</span>
                   <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Suggest dropping</div>
@@ -244,7 +244,7 @@ export default function Home() {
                 <div className="px-6 py-3 flex items-center gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900">Amherst</div>
-                    <div className="text-xs text-gray-500">Coach Cantos</div>
+                    <div className="text-xs text-gray-500">New coach hired</div>
                   </div>
                   <span className="text-xs font-semibold px-2 py-1 rounded-full bg-purple-100 text-purple-700 whitespace-nowrap">Coach changed</span>
                   <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Restart sequence</div>
@@ -252,7 +252,7 @@ export default function Home() {
                 <div className="px-6 py-3 flex items-center gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900">Macalester</div>
-                    <div className="text-xs text-gray-500">Coach Lee</div>
+                    <div className="text-xs text-gray-500">First contact pending</div>
                   </div>
                   <span className="text-xs font-semibold px-2 py-1 rounded-full bg-gray-100 text-gray-700 whitespace-nowrap">Not yet contacted</span>
                   <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">First-touch draft ready</div>
