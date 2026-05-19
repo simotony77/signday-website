@@ -1,6 +1,5 @@
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
-import { WaitlistForm } from "@/components/WaitlistForm";
 import { BuyButton } from "@/components/BuyButton";
 
 const BULLETS = [
@@ -68,10 +67,10 @@ export default function Home() {
             draft outreach to coaches, and chase follow-ups, so you can stop spending Sundays in your daughter&apos;s recruiting spreadsheet.
           </p>
 
-          <div className="mt-10">
-            <WaitlistForm />
+          <div className="mt-10 flex flex-col items-center">
+            <BuyButton />
             <p className="text-xs text-gray-500 mt-4">
-              Drop your email. I&apos;ll reply with 3 quick questions so I can build for your situation specifically.
+              $99/month. Secure checkout via Stripe. Cancel anytime, one click. Your first weekly digest arrives this Sunday at 7 AM Eastern.
             </p>
           </div>
         </div>
@@ -263,7 +262,7 @@ export default function Home() {
           </div>
 
           <p className="text-center text-xs text-gray-400 mt-10 max-w-xl mx-auto">
-            Previews of the experience. SignDay is in early access, onboarding the first families this month.
+            Previews of the experience. Available now. Onboarding takes 3 minutes; your first digest arrives this Sunday.
           </p>
         </div>
       </section>
@@ -359,9 +358,11 @@ export default function Home() {
             Stop spending Sundays in your daughter&apos;s recruiting spreadsheet.
           </h2>
           <p className="text-lg text-gray-600 mb-8">
-            Drop your email. I&apos;ll reply within 24 hours.
+            Start today. $99/month, cancel anytime. Your first weekly digest arrives this Sunday at 7 AM Eastern.
           </p>
-          <WaitlistForm />
+          <div className="flex justify-center">
+            <BuyButton />
+          </div>
         </div>
       </section>
 
