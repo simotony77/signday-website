@@ -207,11 +207,35 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Generation returned bad shape." }, { status: 500 });
     }
 
+    // Build school monitoring summary so the demo can show the full agent
+    // pipeline (monitoring -> detection -> drafting -> delivery) and not look
+    // like just an email generator.
+    const positionCounts = {
+      GK: school.roster.filter((p) => /GK/i.test(p.position)).length,
+      D: school.roster.filter((p) => /D/i.test(p.position) && !/GK/i.test(p.position)).length,
+      M: school.roster.filter((p) => /M/i.test(p.position) && !/GK/i.test(p.position)).length,
+      F: school.roster.filter((p) => /F/i.test(p.position) && !/GK/i.test(p.position)).length,
+    };
+    const graduatingSeniors = school.roster
+      .filter((p) => p.graduating === true)
+      .map((p) => ({ name: p.name, position: p.position, class_year: p.class_year }));
+
     return NextResponse.json({
+      monitoring: {
+        team: school.team,
+        season: school.season,
+        roster_size: school.roster.length,
+        head_coach: headCoach?.name || null,
+        assistant_coaches: school.coaching_staff
+          .filter((c) => !/head coach/i.test(c.title))
+          .map((c) => ({ name: c.name, title: c.title })),
+        position_counts: positionCounts,
+        graduating_seniors: graduatingSeniors,
+      },
+      trigger,
       draft: {
         subject: draft.subject,
         body: draft.body,
-        trigger,
         coach: coachLabel,
         school_name: school.team,
       },

@@ -28,6 +28,29 @@ const POSITIONS = [
 
 type Status = "idle" | "loading" | "success" | "error";
 
+interface Monitoring {
+  team: string;
+  season: number;
+  roster_size: number;
+  head_coach: string | null;
+  assistant_coaches: { name: string; title: string }[];
+  position_counts: { GK: number; D: number; M: number; F: number };
+  graduating_seniors: { name: string; position: string; class_year: string }[];
+}
+
+interface DraftResult {
+  subject: string;
+  body: string;
+  coach: string;
+  school_name: string;
+}
+
+interface ApiResponse {
+  monitoring: Monitoring;
+  trigger: string;
+  draft: DraftResult;
+}
+
 export function DemoForm() {
   const [firstName, setFirstName] = useState("");
   const [gradYear, setGradYear] = useState(2027);
@@ -37,7 +60,7 @@ export function DemoForm() {
 
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
-  const [draft, setDraft] = useState<{ subject: string; body: string; trigger: string; coach: string; school_name: string } | null>(null);
+  const [result, setResult] = useState<ApiResponse | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -49,7 +72,7 @@ export function DemoForm() {
 
     setStatus("loading");
     setError("");
-    setDraft(null);
+    setResult(null);
 
     try {
       const res = await fetch("/api/demo-draft", {
@@ -71,7 +94,7 @@ export function DemoForm() {
         return;
       }
 
-      setDraft(data.draft);
+      setResult(data);
       setStatus("success");
     } catch {
       setError("Network error. Try again in a minute.");
@@ -80,7 +103,8 @@ export function DemoForm() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-4xl mx-auto">
+      {/* Form */}
       <form
         onSubmit={handleSubmit}
         className="bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-sm space-y-5"
@@ -165,7 +189,7 @@ export function DemoForm() {
             ))}
           </select>
           <p className="text-xs text-gray-500 mt-2">
-            We&apos;ve already snapshot-scraped these 12 D3 academic programs. Click Generate and the agent uses that real roster + coach data to write a personalized outreach email.
+            We&apos;ve already snapshot-scraped these 12 D3 academic programs. Click below and the agent walks through everything it does for you, end to end.
           </p>
         </div>
 
@@ -174,7 +198,7 @@ export function DemoForm() {
           disabled={status === "loading"}
           className="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-60 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
         >
-          {status === "loading" ? "Generating draft (10-15 sec)..." : "Generate coach email"}
+          {status === "loading" ? "Running the agent (10-15 sec)..." : "Run the agent on this school"}
         </button>
 
         {status === "error" && (
@@ -182,41 +206,239 @@ export function DemoForm() {
         )}
       </form>
 
-      {draft && status === "success" && (
-        <div className="mt-8">
-          <h2 className="text-base font-semibold text-gray-900 mb-2">
-            Here&apos;s what your athlete would send to {draft.school_name}:
-          </h2>
-          <p className="text-sm text-gray-600 mb-4">
-            Trigger: {draft.trigger}
-          </p>
-
-          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-            <div className="bg-gray-50 border-b border-gray-100 px-6 py-3 text-sm space-y-1">
-              <div>
-                <span className="text-gray-500 inline-block w-16">To:</span>
-                <span className="text-gray-900">{draft.coach}</span>
-              </div>
-              <div>
-                <span className="text-gray-500 inline-block w-16">Subject:</span>
-                <span className="text-gray-900 font-semibold">{draft.subject}</span>
-              </div>
+      {/* Result: full agent walkthrough */}
+      {result && status === "success" && (
+        <div className="mt-12 space-y-10">
+          {/* SECTION 1: Monitoring */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs font-bold text-brand-600 uppercase tracking-wider">
+                Step 1 of 4
+              </span>
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Monitoring
+              </span>
             </div>
-            <div className="p-6 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-              {draft.body}
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-1">
+              What the agent watches at {result.monitoring.team}.
+            </h2>
+            <p className="text-sm text-gray-600 mb-5">
+              Re-checked weekly. Anything that changes between Sundays becomes a signal.
+            </p>
+
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="bg-gray-50 border-b border-gray-100 px-6 py-3 flex items-center justify-between">
+                <div className="text-sm font-semibold text-gray-900">
+                  {result.monitoring.team}
+                </div>
+                <div className="text-xs text-gray-500">
+                  {result.monitoring.season} season
+                </div>
+              </div>
+              <div className="p-6 grid sm:grid-cols-2 gap-x-8 gap-y-5 text-sm">
+                <div>
+                  <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                    Head Coach
+                  </div>
+                  <div className="text-gray-900">
+                    {result.monitoring.head_coach || "Not listed"}
+                  </div>
+                  {result.monitoring.assistant_coaches.length > 0 && (
+                    <div className="text-xs text-gray-500 mt-2">
+                      Plus {result.monitoring.assistant_coaches.length} assistant{result.monitoring.assistant_coaches.length === 1 ? "" : "s"}:{" "}
+                      {result.monitoring.assistant_coaches.map((c) => c.name).join(", ")}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                    Roster ({result.monitoring.roster_size} players)
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs">
+                    <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+                      {result.monitoring.position_counts.GK} GK
+                    </span>
+                    <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+                      {result.monitoring.position_counts.D} D
+                    </span>
+                    <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+                      {result.monitoring.position_counts.M} M
+                    </span>
+                    <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+                      {result.monitoring.position_counts.F} F
+                    </span>
+                  </div>
+                </div>
+                <div className="sm:col-span-2">
+                  <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                    Graduating spring 2026 ({result.monitoring.graduating_seniors.length})
+                  </div>
+                  {result.monitoring.graduating_seniors.length === 0 ? (
+                    <div className="text-sm text-gray-500">No graduating seniors flagged on the current roster.</div>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {result.monitoring.graduating_seniors.map((p) => (
+                        <span
+                          key={p.name}
+                          className="bg-orange-50 border border-orange-200 text-orange-800 text-xs px-2.5 py-1 rounded-full"
+                        >
+                          {p.name} ({p.position})
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="mt-8 bg-brand-50 border border-brand-100 rounded-2xl p-6 text-center">
-            <h3 className="text-base font-semibold text-gray-900 mb-2">
-              Want this every Sunday, for your real list of 12 schools?
+          {/* SECTION 2: Detection */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs font-bold text-brand-600 uppercase tracking-wider">
+                Step 2 of 4
+              </span>
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Detection
+              </span>
+            </div>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-1">
+              Trigger surfaced this week.
+            </h2>
+            <p className="text-sm text-gray-600 mb-5">
+              The agent compares this week&apos;s scrape to last week&apos;s, flags what&apos;s newly actionable, and queues an outreach.
+            </p>
+
+            <div className="bg-orange-50 border border-orange-200 rounded-2xl p-5">
+              <div className="flex items-start gap-3">
+                <span className="text-xl">⚡</span>
+                <div className="text-sm text-orange-900 leading-relaxed">
+                  {result.trigger}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 3: Drafting */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs font-bold text-brand-600 uppercase tracking-wider">
+                Step 3 of 4
+              </span>
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Drafting
+              </span>
+            </div>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-1">
+              Personalized coach email, ready for {firstName || "your athlete"} to approve.
+            </h2>
+            <p className="text-sm text-gray-600 mb-5">
+              Pulled together from the trigger, the school&apos;s data, and your athlete&apos;s profile. No placeholders, no AI-template tells.
+            </p>
+
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+              <div className="bg-gray-50 border-b border-gray-100 px-6 py-3 text-sm space-y-1">
+                <div>
+                  <span className="text-gray-500 inline-block w-16">To:</span>
+                  <span className="text-gray-900">{result.draft.coach}</span>
+                </div>
+                <div>
+                  <span className="text-gray-500 inline-block w-16">Subject:</span>
+                  <span className="text-gray-900 font-semibold">{result.draft.subject}</span>
+                </div>
+              </div>
+              <div className="p-6 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                {result.draft.body}
+              </div>
+              <div className="bg-gray-50 border-t border-gray-100 px-6 py-3 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  disabled
+                  className="bg-brand-600 text-white text-sm font-semibold px-4 py-2 rounded-lg opacity-70 cursor-not-allowed"
+                  title="Available to waitlist members"
+                >
+                  Edit &amp; send via Gmail
+                </button>
+                <button
+                  type="button"
+                  disabled
+                  className="bg-white border border-gray-200 text-sm text-gray-700 px-4 py-2 rounded-lg opacity-70 cursor-not-allowed"
+                >
+                  Re-draft
+                </button>
+                <button
+                  type="button"
+                  disabled
+                  className="bg-white border border-gray-200 text-sm text-gray-700 px-4 py-2 rounded-lg opacity-70 cursor-not-allowed"
+                >
+                  Skip this week
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 4: Delivery */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs font-bold text-brand-600 uppercase tracking-wider">
+                Step 4 of 4
+              </span>
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Delivery
+              </span>
+            </div>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-1">
+              And every Sunday, a digest like this lands in your inbox.
+            </h2>
+            <p className="text-sm text-gray-600 mb-5">
+              One email, all your tracked schools, all the drafts waiting for your approval. Multiply this by 12 schools.
+            </p>
+
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="border-b border-gray-100 px-6 py-4 bg-gray-50">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">
+                    SD
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-semibold text-gray-900">SignDay Agent</div>
+                    <div className="text-xs text-gray-500">to you · Sun May 17, 7:00 AM</div>
+                  </div>
+                </div>
+                <div className="mt-3 text-base font-semibold text-gray-900">
+                  SignDay weekly digest: drafts ready for {firstName || "your athlete"}
+                </div>
+              </div>
+              <div className="p-6 space-y-5 text-sm">
+                <div>
+                  <div className="font-semibold text-gray-900 mb-2">What changed this week:</div>
+                  <ul className="space-y-1.5 text-gray-700 leading-relaxed">
+                    <li>• {result.monitoring.team}: {result.trigger.slice(0, 110)}{result.trigger.length > 110 ? "..." : ""}</li>
+                    <li className="text-gray-500">• (plus changes at your other 11 tracked schools)</li>
+                  </ul>
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-900 mb-2">Drafts waiting for your approval:</div>
+                  <ul className="space-y-1.5 text-gray-700 leading-relaxed">
+                    <li>• {result.monitoring.team}: {result.draft.subject}</li>
+                    <li className="text-gray-500">• (plus drafts for other schools with triggers this week)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="bg-brand-50 border border-brand-100 rounded-2xl p-8 text-center">
+            <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
+              Want this running every Sunday on your real list of 12 schools?
             </h3>
-            <p className="text-sm text-gray-700 mb-4">
-              SignDay watches all of your target schools weekly. When a senior graduates at your position, a coach leaves, or a new commit announces, the agent drafts the outreach. You approve and send via Gmail.
+            <p className="text-base text-gray-700 mb-6 max-w-2xl mx-auto leading-relaxed">
+              Your athlete keeps playing, you keep being present at games, and the agent does the spreadsheet + email work in the background. Drafts land in your inbox. You approve and send via Gmail. $99/month, cancel anytime.
             </p>
             <a
               href="/"
-              className="inline-block bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-3 rounded-xl"
+              className="inline-block bg-brand-600 hover:bg-brand-700 text-white font-semibold px-8 py-3 rounded-xl"
             >
               Join the waitlist
             </a>
