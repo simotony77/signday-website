@@ -9,6 +9,22 @@ const POSITIONS = [
   { value: "F", label: "Forward" },
 ];
 
+// Youth leagues the athlete currently plays in. Coaches use league as a quick
+// signal of competitive level. ECNL / GA are top-tier girls leagues; NPL / NL
+// are next; state leagues are typical for athletes building toward club soccer.
+const CURRENT_LEAGUES = [
+  { value: "ECNL", label: "ECNL" },
+  { value: "GA", label: "Girls Academy (GA)" },
+  { value: "ECNL-RL", label: "ECNL Regional League (ECRL)" },
+  { value: "NPL", label: "NPL" },
+  { value: "NL", label: "National League" },
+  { value: "MLS_NEXT", label: "MLS Next (boys)" },
+  { value: "USL_ACADEMY", label: "USL Academy" },
+  { value: "STATE", label: "State League" },
+  { value: "HS_ONLY", label: "High school only" },
+  { value: "OTHER", label: "Other (explain in notes)" },
+];
+
 const DIVISIONS = [
   { value: "D3", label: "D3 only (best fit for SignDay right now)" },
   { value: "D3+D2", label: "D3 and D2" },
@@ -38,6 +54,7 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
   const [lastName, setLastName] = useState("");
   const [gradYear, setGradYear] = useState(2027);
   const [position, setPosition] = useState("M");
+  const [currentLeague, setCurrentLeague] = useState("ECNL");
   const [division, setDivision] = useState("D3");
   const [club, setClub] = useState("");
   const [gpa, setGpa] = useState("");
@@ -164,6 +181,7 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
             last_name: lastName.trim(),
             grad_year: gradYear,
             position,
+            current_league: currentLeague,
             division,
             club: club.trim(),
             gpa: gpa.trim() ? parseFloat(gpa) : null,
@@ -264,7 +282,18 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
           >
             {POSITIONS.map((p) => (
               <option key={p.value} value={p.value}>
-                {p.label}
+                Position: {p.label}
+              </option>
+            ))}
+          </select>
+          <select
+            value={currentLeague}
+            onChange={(e) => setCurrentLeague(e.target.value)}
+            className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
+          >
+            {CURRENT_LEAGUES.map((l) => (
+              <option key={l.value} value={l.value}>
+                Current league: {l.label}
               </option>
             ))}
           </select>
@@ -275,7 +304,7 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
           >
             {DIVISIONS.map((d) => (
               <option key={d.value} value={d.value}>
-                Target: {d.label}
+                Target college division: {d.label}
               </option>
             ))}
           </select>
@@ -283,7 +312,7 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
             type="text"
             value={club}
             onChange={(e) => setClub(e.target.value)}
-            placeholder="Club (e.g. Connecticut FC ECNL)"
+            placeholder="Club name (e.g. Connecticut FC)"
             required
             className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
           />
