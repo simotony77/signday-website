@@ -1,0 +1,216 @@
+{
+  "team": "Hamilton College",
+  "season": 2025,
+  "roster": [
+    {
+      "name": "Corah Boller",
+      "jersey_number": 0,
+      "position": "GK",
+      "class_year": "2029",
+      "graduating": false
+    },
+    {
+      "name": "Christina Rego",
+      "jersey_number": 0,
+      "position": "GK",
+      "class_year": "2028",
+      "graduating": false
+    },
+    {
+      "name": "Nieve Tonna",
+      "jersey_number": 1,
+      "position": "GK",
+      "class_year": "2026",
+      "graduating": false,
+      "captain": true
+    },
+    {
+      "name": "Daisy Sullivan",
+      "jersey_number": 2,
+      "position": "M",
+      "class_year": "2026",
+      "graduating": false
+    },
+    {
+      "name": "Elaina-Rose Men-Martin",
+      "jersey_number": 3,
+      "position": "F",
+      "class_year": "2029",
+      "graduating": false
+    },
+    {
+      "name": "Ryan Manning",
+      "jersey_number": 4,
+      "position": "M",
+      "class_year": "2027",
+      "graduating": false
+    },
+    {
+      "name": "Carly McMahon",
+      "jersey_number": 5,
+      "position": "D",
+      "class_year": "2027",
+      "graduating": false,
+      "captain": true
+    },
+    {
+      "name": "Kate Giglio",
+      "jersey_number": 6,
+      "position": "D",
+      "class_year": "2028",
+      "graduating": false
+    },
+    {
+      "name": "Emma Kelesoglu",
+      "jersey_number": 7,
+      "position": "M",
+      "class_year": "2027",
+      "graduating": false
+    },
+    {
+      "name": "Lydia DeTraglia",
+      "jersey_number": 8,
+      "position": "F",
+      "class_year": "2028",
+      "graduating": false
+    },
+    {
+      "name": "Avery Musielak",
+      "jersey_number": 9,
+      "position": "D",
+      "class_year": "2029",
+      "graduating": false
+    },
+    {
+      "name": "Maddie Ledbury",
+      "jersey_number": 10,
+      "position": "F",
+      "class_year": "2026",
+      "graduating": false
+    },
+    {
+      "name": "Isabel Harvey",
+      "jersey_number": 11,
+      "position": "F",
+      "class_year": "2028",
+      "graduating": false
+    },
+    {
+      "name": "Sarah Flood",
+      "jersey_number": 12,
+      "position": "M",
+      "class_year": "2027",
+      "graduating": false
+    },
+    {
+      "name": "Maddie Buck",
+      "jersey_number": 13,
+      "position": "D",
+      "class_year": "2027",
+      "graduating": false
+    },
+    {
+      "name": "Ava Chiappinelli",
+      "jersey_number": 14,
+      "position": "D",
+      "class_year": "2029",
+      "graduating": false
+    },
+    {
+      "name": "Helena Crate",
+      "jersey_number": 15,
+      "position": "M",
+      "class_year": "2028",
+      "graduating": false
+    },
+    {
+      "name": "Samantha Tyska",
+      "jersey_number": 16,
+      "position": "D",
+      "class_year": "2027",
+      "graduating": false
+    },
+    {
+      "name": "Jess Yee",
+      "jersey_number": 17,
+      "position": "M",
+      "class_year": "2026",
+      "graduating": false
+    },
+    {
+      "name": "Haley Cramer",
+      "jersey_number": 18,
+      "position": "M",
+      "class_year": "2028",
+      "graduating": false
+    },
+    {
+      "name": "Amelia Johnson",
+      "jersey_number": 19,
+      "position": "D",
+      "class_year": "2028",
+      "graduating": false
+    },
+    {
+      "name": "Abby Douglass",
+      "jersey_number": 20,
+      "position": "D",
+      "class_year": "2027",
+      "graduating": false,
+      "captain": true
+    },
+    {
+      "name": "Lila Sullivan",
+      "jersey_number": 22,
+      "position": "F",
+      "class_year": "2029",
+      "graduating": false
+    },
+    {
+      "name": "Diana Baffor",
+      "jersey_number": 23,
+      "position": "M",
+      "class_year": "2029",
+      "graduating": false
+    },
+    {
+      "name": "Taryn Gillis",
+      "jersey_number": 24,
+      "position": "F",
+      "class_year": "2026",
+      "graduating": false
+    },
+    {
+      "name": "Evie McCreery",
+      "jersey_number": 25,
+      "position": "F",
+      "class_year": "2026",
+      "graduating": false
+    },
+    {
+      "name": "Keira Nyarady",
+      "jersey_number": 28,
+      "position": "D",
+      "class_year": "2028",
+      "graduating": false
+    },
+    {
+      "name": "Olivia Connolly",
+      "jersey_number": 30,
+      "position": "GK",
+      "class_year": "2027",
+      "graduating": false
+    }
+  ],
+  "coaching_staff": [
+    {
+      "name": "Colette Gilligan",
+      "title": "Head Coach"
+    },
+    {
+      "name": "Travis Regner",
+      "title": "Assistant Coach"
+    }
+  ],
+  "seniors_graduating_next": []
+}

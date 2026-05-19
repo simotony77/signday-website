@@ -1,0 +1,215 @@
+{
+  "team": "Trinity College Women's Soccer",
+  "season": 2025,
+  "roster": [
+    {
+      "name": "Ali Shure",
+      "jersey_number": 0,
+      "position": "GK",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Zoe Tamborello",
+      "jersey_number": 0,
+      "position": "GK",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Lily Bracken",
+      "jersey_number": 1,
+      "position": "GK",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Addie Covey",
+      "jersey_number": 2,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Maggie Hyder",
+      "jersey_number": 3,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Sophia Simmons",
+      "jersey_number": 4,
+      "position": "M/F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Emma Rose",
+      "jersey_number": 5,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Kyra Charette",
+      "jersey_number": 6,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Shea O'Neill",
+      "jersey_number": 7,
+      "position": "D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Ava Correnti",
+      "jersey_number": 8,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Taylor Troskey",
+      "jersey_number": 9,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Sara Rieger",
+      "jersey_number": 10,
+      "position": "F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Emma Almoney",
+      "jersey_number": 11,
+      "position": "M/F",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Meghan O'Neil",
+      "jersey_number": 12,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Elsa Deutsch",
+      "jersey_number": 13,
+      "position": "M",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Lauren Grattan",
+      "jersey_number": 14,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Elena Lindonen",
+      "jersey_number": 15,
+      "position": "F",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Iva Carton",
+      "jersey_number": 16,
+      "position": "F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Adeline Shannon",
+      "jersey_number": 17,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Lauren Hoh",
+      "jersey_number": 18,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Ashley McSweeney",
+      "jersey_number": 19,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Sarah Kenney",
+      "jersey_number": 20,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Jill Fisher",
+      "jersey_number": 21,
+      "position": "F",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Mallory Kerr",
+      "jersey_number": 24,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Savannah Nevins",
+      "jersey_number": 25,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Alexis Donovan",
+      "jersey_number": 26,
+      "position": "D/F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Makena Hammond",
+      "jersey_number": 27,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Alyssa Keane",
+      "jersey_number": 30,
+      "position": "F",
+      "class_year": "Sr",
+      "graduating": true
+    }
+  ],
+  "coaching_staff": [
+    {
+      "name": "Rachael Schroeder",
+      "title": "Head Coach"
+    }
+  ],
+  "seniors_graduating_next": [
+    "Elsa Deutsch",
+    "Elena Lindonen",
+    "Sarah Kenney",
+    "Jill Fisher",
+    "Alyssa Keane"
+  ]
+}

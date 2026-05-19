@@ -1,0 +1,217 @@
+{
+  "team": "Bowdoin College Women's Soccer",
+  "season": 2025,
+  "roster": [
+    {
+      "name": "Ilana Posner",
+      "jersey_number": 0,
+      "position": "GK",
+      "class_year": "2027",
+      "graduating": false
+    },
+    {
+      "name": "Clare Miller",
+      "jersey_number": 0,
+      "position": "GK",
+      "class_year": "2029",
+      "graduating": false
+    },
+    {
+      "name": "Charlotte Iannone",
+      "jersey_number": 1,
+      "position": "GK",
+      "class_year": "2026",
+      "graduating": false
+    },
+    {
+      "name": "Kendrick LaPrade",
+      "jersey_number": 2,
+      "position": "D",
+      "class_year": "2029",
+      "graduating": false
+    },
+    {
+      "name": "Sofi Rua",
+      "jersey_number": 3,
+      "position": "M/F",
+      "class_year": "2028",
+      "graduating": false
+    },
+    {
+      "name": "Sienna Masood",
+      "jersey_number": 4,
+      "position": "M",
+      "class_year": "2028",
+      "graduating": false
+    },
+    {
+      "name": "Jackie Shores",
+      "jersey_number": 5,
+      "position": "F",
+      "class_year": "2028",
+      "graduating": false
+    },
+    {
+      "name": "Kendall Hacker",
+      "jersey_number": 6,
+      "position": "D",
+      "class_year": "2029",
+      "graduating": false
+    },
+    {
+      "name": "Kayley Huleatt",
+      "jersey_number": 7,
+      "position": "F/M/D",
+      "class_year": "2028",
+      "graduating": false
+    },
+    {
+      "name": "Cadence Lee",
+      "jersey_number": 9,
+      "position": "M",
+      "class_year": "2027",
+      "graduating": false
+    },
+    {
+      "name": "Laila Nickelson",
+      "jersey_number": 10,
+      "position": "M",
+      "class_year": "2026",
+      "graduating": false
+    },
+    {
+      "name": "Mary Rainey",
+      "jersey_number": 11,
+      "position": "F",
+      "class_year": "2027",
+      "graduating": false
+    },
+    {
+      "name": "Athalia Esty",
+      "jersey_number": 12,
+      "position": "D",
+      "class_year": "2026",
+      "graduating": false
+    },
+    {
+      "name": "Alexa Sheppard",
+      "jersey_number": 13,
+      "position": "D",
+      "class_year": "2028",
+      "graduating": false
+    },
+    {
+      "name": "Zoe Castrucci",
+      "jersey_number": 14,
+      "position": "M/D",
+      "class_year": "2029",
+      "graduating": false
+    },
+    {
+      "name": "Emilia Tutun",
+      "jersey_number": 15,
+      "position": "M/F",
+      "class_year": "2026",
+      "graduating": false
+    },
+    {
+      "name": "Taylor Carrescia",
+      "jersey_number": 16,
+      "position": "F/M",
+      "class_year": "2029",
+      "graduating": false
+    },
+    {
+      "name": "Rylie McLaren",
+      "jersey_number": 17,
+      "position": "F",
+      "class_year": "2026",
+      "graduating": false
+    },
+    {
+      "name": "Dani Musry",
+      "jersey_number": 18,
+      "position": "F",
+      "class_year": "2028",
+      "graduating": false
+    },
+    {
+      "name": "Annabel Callahan",
+      "jersey_number": 19,
+      "position": "M",
+      "class_year": "2029",
+      "graduating": false
+    },
+    {
+      "name": "Astrid McGuire",
+      "jersey_number": 20,
+      "position": "M",
+      "class_year": "2028",
+      "graduating": false
+    },
+    {
+      "name": "Layla McBerry",
+      "jersey_number": 21,
+      "position": "F",
+      "class_year": "2029",
+      "graduating": false
+    },
+    {
+      "name": "Kyra Hacker",
+      "jersey_number": 22,
+      "position": "D",
+      "class_year": "2026",
+      "graduating": false
+    },
+    {
+      "name": "Grace Harvey",
+      "jersey_number": 23,
+      "position": "D",
+      "class_year": "2027",
+      "graduating": false
+    },
+    {
+      "name": "Catherine Webster",
+      "jersey_number": 24,
+      "position": "F",
+      "class_year": "2029",
+      "graduating": false
+    },
+    {
+      "name": "Stephanie Christianson",
+      "jersey_number": 26,
+      "position": "M",
+      "class_year": "2026",
+      "graduating": false
+    },
+    {
+      "name": "Ashley Ahn",
+      "jersey_number": 27,
+      "position": "D",
+      "class_year": "2029",
+      "graduating": false
+    },
+    {
+      "name": "Mia Williams",
+      "jersey_number": null,
+      "position": "",
+      "class_year": "2027",
+      "graduating": false
+    }
+  ],
+  "coaching_staff": [
+    {
+      "name": "Brianne Smithson",
+      "title": "Head Coach"
+    },
+    {
+      "name": "Adam Sprague",
+      "title": "Assistant Coach"
+    },
+    {
+      "name": "Elayna Girardin",
+      "title": "Assistant Coach - Goaltending"
+    }
+  ],
+  "seniors_graduating_next": []
+}

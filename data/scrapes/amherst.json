@@ -1,0 +1,234 @@
+{
+  "team": "Amherst College Women's Soccer",
+  "season": 2025,
+  "roster": [
+    {
+      "name": "Molly Davidson",
+      "jersey_number": 0,
+      "position": "GK",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Sara Nagle",
+      "jersey_number": 0,
+      "position": "GK",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Lulu Fickes",
+      "jersey_number": 1,
+      "position": "GK",
+      "class_year": "Sr",
+      "graduating": true,
+      "captain": true
+    },
+    {
+      "name": "Pao Monter",
+      "jersey_number": 2,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Amelie Zeitz",
+      "jersey_number": 3,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Mekhala Costello",
+      "jersey_number": 4,
+      "position": "D/M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Ani Populoh",
+      "jersey_number": 5,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Sofia Preuss",
+      "jersey_number": 6,
+      "position": "D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Ella Johnson",
+      "jersey_number": 7,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true,
+      "captain": true
+    },
+    {
+      "name": "Katie Pedersen",
+      "jersey_number": 8,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Becca Button",
+      "jersey_number": 9,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Abigail Danso",
+      "jersey_number": 10,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Sophia Haynes",
+      "jersey_number": 11,
+      "position": "D/F",
+      "class_year": "Sr",
+      "graduating": true,
+      "captain": true
+    },
+    {
+      "name": "Kate Quigley",
+      "jersey_number": 12,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Halle Hanna",
+      "jersey_number": 13,
+      "position": "F",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Brooke Ingemi",
+      "jersey_number": 14,
+      "position": "M",
+      "class_year": "Sr",
+      "graduating": true,
+      "captain": true
+    },
+    {
+      "name": "Katie O'Reilly",
+      "jersey_number": 15,
+      "position": "M/F/D",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Catherine McDonald",
+      "jersey_number": 16,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Emma Darling",
+      "jersey_number": 17,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Sophie Chen",
+      "jersey_number": 18,
+      "position": "M/D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Maya Siegel",
+      "jersey_number": 19,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Caroline Coletti",
+      "jersey_number": 21,
+      "position": "F/M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Allison Hayes",
+      "jersey_number": 22,
+      "position": "F/D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Maddy Varela",
+      "jersey_number": 23,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Kate Donlan",
+      "jersey_number": 24,
+      "position": "F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Millie McLeod",
+      "jersey_number": 25,
+      "position": "F/M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Ella Watkins",
+      "jersey_number": 28,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Jessica Lomo",
+      "jersey_number": 30,
+      "position": "F/M",
+      "class_year": "Jr",
+      "graduating": false
+    }
+  ],
+  "coaching_staff": [
+    {
+      "name": "Jen Hughes",
+      "title": "Head Coach"
+    },
+    {
+      "name": "Su DelGuercio",
+      "title": "Assistant Coach"
+    },
+    {
+      "name": "Jeff Huffman",
+      "title": "Assistant Coach"
+    },
+    {
+      "name": "Liza Katz",
+      "title": "Assistant Coach (Hitchcock Fellow)"
+    }
+  ],
+  "seniors_graduating_next": [
+    "Lulu Fickes",
+    "Ella Johnson",
+    "Sophia Haynes",
+    "Kate Quigley",
+    "Halle Hanna",
+    "Brooke Ingemi",
+    "Katie O'Reilly",
+    "Ella Watkins"
+  ]
+}

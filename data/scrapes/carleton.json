@@ -1,0 +1,277 @@
+{
+  "team": "Carleton College Women's Soccer",
+  "season": 2025,
+  "roster": [
+    {
+      "name": "Sophia Lehman",
+      "jersey_number": 0,
+      "position": "GK",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Avery Trapp",
+      "jersey_number": 1,
+      "position": "GK",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Zaraya Jordan",
+      "jersey_number": 2,
+      "position": "D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Sam Gotch",
+      "jersey_number": 3,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Lily Shure",
+      "jersey_number": 4,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Katherine Krugh",
+      "jersey_number": 5,
+      "position": "F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Eliza Barton",
+      "jersey_number": 6,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Isabella Pennell",
+      "jersey_number": 7,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Kiana Feldis",
+      "jersey_number": 8,
+      "position": "F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Maya Lacey",
+      "jersey_number": 9,
+      "position": "D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Disha Roy",
+      "jersey_number": 10,
+      "position": "F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Anna Borkowski",
+      "jersey_number": 11,
+      "position": "M",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Naomi Straub",
+      "jersey_number": 12,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Carson Cheng",
+      "jersey_number": 13,
+      "position": "M/F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Kathryn Kresse",
+      "jersey_number": 14,
+      "position": "F",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Isabella Gill",
+      "jersey_number": 15,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Hadley Twichell",
+      "jersey_number": 16,
+      "position": "M/D",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Lola Feurer",
+      "jersey_number": 17,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Mackenzie White",
+      "jersey_number": 18,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Chloe Simanek",
+      "jersey_number": 19,
+      "position": "M",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Dylan Baker",
+      "jersey_number": 20,
+      "position": "F",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Ashlyn Haigh",
+      "jersey_number": 21,
+      "position": "M",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Natessa Wright",
+      "jersey_number": 22,
+      "position": "D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Mia Anzalone",
+      "jersey_number": 23,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Rian Fitzpatrick",
+      "jersey_number": 24,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Haley Sturgill",
+      "jersey_number": 25,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Claire Burbery",
+      "jersey_number": 26,
+      "position": "F/M",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Isabelle Connolly",
+      "jersey_number": 27,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Lauren Caldwell",
+      "jersey_number": 28,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Liv Wilson",
+      "jersey_number": 29,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Louisa Symkowick",
+      "jersey_number": 30,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Claire Eberhard",
+      "jersey_number": 32,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Keira Hanmer",
+      "jersey_number": 33,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Miren Creswell",
+      "jersey_number": 34,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Katherine Mallon",
+      "jersey_number": 35,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    }
+  ],
+  "coaching_staff": [
+    {
+      "name": "Jessica Mueller",
+      "title": "Head Coach"
+    },
+    {
+      "name": "Mike Navarre",
+      "title": "Assistant Coach"
+    },
+    {
+      "name": "Ashley Becker",
+      "title": "Assistant Coach"
+    }
+  ],
+  "seniors_graduating_next": [
+    "Sam Gotch",
+    "Anna Borkowski",
+    "Naomi Straub",
+    "Kathryn Kresse",
+    "Hadley Twichell",
+    "Chloe Simanek",
+    "Dylan Baker",
+    "Ashlyn Haigh",
+    "Mia Anzalone",
+    "Claire Burbery"
+  ]
+}

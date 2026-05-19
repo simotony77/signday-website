@@ -7,10 +7,16 @@ export function Nav() {
         <Link href="/" className="text-xl font-bold text-brand-600">
           SignDay
         </Link>
-        <div className="hidden md:flex items-center gap-6 text-sm text-gray-600">
-          <Link href="/privacy" className="hover:text-brand-600">Privacy</Link>
-          <Link href="/terms" className="hover:text-brand-600">Terms</Link>
-          <a href="mailto:tony@signdayapp.com" className="hover:text-brand-600">Contact</a>
+        <div className="flex items-center gap-3 md:gap-6 text-sm text-gray-600">
+          <Link
+            href="/demo"
+            className="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-3 md:px-4 py-2 rounded-xl"
+          >
+            Try the agent
+          </Link>
+          <Link href="/privacy" className="hidden md:inline hover:text-brand-600">Privacy</Link>
+          <Link href="/terms" className="hidden md:inline hover:text-brand-600">Terms</Link>
+          <a href="mailto:tony@signdayapp.com" className="hidden md:inline hover:text-brand-600">Contact</a>
         </div>
       </div>
     </nav>

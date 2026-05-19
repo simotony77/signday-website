@@ -1,0 +1,227 @@
+{
+  "team": "Pomona-Pitzer Sagehens",
+  "season": 2025,
+  "roster": [
+    {
+      "name": "Hadley Johnson",
+      "jersey_number": 0,
+      "position": "GK",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Patricia DePalma",
+      "jersey_number": 1,
+      "position": "GK",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Arden Galvelis",
+      "jersey_number": 2,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Lottie Dierks",
+      "jersey_number": 3,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Anjali Nuggehalli",
+      "jersey_number": 4,
+      "position": "D/F",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Brooke Bailey",
+      "jersey_number": 5,
+      "position": "F",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Hannah Hong",
+      "jersey_number": 7,
+      "position": "F",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Rae Kamikawa",
+      "jersey_number": 8,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Kendrick Dahlin",
+      "jersey_number": 9,
+      "position": "F/M",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Ava Watanabe",
+      "jersey_number": 10,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Emily Chang",
+      "jersey_number": 11,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Ally Hsieh",
+      "jersey_number": 13,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Avery Izzo",
+      "jersey_number": 14,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Sophia Amanquah",
+      "jersey_number": 15,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Ingrid Nelson",
+      "jersey_number": 16,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Koa DeLeon",
+      "jersey_number": 17,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Taylor Marshall",
+      "jersey_number": 18,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Tara Kamshad",
+      "jersey_number": 19,
+      "position": "F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Anya Offenbacher-Jones",
+      "jersey_number": 20,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Lexi Wong",
+      "jersey_number": 23,
+      "position": "D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Zakiah Sesay",
+      "jersey_number": 24,
+      "position": "M/D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Imogen Roy Jenkyn",
+      "jersey_number": 25,
+      "position": "F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Sabina Peterson Rajalingam",
+      "jersey_number": 27,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Lucia Page Sander",
+      "jersey_number": 28,
+      "position": "M/F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Addy Rhee",
+      "jersey_number": 29,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Ellie Peterson",
+      "jersey_number": 30,
+      "position": "M/F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Gabbie Martin-Mazzeo",
+      "jersey_number": 31,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Vivian Rojas Collins",
+      "jersey_number": 33,
+      "position": "D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Vivi Nealey",
+      "jersey_number": 99,
+      "position": "GK",
+      "class_year": "Fr",
+      "graduating": false
+    }
+  ],
+  "coaching_staff": [
+    {
+      "name": "Miranda Armstrong",
+      "title": "Acting Head Soccer Coach"
+    },
+    {
+      "name": "Bernard Hoffrogge",
+      "title": "Assistant Soccer Coach"
+    }
+  ],
+  "seniors_graduating_next": [
+    "Hadley Johnson",
+    "Lottie Dierks",
+    "Anjali Nuggehalli",
+    "Hannah Hong",
+    "Kendrick Dahlin",
+    "Taylor Marshall"
+  ]
+}

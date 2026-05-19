@@ -1,0 +1,209 @@
+{
+  "team": "Williams College",
+  "season": 2025,
+  "roster": [
+    {
+      "name": "Margaret Huelin",
+      "jersey_number": 0,
+      "position": "GK",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Sara Warmack",
+      "jersey_number": 2,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Greta Pew",
+      "jersey_number": 3,
+      "position": "M/D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Lucy Carrel",
+      "jersey_number": 4,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Abby Collis",
+      "jersey_number": 5,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Ansley Burns",
+      "jersey_number": 7,
+      "position": "M/D",
+      "class_year": "Sr",
+      "graduating": true,
+      "captain": true
+    },
+    {
+      "name": "Paige Nelson",
+      "jersey_number": 8,
+      "position": "M/D",
+      "class_year": "Sr",
+      "graduating": true,
+      "captain": true
+    },
+    {
+      "name": "Lily Mark",
+      "jersey_number": 9,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Emmy Chung",
+      "jersey_number": 10,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Leila Alvarez",
+      "jersey_number": 11,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Elizabeth Stophel",
+      "jersey_number": 12,
+      "position": "F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Reece Willison",
+      "jersey_number": 13,
+      "position": "D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Olivia Bevilacqua",
+      "jersey_number": 15,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Chloe Lee",
+      "jersey_number": 16,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Brianna Wright",
+      "jersey_number": 17,
+      "position": "F",
+      "class_year": "Sr",
+      "graduating": true,
+      "captain": true
+    },
+    {
+      "name": "Maya Lloyd",
+      "jersey_number": 18,
+      "position": "F/M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Bria Abbiati",
+      "jersey_number": 19,
+      "position": "F",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Elle Long",
+      "jersey_number": 20,
+      "position": "M/F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Claire Tunney",
+      "jersey_number": 21,
+      "position": "M",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Isabel Konijnenberg",
+      "jersey_number": 22,
+      "position": "F",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Kianna Porter",
+      "jersey_number": 23,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Piper Dupies",
+      "jersey_number": 24,
+      "position": "M/D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Taryn Reohr",
+      "jersey_number": 25,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Jackie Rainville",
+      "jersey_number": 27,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Ella Ryan",
+      "jersey_number": 28,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Emma Sicat",
+      "jersey_number": 30,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Tessa Chomsky",
+      "jersey_number": 33,
+      "position": "GK",
+      "class_year": "Fr",
+      "graduating": false
+    }
+  ],
+  "coaching_staff": [
+    {
+      "name": "Sarah Raymond",
+      "title": "Head Coach"
+    },
+    {
+      "name": "Natalie Harris",
+      "title": "Assistant Coach"
+    }
+  ],
+  "seniors_graduating_next": []
+}

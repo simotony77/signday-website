@@ -1,0 +1,264 @@
+{
+  "team": "Macalester College Women's Soccer",
+  "season": 2025,
+  "roster": [
+    {
+      "name": "Ramatoulaye Bah",
+      "jersey_number": 0,
+      "position": "GK",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Abigail Heuga",
+      "jersey_number": 1,
+      "position": "GK",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Hazel Waters",
+      "jersey_number": 2,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Timna Nevo",
+      "jersey_number": 3,
+      "position": "D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Miya Whiteley",
+      "jersey_number": 4,
+      "position": "D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Christina Tobon",
+      "jersey_number": 5,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Georgia LeWin-Mills",
+      "jersey_number": 6,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Nisha Wetter",
+      "jersey_number": 7,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Lilly Staples",
+      "jersey_number": 8,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Julia Hanson",
+      "jersey_number": 9,
+      "position": "F",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Gabriela Carrillo-Quinones",
+      "jersey_number": 10,
+      "position": "M/F",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Evelyn Savoie",
+      "jersey_number": 11,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Kyra Morris",
+      "jersey_number": 12,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Lindsay Edmonson",
+      "jersey_number": 13,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Reese Preston",
+      "jersey_number": 14,
+      "position": "F/M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Ava Arredondo",
+      "jersey_number": 15,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Adi Nhouyvanisvong",
+      "jersey_number": 16,
+      "position": "F",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Julia Maroon",
+      "jersey_number": 17,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Avery Ellis",
+      "jersey_number": 18,
+      "position": "F",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Eliza Palmer",
+      "jersey_number": 19,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Maia Lemov",
+      "jersey_number": 20,
+      "position": "M/F",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Abbey Birkey",
+      "jersey_number": 21,
+      "position": "F/D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Erica Hamilton",
+      "jersey_number": 22,
+      "position": "F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Catriona O'Hagan",
+      "jersey_number": 23,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Karyna Steele",
+      "jersey_number": 24,
+      "position": "D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Becky Mulcahy",
+      "jersey_number": 25,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Parker Friedman",
+      "jersey_number": 26,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Ella Wu-Ancipink",
+      "jersey_number": 27,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Annelise McGee",
+      "jersey_number": 28,
+      "position": "F/D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Eliza Small",
+      "jersey_number": 29,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Mikayla Edmunds",
+      "jersey_number": 30,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Shaylee O'Grady",
+      "jersey_number": 35,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Charlotte Martel",
+      "jersey_number": 37,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Lily Salazar",
+      "jersey_number": 40,
+      "position": "GK",
+      "class_year": "So",
+      "graduating": false
+    }
+  ],
+  "coaching_staff": [
+    {
+      "name": "Madeline Buckley",
+      "title": "Head Coach"
+    },
+    {
+      "name": "Marissa Olson-Guillou",
+      "title": "Assistant Coach"
+    },
+    {
+      "name": "Chris Foreman",
+      "title": "Assistant Coach"
+    }
+  ],
+  "seniors_graduating_next": [
+    "Hazel Waters",
+    "Maia Lemov",
+    "Becky Mulcahy",
+    "Ella Wu-Ancipink"
+  ]
+}

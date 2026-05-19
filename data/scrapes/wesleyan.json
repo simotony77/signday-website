@@ -1,0 +1,250 @@
+{
+  "team": "Wesleyan University Women's Soccer",
+  "season": 2025,
+  "roster": [
+    {
+      "name": "Marley Hansard",
+      "jersey_number": 0,
+      "position": "GK",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Molly Brumbach",
+      "jersey_number": 1,
+      "position": "GK",
+      "class_year": "Sr",
+      "graduating": true,
+      "captain": true
+    },
+    {
+      "name": "Rachel Katz",
+      "jersey_number": 2,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Riley Buehler",
+      "jersey_number": 3,
+      "position": "M",
+      "class_year": "Sr",
+      "graduating": true,
+      "captain": true
+    },
+    {
+      "name": "Zoey Fagnan",
+      "jersey_number": 4,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Lily Jebejian",
+      "jersey_number": 5,
+      "position": "D/M",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Waverly Meyers",
+      "jersey_number": 6,
+      "position": "M",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Brianna Garcia",
+      "jersey_number": 7,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Tori Rideau-Winds",
+      "jersey_number": 8,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true,
+      "captain": true
+    },
+    {
+      "name": "Stefanie Stoj",
+      "jersey_number": 9,
+      "position": "F",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Kerenza Leahey",
+      "jersey_number": 10,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Payton Radosti",
+      "jersey_number": 11,
+      "position": "D/M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Romi Schreiber",
+      "jersey_number": 12,
+      "position": "M/F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Brooke Goodwin",
+      "jersey_number": 13,
+      "position": "D/M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Meghan Noe",
+      "jersey_number": 14,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Sheridan Snow",
+      "jersey_number": 15,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Gabriella Freeman",
+      "jersey_number": 16,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Maisie White",
+      "jersey_number": 17,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Taylor Hill",
+      "jersey_number": 18,
+      "position": "M/F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Juliette Sullivan",
+      "jersey_number": 19,
+      "position": "D/F",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Hannah Bodner",
+      "jersey_number": 20,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Beatrix Delaney",
+      "jersey_number": 21,
+      "position": "M/F",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Lanee Farr",
+      "jersey_number": 22,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Maria Utz",
+      "jersey_number": 23,
+      "position": "F",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Meredith Feiner",
+      "jersey_number": 24,
+      "position": "F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Charlotte Franklin",
+      "jersey_number": 25,
+      "position": "D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Kaitlyn Connors",
+      "jersey_number": 26,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Lola Tirabassi",
+      "jersey_number": 27,
+      "position": "M/F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Maggie di Rienzo",
+      "jersey_number": 30,
+      "position": "GK",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Bridget Taketa",
+      "jersey_number": 33,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Emma Gower",
+      "jersey_number": 34,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    }
+  ],
+  "coaching_staff": [
+    {
+      "name": "Eva Meredith",
+      "title": "Head Coach"
+    },
+    {
+      "name": "Emily Ribatt",
+      "title": "Assistant Coach"
+    },
+    {
+      "name": "Nina Zwolinski",
+      "title": "Goalkeeper Coach"
+    }
+  ],
+  "seniors_graduating_next": [
+    "Kerenza Leahey",
+    "Brooke Goodwin",
+    "Meghan Noe",
+    "Juliette Sullivan",
+    "Beatrix Delaney",
+    "Lanee Farr",
+    "Maria Utz",
+    "Charlotte Franklin"
+  ]
+}

@@ -1,0 +1,251 @@
+{
+  "team": "Tufts University Jumbos",
+  "season": 2025,
+  "roster": [
+    {
+      "name": "Gigi Edwards",
+      "jersey_number": 0,
+      "position": "GK",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Kianna Hill",
+      "jersey_number": 1,
+      "position": "GK",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Camille Lu",
+      "jersey_number": 3,
+      "position": "F",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Sydney Kassel",
+      "jersey_number": 4,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Reese Birch",
+      "jersey_number": 5,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Caroline Kelly",
+      "jersey_number": 7,
+      "position": "M",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Jordyn Miller",
+      "jersey_number": 8,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Elsi Aires",
+      "jersey_number": 9,
+      "position": "F",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Juliana Rosen",
+      "jersey_number": 10,
+      "position": "F",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Emily Nicholas",
+      "jersey_number": 11,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Aoife O'Reilly",
+      "jersey_number": 12,
+      "position": "M",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Anna Griffin",
+      "jersey_number": 13,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Maggie Rogers",
+      "jersey_number": 14,
+      "position": "D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Maren Jones",
+      "jersey_number": 15,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Emma Finnerty",
+      "jersey_number": 16,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Sarah Hauck",
+      "jersey_number": 17,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Waverly Sumner",
+      "jersey_number": 18,
+      "position": "F",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Mazie Neville",
+      "jersey_number": 19,
+      "position": "F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Claire Brady",
+      "jersey_number": 20,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Kate Loparco",
+      "jersey_number": 21,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Hannah Batt",
+      "jersey_number": 22,
+      "position": "F",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Alyssa Ruiz",
+      "jersey_number": 23,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Phoebe Marsick",
+      "jersey_number": 24,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Rachel Arcella",
+      "jersey_number": 25,
+      "position": "D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Mia Usatin",
+      "jersey_number": 26,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Caitlin Capitolo",
+      "jersey_number": 27,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Greta Steege",
+      "jersey_number": 28,
+      "position": "GK",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Cate Holzbeierlein",
+      "jersey_number": 29,
+      "position": "D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Audrey Cromett",
+      "jersey_number": 30,
+      "position": "F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Lena Sugrue",
+      "jersey_number": 31,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Lindsay Fouché",
+      "jersey_number": 35,
+      "position": "GK",
+      "class_year": "Fr",
+      "graduating": false
+    }
+  ],
+  "coaching_staff": [
+    {
+      "name": "Martha Whiting",
+      "title": "Head Coach"
+    },
+    {
+      "name": "Taylor Dempsey",
+      "title": "Assistant Coach"
+    },
+    {
+      "name": "Óli Gunnarsson",
+      "title": "Assistant Coach"
+    },
+    {
+      "name": "Ilana Albert",
+      "title": "Assistant Coach"
+    }
+  ],
+  "seniors_graduating_next": [
+    "Kianna Hill",
+    "Camille Lu",
+    "Caroline Kelly",
+    "Elsi Aires",
+    "Juliana Rosen",
+    "Aoife O'Reilly",
+    "Anna Griffin",
+    "Lena Sugrue"
+  ]
+}

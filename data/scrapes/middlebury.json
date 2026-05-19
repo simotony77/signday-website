@@ -1,0 +1,257 @@
+{
+  "team": "Middlebury College",
+  "season": 2025,
+  "roster": [
+    {
+      "name": "Aubrey Silvestri",
+      "jersey_number": 0,
+      "position": "GK",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Livia Davidson",
+      "jersey_number": 0,
+      "position": "GK",
+      "class_year": "Sr",
+      "graduating": true,
+      "captain": true
+    },
+    {
+      "name": "Frankie Marston",
+      "jersey_number": 1,
+      "position": "GK",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Delaney Meehan",
+      "jersey_number": 3,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Brooks DeShaw",
+      "jersey_number": 4,
+      "position": "F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Emmy Christopher",
+      "jersey_number": 6,
+      "position": "F",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Olivia Colby",
+      "jersey_number": 7,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Mia Feldman",
+      "jersey_number": 8,
+      "position": "F",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Carolina Espinosa",
+      "jersey_number": 9,
+      "position": "F/M",
+      "class_year": "Sr",
+      "graduating": true,
+      "captain": true
+    },
+    {
+      "name": "Chloe Swindle",
+      "jersey_number": 10,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Lauren Tracey",
+      "jersey_number": 11,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Olivia Irwin-Pokorny",
+      "jersey_number": 12,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Fiona Linnau",
+      "jersey_number": 13,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Mari Rode",
+      "jersey_number": 15,
+      "position": "D/M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Suzanna Fee",
+      "jersey_number": 16,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Roshann Purcell",
+      "jersey_number": 17,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true,
+      "captain": true
+    },
+    {
+      "name": "Gigi Day",
+      "jersey_number": 18,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false,
+      "captain": true
+    },
+    {
+      "name": "Victoria Quagrello",
+      "jersey_number": 19,
+      "position": "D/M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Wynne Braemer",
+      "jersey_number": 20,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Taya McClennen",
+      "jersey_number": 21,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Tessa Broderick",
+      "jersey_number": 22,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Stella Espinasse",
+      "jersey_number": 23,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Kacy Walker",
+      "jersey_number": 24,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Katherine Goodman",
+      "jersey_number": 25,
+      "position": "F/M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Avery Cox",
+      "jersey_number": 26,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Sarah Hall",
+      "jersey_number": 27,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Kjersti Moritz",
+      "jersey_number": 28,
+      "position": "D/M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Kiran Park",
+      "jersey_number": 30,
+      "position": "D/M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Lucille McCargo",
+      "jersey_number": 31,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Corinne Hessler",
+      "jersey_number": 32,
+      "position": "D/M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Lila Savage",
+      "jersey_number": 33,
+      "position": "M/F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Ainsley Chu",
+      "jersey_number": 34,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    }
+  ],
+  "coaching_staff": [
+    {
+      "name": "Peter Kim",
+      "title": "Head Coach"
+    },
+    {
+      "name": "Phoebe Martell-Crawford",
+      "title": "Assistant Coach"
+    },
+    {
+      "name": "Jon Hammond",
+      "title": "Assistant Coach"
+    },
+    {
+      "name": "Dean English",
+      "title": "Assistant Coach"
+    }
+  ],
+  "seniors_graduating_next": [
+    "Livia Davidson",
+    "Carolina Espinosa",
+    "Roshann Purcell"
+  ]
+}

@@ -1,0 +1,254 @@
+{
+  "team": "Vassar College Women's Soccer",
+  "season": 2025,
+  "roster": [
+    {
+      "name": "Bella Stevens",
+      "jersey_number": 0,
+      "position": "GK",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Olivia Sandrew",
+      "jersey_number": 0,
+      "position": "GK",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Laura Shea",
+      "jersey_number": 1,
+      "position": "GK",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Emily McMahon",
+      "jersey_number": 2,
+      "position": "GK",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Sonya Franklin",
+      "jersey_number": 3,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Rebecca Rodriguez",
+      "jersey_number": 4,
+      "position": "M",
+      "class_year": "Sr",
+      "graduating": true,
+      "captain": true
+    },
+    {
+      "name": "Anna Arban",
+      "jersey_number": 5,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Cecelia Wager",
+      "jersey_number": 6,
+      "position": "D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Caroline Sheehan",
+      "jersey_number": 7,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Maddie Wolf",
+      "jersey_number": 8,
+      "position": "M",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Alice Crowley",
+      "jersey_number": 9,
+      "position": "F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Gianna Panarelli",
+      "jersey_number": 10,
+      "position": "F",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Olivia Spektor",
+      "jersey_number": 11,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Anya Halkovich",
+      "jersey_number": 12,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Lily Brigman",
+      "jersey_number": 13,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true,
+      "captain": true
+    },
+    {
+      "name": "Lucy Getzin",
+      "jersey_number": 14,
+      "position": "F",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Elena Valle",
+      "jersey_number": 15,
+      "position": "M",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Alex Astalos",
+      "jersey_number": 16,
+      "position": "D",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Ava Holman",
+      "jersey_number": 17,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Grace Romano",
+      "jersey_number": 18,
+      "position": "F",
+      "class_year": "Jr",
+      "graduating": false
+    },
+    {
+      "name": "Sarah Bowler",
+      "jersey_number": 19,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Lindsey Nihei",
+      "jersey_number": 20,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true,
+      "captain": true
+    },
+    {
+      "name": "Riley McGrath",
+      "jersey_number": 21,
+      "position": "F",
+      "class_year": "Sr",
+      "graduating": true,
+      "captain": true
+    },
+    {
+      "name": "Liv Ivie",
+      "jersey_number": 22,
+      "position": "F",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Mollie McLaughlin",
+      "jersey_number": 23,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Lucy Hart",
+      "jersey_number": 24,
+      "position": "M",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Kloe Brown",
+      "jersey_number": 25,
+      "position": "D",
+      "class_year": "So",
+      "graduating": false
+    },
+    {
+      "name": "Jessica Bowman",
+      "jersey_number": 27,
+      "position": "D",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Samantha Ehrenreich",
+      "jersey_number": 29,
+      "position": "F",
+      "class_year": "Fr",
+      "graduating": false
+    },
+    {
+      "name": "Livy Soble",
+      "jersey_number": 31,
+      "position": "M",
+      "class_year": "Sr",
+      "graduating": true
+    },
+    {
+      "name": "Braelynn Tomanio",
+      "jersey_number": 32,
+      "position": "D",
+      "class_year": "Fr",
+      "graduating": false
+    }
+  ],
+  "coaching_staff": [
+    {
+      "name": "Keith Simons",
+      "title": "Head Coach"
+    },
+    {
+      "name": "Marissa Fortuna",
+      "title": "Assistant Coach"
+    },
+    {
+      "name": "Sarah Dwyer-Shick",
+      "title": "Assistant Coach"
+    },
+    {
+      "name": "Adam Pregno",
+      "title": "Assistant Coach"
+    }
+  ],
+  "seniors_graduating_next": [
+    "Rebecca Rodriguez",
+    "Lily Brigman",
+    "Lucy Getzin",
+    "Lindsey Nihei",
+    "Riley McGrath",
+    "Jessica Bowman",
+    "Livy Soble"
+  ]
+}
