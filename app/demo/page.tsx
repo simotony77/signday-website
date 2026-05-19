@@ -14,16 +14,56 @@ export default function DemoPage() {
       <Nav />
 
       <section className="bg-gradient-to-b from-brand-50 via-white to-white">
-        <div className="max-w-4xl mx-auto px-6 pt-12 pb-8 md:pt-16 md:pb-10 text-center">
+        <div className="max-w-4xl mx-auto px-6 pt-12 pb-6 md:pt-16 md:pb-8 text-center">
           <div className="inline-block bg-brand-100 text-brand-700 text-xs font-semibold px-3 py-1 rounded-full mb-5 uppercase tracking-wider">
-            Try the agent
+            See the agent run
           </div>
           <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 leading-tight tracking-tight">
-            See what your daughter would send to a real D3 coach.
+            See exactly what the agent does for your athlete every Sunday.
           </h1>
           <p className="text-base md:text-lg text-gray-600 mt-4 max-w-2xl mx-auto leading-relaxed">
-            Tell us about your athlete and pick a target school. The SignDay agent uses that program&apos;s actual roster and coaching staff to draft a personalized coach email. No fake data, no placeholders, no AI tells.
+            Tell us about your athlete and pick a target school. The agent walks you through the full pipeline: monitoring the program, detecting what changed, drafting the outreach, and delivering it in your Sunday digest. Real roster data, real coaches, no placeholders.
           </p>
+        </div>
+      </section>
+
+      <section className="pb-8 bg-white">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 md:p-6">
+            <div className="text-xs font-bold text-brand-600 uppercase tracking-wider mb-3 text-center">
+              What you&apos;ll see in 4 steps
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              <div>
+                <div className="text-2xl mb-1">👀</div>
+                <div className="text-xs font-semibold text-gray-900">1. Monitoring</div>
+                <div className="text-xs text-gray-500 leading-snug mt-1">
+                  Roster, coaches, graduating seniors at the school you pick
+                </div>
+              </div>
+              <div>
+                <div className="text-2xl mb-1">⚡</div>
+                <div className="text-xs font-semibold text-gray-900">2. Detection</div>
+                <div className="text-xs text-gray-500 leading-snug mt-1">
+                  The trigger the agent surfaced this week
+                </div>
+              </div>
+              <div>
+                <div className="text-2xl mb-1">✉️</div>
+                <div className="text-xs font-semibold text-gray-900">3. Drafting</div>
+                <div className="text-xs text-gray-500 leading-snug mt-1">
+                  A coach email personalized to that program and your athlete
+                </div>
+              </div>
+              <div>
+                <div className="text-2xl mb-1">📬</div>
+                <div className="text-xs font-semibold text-gray-900">4. Delivery</div>
+                <div className="text-xs text-gray-500 leading-snug mt-1">
+                  How it lands in your Sunday digest across all 12 schools
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
