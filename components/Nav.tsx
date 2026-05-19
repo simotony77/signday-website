@@ -14,6 +14,7 @@ export function Nav() {
           >
             Try the agent
           </Link>
+          <Link href="/account" className="hover:text-brand-600">Account</Link>
           <Link href="/privacy" className="hidden md:inline hover:text-brand-600">Privacy</Link>
           <Link href="/terms" className="hidden md:inline hover:text-brand-600">Terms</Link>
           <a href="mailto:tony@signdayapp.com" className="hidden md:inline hover:text-brand-600">Contact</a>

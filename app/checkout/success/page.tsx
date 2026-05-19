@@ -47,6 +47,14 @@ export default function CheckoutSuccessPage() {
             .
           </p>
 
+          <p className="text-sm text-gray-500 mt-4">
+            Need to cancel or update payment?{" "}
+            <Link href="/account" className="text-brand-600 hover:underline">
+              Manage your subscription
+            </Link>
+            .
+          </p>
+
           <Link
             href="/"
             className="inline-block mt-8 text-sm text-gray-500 hover:text-brand-600 underline"

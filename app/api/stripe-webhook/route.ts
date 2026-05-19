@@ -101,6 +101,9 @@ ${onboardingUrl}
 
 Reply to this email if anything goes sideways. I read every reply personally.
 
+Manage your subscription (cancel, update payment, view invoices) at any time:
+${origin}/account
+
 Tony
 `,
             });

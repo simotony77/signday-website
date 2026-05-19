@@ -35,7 +35,7 @@ const FAQ = [
   },
   {
     q: "What happens when my kid commits?",
-    a: "Cancel anytime, one click. No hoops, no retention emails.",
+    a: "Cancel anytime from your Account page (link in the top nav). Enter the email you used at checkout, you'll be sent to Stripe's secure billing portal where one click cancels. No hoops, no retention emails.",
   },
   {
     q: "Why only D3 right now?",
@@ -312,7 +312,11 @@ export default function Home() {
               <div>
                 <h3 className="text-sm font-semibold text-gray-900">Cancel anytime.</h3>
                 <p className="text-sm text-gray-700 mt-1">
-                  No commitments, no contracts. One click. Monthly billing means you only pay for what you use. If the agent isn&apos;t saving you time, you stop.
+                  No commitments, no contracts. One click from{" "}
+                  <a href="/account" className="text-brand-600 hover:text-brand-700 underline">
+                    your account page
+                  </a>{" "}
+                  opens Stripe&apos;s billing portal. Monthly billing means you only pay for what you use. If the agent isn&apos;t saving you time, you stop.
                 </p>
               </div>
             </div>
