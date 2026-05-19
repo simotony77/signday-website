@@ -10,10 +10,11 @@ export const metadata = {
 export default async function OnboardingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ email?: string }>;
+  searchParams: Promise<{ email?: string; mode?: string }>;
 }) {
   const params = await searchParams;
   const initialEmail = params.email || "";
+  const isUpdateMode = params.mode === "update";
 
   return (
     <>
@@ -22,13 +23,17 @@ export default async function OnboardingPage({
       <section className="bg-gradient-to-b from-brand-50 via-white to-white">
         <div className="max-w-3xl mx-auto px-6 pt-12 pb-6 md:pt-16 md:pb-8 text-center">
           <div className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full mb-5 uppercase tracking-wider">
-            Welcome to SignDay
+            {isUpdateMode ? "Update your setup" : "Welcome to SignDay"}
           </div>
           <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 leading-tight tracking-tight">
-            Set up your agent in 3 minutes.
+            {isUpdateMode
+              ? "Edit your athlete and schools."
+              : "Set up your agent in 3 minutes."}
           </h1>
           <p className="text-base md:text-lg text-gray-600 mt-4 max-w-2xl mx-auto leading-relaxed">
-            Tell me about your athlete and the schools you&apos;re tracking. Your first weekly digest arrives this Sunday at 7 AM Eastern.
+            {isUpdateMode
+              ? "Add or remove schools, update athlete info, change your target division. Your changes take effect with this Sunday's digest."
+              : "Tell me about your athlete and the schools you're tracking. Your first weekly digest arrives this Sunday at 7 AM Eastern."}
           </p>
         </div>
       </section>

@@ -23,16 +23,16 @@ export default async function AccountPage({
       <section className="bg-gradient-to-b from-brand-50 via-white to-white">
         <div className="max-w-2xl mx-auto px-6 pt-16 pb-8 md:pt-20 md:pb-10 text-center">
           <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
-            Manage your subscription
+            Your SignDay account
           </h1>
           <p className="text-base md:text-lg text-gray-600 mt-4 max-w-xl mx-auto leading-relaxed">
-            Cancel, update your payment method, or view invoices. One click, no hoops.
+            Manage your billing, or update which schools and athlete info the agent uses. Your email proves it&apos;s your account.
           </p>
         </div>
       </section>
 
       <section className="pb-20 md:pb-24 bg-white">
-        <div className="max-w-md mx-auto px-6">
+        <div className="max-w-lg mx-auto px-6">
           {justReturned && (
             <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-6 text-sm text-green-800">
               You&apos;re back from the billing portal. Any changes you made are saved.
@@ -49,7 +49,7 @@ export default async function AccountPage({
             >
               tony@signdayapp.com
             </a>{" "}
-            and I&apos;ll cancel for you manually.
+            and I&apos;ll handle it manually.
           </p>
         </div>
       </section>

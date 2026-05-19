@@ -101,8 +101,9 @@ ${onboardingUrl}
 
 Reply to this email if anything goes sideways. I read every reply personally.
 
-Manage your subscription (cancel, update payment, view invoices) at any time:
+Manage your subscription, or update your school list any time:
 ${origin}/account
+(cancel / update payment / view invoices, or add / remove schools)
 
 Tony
 `,

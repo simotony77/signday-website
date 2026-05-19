@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const POSITIONS = [
   { value: "GK", label: "Goalkeeper" },
@@ -76,6 +76,69 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
 
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
+
+  // Existing-submission flag: switches button label + success copy from
+  // "Finish onboarding" to "Save changes" once we've loaded prior data.
+  const [isUpdate, setIsUpdate] = useState(false);
+
+  // On mount, if we have an initial email, try to load an existing onboarding
+  // submission for that customer and prefill the form. Lets paying customers
+  // come back and update their athlete + school list any time.
+  useEffect(() => {
+    const e = initialEmail.trim().toLowerCase();
+    if (!e) return;
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/onboarding/load?email=${encodeURIComponent(e)}`,
+          { method: "GET" }
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        const sub = data?.submission;
+        if (cancelled || !sub) return;
+
+        const a = sub.athlete || {};
+        if (typeof a.first_name === "string") setFirstName(a.first_name);
+        if (typeof a.last_name === "string") setLastName(a.last_name);
+        if (typeof a.grad_year === "number") setGradYear(a.grad_year);
+        if (typeof a.position === "string") setPosition(a.position);
+        if (typeof a.current_league === "string") setCurrentLeague(a.current_league);
+        if (typeof a.division === "string") setDivision(a.division);
+        if (typeof a.club === "string") setClub(a.club);
+        if (typeof a.gpa === "number") setGpa(String(a.gpa));
+        if (typeof a.test_score === "number") setTestScore(String(a.test_score));
+        if (typeof a.reel_url === "string") setReelUrl(a.reel_url || "");
+        if (typeof a.email === "string") setAthleteEmail(a.email);
+
+        const savedSchools = Array.isArray(sub.schools) ? sub.schools : [];
+        if (savedSchools.length > 0) {
+          // Show at least 12 rows so they have empty slots to add more.
+          const padded: SchoolRow[] = [
+            ...savedSchools.map((s: { name?: string; roster_url?: string }) => ({
+              name: s.name || "",
+              roster_url: s.roster_url || "",
+            })),
+            ...Array.from({ length: Math.max(0, 12 - savedSchools.length) }, emptyRow),
+          ];
+          setSchools(padded);
+          setLookupStates(padded.map((s) => (s.roster_url ? "found" : "idle")));
+          setLookupNotes(padded.map(() => ""));
+        }
+
+        if (typeof sub.notes === "string") setNotes(sub.notes);
+        setIsUpdate(true);
+      } catch {
+        // Silent fail — form just stays empty
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [initialEmail]);
 
   function updateSchool(index: number, field: keyof SchoolRow, value: string) {
     setSchools((prev) => {
@@ -212,10 +275,12 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
       <div className="bg-green-50 border border-green-200 rounded-2xl p-8 text-center">
         <div className="text-4xl mb-3">✅</div>
         <h2 className="text-xl font-bold text-gray-900 mb-2">
-          You&apos;re onboarded.
+          {isUpdate ? "Setup updated." : "You’re onboarded."}
         </h2>
         <p className="text-gray-700 leading-relaxed">
-          I&apos;ll review your setup and get back to you within 24 hours with any questions. Your first weekly digest arrives this Sunday at 7 AM Eastern. Welcome to SignDay.
+          {isUpdate
+            ? "Your changes are saved. The agent will use the new list starting with this Sunday's digest. I'll reach out within 24 hours if anything needs verifying."
+            : "I'll review your setup and get back to you within 24 hours with any questions. Your first weekly digest arrives this Sunday at 7 AM Eastern. Welcome to SignDay."}
         </p>
       </div>
     );
@@ -452,7 +517,11 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
           disabled={status === "submitting"}
           className="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-60 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
         >
-          {status === "submitting" ? "Saving..." : "Finish onboarding"}
+          {status === "submitting"
+            ? "Saving..."
+            : isUpdate
+            ? "Save changes"
+            : "Finish onboarding"}
         </button>
         {status === "error" && (
           <p className="text-sm text-red-600 mt-3">{error}</p>
