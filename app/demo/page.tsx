@@ -59,7 +59,7 @@ export default function DemoPage() {
                 <div className="text-2xl mb-1">📬</div>
                 <div className="text-xs font-semibold text-gray-900">4. Delivery</div>
                 <div className="text-xs text-gray-500 leading-snug mt-1">
-                  How it lands in your Sunday digest across all 12 schools
+                  How it lands in your Sunday digest across every school you track
                 </div>
               </div>
             </div>

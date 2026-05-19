@@ -190,7 +190,7 @@ export function DemoForm() {
             ))}
           </select>
           <p className="text-xs text-gray-500 mt-2">
-            We&apos;ve already snapshot-scraped these 12 D3 academic programs. Click below and the agent walks through everything it does for you, end to end.
+            Demo only — these 12 D3 programs are pre-scraped so the walkthrough runs in seconds. <span className="font-semibold text-gray-700">Once you subscribe, the agent tracks any school you want</span> (D3, D2, D1, NAIA, in any state — up to your full target list).
           </p>
         </div>
 
@@ -392,7 +392,7 @@ export function DemoForm() {
               And every Sunday, a digest like this lands in your inbox.
             </h2>
             <p className="text-sm text-gray-600 mb-5">
-              One email, all your tracked schools, all the drafts waiting for your approval. Multiply this by 12 schools.
+              One email, all your tracked schools, all the drafts waiting for your approval. Multiply this by every program on your list.
             </p>
 
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
@@ -432,7 +432,7 @@ export function DemoForm() {
           {/* CTA */}
           <div className="bg-brand-50 border border-brand-100 rounded-2xl p-8 text-center">
             <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
-              Want this running every Sunday on your real list of 12 schools?
+              Want this running every Sunday on your real target list?
             </h3>
             <p className="text-base text-gray-700 mb-6 max-w-2xl mx-auto leading-relaxed">
               Your athlete keeps playing, you keep being present at games, and the agent does the spreadsheet + email work in the background. Drafts land in your inbox. You approve and send via Gmail. $99/month, cancel anytime.
