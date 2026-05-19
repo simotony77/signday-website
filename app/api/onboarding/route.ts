@@ -54,11 +54,12 @@ export async function POST(req: Request) {
     );
   }
 
-  // Light validation of each school
+  // Light validation of each school. URL is optional — Tony resolves blank URLs
+  // manually (or via the find-roster-url agent during onboarding form fill).
   for (const s of body.schools) {
-    if (!s.name || !s.roster_url) {
+    if (!s.name) {
       return NextResponse.json(
-        { error: "Each school must have a name and roster URL." },
+        { error: "Each school must have a name." },
         { status: 400 }
       );
     }
@@ -110,8 +111,12 @@ export async function POST(req: Request) {
       const athlete = body.athlete as Record<string, unknown>;
       const athleteSummary = `${athlete.first_name ?? "?"} ${athlete.last_name ?? ""} (Class of ${athlete.grad_year ?? "?"}, ${athlete.position ?? "?"}, ${athlete.club ?? "?"})`;
       const schoolList = body.schools
-        .map((s, i) => `  ${i + 1}. ${s.name} - ${s.roster_url}`)
+        .map(
+          (s, i) =>
+            `  ${i + 1}. ${s.name}${s.roster_url ? ` - ${s.roster_url}` : " - (URL NOT PROVIDED — needs lookup)"}`
+        )
         .join("\n");
+      const needsUrlCount = body.schools.filter((s) => !s.roster_url).length;
 
       await resend.emails.send({
         from: fromAddress,
@@ -123,13 +128,13 @@ Email:    ${email}
 Customer: ${customerId || "(no customer record found yet)"}
 Athlete:  ${athleteSummary}
 
-Schools (${body.schools.length}):
+Schools (${body.schools.length}, ${needsUrlCount} missing URL):
 ${schoolList}
 
 Notes:
 ${body.notes || "(none)"}
 
-Next: scrape these schools as baseline, then run agent each Sunday.
+Next: ${needsUrlCount > 0 ? `resolve ${needsUrlCount} missing URLs, then ` : ""}scrape these schools as baseline, then run agent each Sunday.
 View raw row: https://supabase.com/dashboard/project/teamquykkznndcmknvpy/editor
 `,
       });

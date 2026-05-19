@@ -11,6 +11,8 @@ const POSITIONS = [
 
 type Status = "idle" | "submitting" | "success" | "error";
 
+type LookupStatus = "idle" | "looking" | "found" | "failed";
+
 interface SchoolRow {
   name: string;
   roster_url: string;
@@ -38,6 +40,12 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
   const [schools, setSchools] = useState<SchoolRow[]>(
     Array.from({ length: 12 }, emptyRow)
   );
+  const [lookupStates, setLookupStates] = useState<LookupStatus[]>(
+    Array.from({ length: 12 }, () => "idle")
+  );
+  const [lookupNotes, setLookupNotes] = useState<string[]>(
+    Array.from({ length: 12 }, () => "")
+  );
 
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
@@ -50,8 +58,65 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
     });
   }
 
+  function setLookup(index: number, state: LookupStatus, note: string = "") {
+    setLookupStates((prev) => {
+      const next = [...prev];
+      next[index] = state;
+      return next;
+    });
+    setLookupNotes((prev) => {
+      const next = [...prev];
+      next[index] = note;
+      return next;
+    });
+  }
+
+  async function findUrlFor(index: number) {
+    const name = schools[index]?.name.trim();
+    if (!name) return;
+    setLookup(index, "looking");
+    try {
+      const res = await fetch("/api/find-roster-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ school_name: name }),
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        updateSchool(index, "roster_url", data.url);
+        const confidence = data.confidence || "medium";
+        setLookup(
+          index,
+          "found",
+          confidence === "high"
+            ? "Found. Verify it looks right."
+            : "Found (low confidence). Please verify."
+        );
+      } else {
+        setLookup(index, "failed", data.reason || "Couldn't find. Paste it manually.");
+      }
+    } catch {
+      setLookup(index, "failed", "Network error. Paste it manually.");
+    }
+  }
+
+  function handleNameBlur(index: number) {
+    const row = schools[index];
+    if (!row) return;
+    // Only auto-lookup if name has 3+ chars, URL is empty, and we haven't tried already
+    if (
+      row.name.trim().length >= 3 &&
+      !row.roster_url.trim() &&
+      lookupStates[index] === "idle"
+    ) {
+      findUrlFor(index);
+    }
+  }
+
   function addSchool() {
     setSchools((prev) => [...prev, emptyRow()]);
+    setLookupStates((prev) => [...prev, "idle"]);
+    setLookupNotes((prev) => [...prev, ""]);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -62,11 +127,15 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
       return;
     }
 
-    const filledSchools = schools.filter(
-      (s) => s.name.trim() && s.roster_url.trim()
-    );
+    // Accept any row with a name. URL is optional — if blank, we'll find it for them.
+    const filledSchools = schools
+      .filter((s) => s.name.trim())
+      .map((s) => ({
+        name: s.name.trim(),
+        roster_url: s.roster_url.trim() || "",
+      }));
     if (filledSchools.length === 0) {
-      setError("Please add at least one target school with a roster URL.");
+      setError("Please add at least one target school.");
       setStatus("error");
       return;
     }
@@ -236,31 +305,64 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
       <section>
         <h2 className="text-lg font-bold text-gray-900 mb-1">Schools to track</h2>
         <p className="text-sm text-gray-500 mb-4">
-          Up to 12 to start. For each, give the name and the URL of their women&apos;s soccer roster page. Empty rows will be ignored.
+          Up to 12 to start. Just type the school name and tab out. The agent finds the women&apos;s soccer roster page for you. Empty rows ignored.
         </p>
 
         <div className="space-y-3">
-          {schools.map((s, i) => (
-            <div key={i} className="grid sm:grid-cols-[1fr_2fr_auto] gap-2">
-              <input
-                type="text"
-                value={s.name}
-                onChange={(e) => updateSchool(i, "name", e.target.value)}
-                placeholder={`School ${i + 1} (e.g. Williams College)`}
-                className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400"
-              />
-              <input
-                type="url"
-                value={s.roster_url}
-                onChange={(e) => updateSchool(i, "roster_url", e.target.value)}
-                placeholder="https://athletics.example.edu/sports/womens-soccer/roster"
-                className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 sm:col-span-1"
-              />
-              <span className="hidden sm:block text-xs text-gray-400 self-center">
-                #{i + 1}
-              </span>
-            </div>
-          ))}
+          {schools.map((s, i) => {
+            const lookup = lookupStates[i] || "idle";
+            const note = lookupNotes[i] || "";
+            return (
+              <div key={i} className="space-y-1">
+                <div className="grid sm:grid-cols-[1fr_2fr_auto_auto] gap-2">
+                  <input
+                    type="text"
+                    value={s.name}
+                    onChange={(e) => updateSchool(i, "name", e.target.value)}
+                    onBlur={() => handleNameBlur(i)}
+                    placeholder={`School ${i + 1} (e.g. Williams College)`}
+                    className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400"
+                  />
+                  <input
+                    type="url"
+                    value={s.roster_url}
+                    onChange={(e) => updateSchool(i, "roster_url", e.target.value)}
+                    placeholder={
+                      lookup === "looking"
+                        ? "Searching..."
+                        : "Roster URL (auto-filled, or paste manually)"
+                    }
+                    disabled={lookup === "looking"}
+                    className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 disabled:bg-gray-50 sm:col-span-1"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => findUrlFor(i)}
+                    disabled={lookup === "looking" || !s.name.trim()}
+                    className="text-xs text-brand-600 hover:text-brand-700 font-medium disabled:text-gray-300 disabled:cursor-not-allowed px-2 self-center whitespace-nowrap"
+                  >
+                    {lookup === "looking" ? "..." : lookup === "found" ? "Refind" : "Find URL"}
+                  </button>
+                  <span className="hidden sm:block text-xs text-gray-400 self-center">
+                    #{i + 1}
+                  </span>
+                </div>
+                {note && (
+                  <p
+                    className={`text-xs ml-1 ${
+                      lookup === "found"
+                        ? "text-green-600"
+                        : lookup === "failed"
+                        ? "text-orange-600"
+                        : "text-gray-500"
+                    }`}
+                  >
+                    {note}
+                  </p>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         <button
