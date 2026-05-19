@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { BuyButton } from "@/components/BuyButton";
 
 const SCHOOLS = [
   { slug: "williams", name: "Williams College" },
@@ -355,7 +356,7 @@ export function DemoForm() {
                   type="button"
                   disabled
                   className="bg-brand-600 text-white text-sm font-semibold px-4 py-2 rounded-lg opacity-70 cursor-not-allowed"
-                  title="Available to waitlist members"
+                  title="Available to subscribers"
                 >
                   Edit &amp; send via Gmail
                 </button>
@@ -436,12 +437,12 @@ export function DemoForm() {
             <p className="text-base text-gray-700 mb-6 max-w-2xl mx-auto leading-relaxed">
               Your athlete keeps playing, you keep being present at games, and the agent does the spreadsheet + email work in the background. Drafts land in your inbox. You approve and send via Gmail. $99/month, cancel anytime.
             </p>
-            <a
-              href="/"
-              className="inline-block bg-brand-600 hover:bg-brand-700 text-white font-semibold px-8 py-3 rounded-xl"
-            >
-              Join the waitlist
-            </a>
+            <div className="flex justify-center">
+              <BuyButton />
+            </div>
+            <p className="text-xs text-gray-500 mt-3">
+              Secure checkout via Stripe. Cancel anytime, one click. Your first weekly digest arrives this Sunday at 7 AM Eastern.
+            </p>
           </div>
         </div>
       )}
