@@ -9,6 +9,15 @@ const POSITIONS = [
   { value: "F", label: "Forward" },
 ];
 
+const DIVISIONS = [
+  { value: "D3", label: "D3 only (best fit for SignDay right now)" },
+  { value: "D3+D2", label: "D3 and D2" },
+  { value: "D3+NAIA", label: "D3 and NAIA" },
+  { value: "D3+D1", label: "D3 and D1 (low-major / Ivy)" },
+  { value: "D2+D1", label: "Mostly D2 / D1 (let me know in notes)" },
+  { value: "Other", label: "Other / mixed (explain in notes)" },
+];
+
 type Status = "idle" | "submitting" | "success" | "error";
 
 type LookupStatus = "idle" | "looking" | "found" | "failed";
@@ -29,6 +38,7 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
   const [lastName, setLastName] = useState("");
   const [gradYear, setGradYear] = useState(2027);
   const [position, setPosition] = useState("M");
+  const [division, setDivision] = useState("D3");
   const [club, setClub] = useState("");
   const [gpa, setGpa] = useState("");
   const [testScore, setTestScore] = useState("");
@@ -154,6 +164,7 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
             last_name: lastName.trim(),
             grad_year: gradYear,
             position,
+            division,
             club: club.trim(),
             gpa: gpa.trim() ? parseFloat(gpa) : null,
             test_score: testScore.trim() ? parseInt(testScore, 10) : null,
@@ -257,6 +268,17 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
               </option>
             ))}
           </select>
+          <select
+            value={division}
+            onChange={(e) => setDivision(e.target.value)}
+            className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white sm:col-span-2"
+          >
+            {DIVISIONS.map((d) => (
+              <option key={d.value} value={d.value}>
+                Target: {d.label}
+              </option>
+            ))}
+          </select>
           <input
             type="text"
             value={club}
@@ -287,6 +309,10 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
             className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
           />
         </div>
+
+        <p className="text-xs text-gray-500 mt-2">
+          SignDay is built for D3 right now. The agent can still draft for D2 / D1 / NAIA targets, but the prompt tuning (academic-fit framing, no athletic-scholarship language) is most dialed in for D3.
+        </p>
 
         <input
           type="email"

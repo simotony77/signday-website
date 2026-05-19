@@ -109,7 +109,7 @@ export async function POST(req: Request) {
     const resend = new Resend(resendApiKey);
     try {
       const athlete = body.athlete as Record<string, unknown>;
-      const athleteSummary = `${athlete.first_name ?? "?"} ${athlete.last_name ?? ""} (Class of ${athlete.grad_year ?? "?"}, ${athlete.position ?? "?"}, ${athlete.club ?? "?"})`;
+      const athleteSummary = `${athlete.first_name ?? "?"} ${athlete.last_name ?? ""} (Class of ${athlete.grad_year ?? "?"}, ${athlete.position ?? "?"}, ${athlete.club ?? "?"}, target: ${athlete.division ?? "D3"})`;
       const schoolList = body.schools
         .map(
           (s, i) =>
