@@ -1,6 +1,7 @@
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { WaitlistForm } from "@/components/WaitlistForm";
+import { BuyButton } from "@/components/BuyButton";
 
 const BULLETS = [
   {
@@ -297,6 +298,14 @@ export default function Home() {
               <p className="text-sm text-blue-100 mt-2">~$66/month. Save $389/year.</p>
             </div>
           </div>
+
+          <div className="mt-8 flex justify-center">
+            <BuyButton />
+          </div>
+
+          <p className="text-xs text-gray-500 mt-3">
+            Secure checkout via Stripe. Cancel anytime, one click.
+          </p>
 
           <div className="mt-8 bg-gray-50 border border-gray-200 rounded-2xl p-5 text-left">
             <div className="flex items-start gap-3">
