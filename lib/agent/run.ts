@@ -16,6 +16,9 @@ export interface CustomerRunInput {
   customer: { id: string | null; email: string };
   athlete: AthleteProfile;
   schools: TrackedSchool[];
+  // When true, don't persist snapshots or log the digest. Used for diagnostic
+  // dry runs so they don't mutate state or pollute week-over-week diffing.
+  dryRun?: boolean;
 }
 
 export interface CustomerRunResult {
@@ -25,6 +28,7 @@ export interface CustomerRunResult {
   triggers_count: number;
   drafts_count: number;
   failures: number;
+  failure_details: { school: string; roster_url: string; error: string }[];
   sent: boolean;
   message_id?: string;
   skipped_reason?: string;
@@ -84,6 +88,7 @@ export async function runForCustomer(
 ): Promise<CustomerRunResult> {
   const { supabase, anthropic, resend, model, fromEmail, customer, athlete } =
     input;
+  const dryRun = input.dryRun ?? false;
 
   const schools = input.schools.filter((s) => s.roster_url && s.roster_url.trim());
   if (schools.length === 0) {
@@ -94,6 +99,7 @@ export async function runForCustomer(
       triggers_count: 0,
       drafts_count: 0,
       failures: 0,
+      failure_details: [],
       sent: false,
       skipped_reason: "no schools with roster URLs",
     };
@@ -115,15 +121,18 @@ export async function runForCustomer(
         school.roster_url
       );
 
-      // Persist this week's snapshot regardless of outcome.
-      await saveSnapshot(
-        supabase,
-        customer.id,
-        customer.email,
-        school.name,
-        school.roster_url,
-        after
-      );
+      // Persist this week's snapshot (skipped on dry runs so we don't
+      // pollute week-over-week diff state).
+      if (!dryRun) {
+        await saveSnapshot(
+          supabase,
+          customer.id,
+          customer.email,
+          school.name,
+          school.roster_url,
+          after
+        );
+      }
 
       if (!before) {
         // Baseline week: nothing to diff against yet.
@@ -202,25 +211,27 @@ export async function runForCustomer(
     }
   }
 
-  // Log the digest run.
-  await supabase.from("digests").insert({
-    customer_id: customer.id,
-    email: customer.email,
-    schools_tracked: digest.schools_tracked,
-    triggers_count: digest.triggers_count,
-    drafts_count: digest.drafts_count,
-    is_baseline: digest.is_baseline,
-    detail: {
-      results: results.map((r) => ({
-        school: r.school_name,
-        baseline: r.is_baseline,
-        triggers: r.triggers.length,
-        drafts: r.drafts.length,
-        error: r.error ?? null,
-      })),
-      message_id: messageId ?? null,
-    },
-  });
+  // Log the digest run (skipped on dry runs).
+  if (!dryRun) {
+    await supabase.from("digests").insert({
+      customer_id: customer.id,
+      email: customer.email,
+      schools_tracked: digest.schools_tracked,
+      triggers_count: digest.triggers_count,
+      drafts_count: digest.drafts_count,
+      is_baseline: digest.is_baseline,
+      detail: {
+        results: results.map((r) => ({
+          school: r.school_name,
+          baseline: r.is_baseline,
+          triggers: r.triggers.length,
+          drafts: r.drafts.length,
+          error: r.error ?? null,
+        })),
+        message_id: messageId ?? null,
+      },
+    });
+  }
 
   return {
     email: customer.email,
@@ -229,6 +240,13 @@ export async function runForCustomer(
     triggers_count: digest.triggers_count,
     drafts_count: digest.drafts_count,
     failures: results.filter((r) => r.error).length,
+    failure_details: results
+      .filter((r) => r.error)
+      .map((r) => ({
+        school: r.school_name,
+        roster_url: r.roster_url,
+        error: r.error || "unknown",
+      })),
     sent,
     message_id: messageId,
   };

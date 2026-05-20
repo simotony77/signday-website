@@ -122,6 +122,7 @@ async function main() {
         customer: { id: c.id, email: c.email },
         athlete,
         schools,
+        dryRun,
       });
       processed++;
       if (result.sent) sent++;
@@ -131,6 +132,9 @@ async function main() {
           `${result.failures ? `, ${result.failures} scrape failures` : ""}` +
           `${result.sent ? `, sent (${result.message_id})` : result.skipped_reason ? `, skipped (${result.skipped_reason})` : dryRun ? ", not sent (dry run)" : ", NOT sent"}`
       );
+      for (const f of result.failure_details) {
+        log(`     [scrape failed] ${f.school} <${f.roster_url}>: ${f.error}`);
+      }
     } catch (e) {
       log(`  -> [ERROR] ${e instanceof Error ? e.message : e}`);
     }
