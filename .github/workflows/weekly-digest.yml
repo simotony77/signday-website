@@ -1,0 +1,53 @@
+name: SignDay weekly digest
+
+# Runs the agent every Sunday at 11:00 UTC (7:00 AM US Eastern during EDT,
+# 6:00 AM during EST). Also runnable on demand from the Actions tab.
+on:
+  schedule:
+    - cron: "0 11 * * 0"
+  workflow_dispatch:
+    inputs:
+      email:
+        description: "Run for a single customer email only (optional)"
+        required: false
+        default: ""
+      dry_run:
+        description: "Dry run (build digests but do NOT send emails)"
+        required: false
+        default: "false"
+
+jobs:
+  run-digests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run weekly digest
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DIGEST_FROM_EMAIL: ${{ secrets.DIGEST_FROM_EMAIL }}
+          CLAUDE_MODEL: ${{ secrets.CLAUDE_MODEL }}
+        run: |
+          ARGS=""
+          if [ -n "${{ github.event.inputs.email }}" ]; then
+            ARGS="$ARGS --email ${{ github.event.inputs.email }}"
+          fi
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          echo "Running: npm run agent:weekly -- $ARGS"
+          npm run agent:weekly -- $ARGS
