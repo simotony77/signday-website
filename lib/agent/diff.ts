@@ -7,19 +7,44 @@ import type {
 
 function indexBy<T>(items: T[], key: (item: T) => string): Map<string, T> {
   const map = new Map<string, T>();
-  for (const item of items) map.set(key(item), item);
+  for (const item of items) {
+    const k = key(item);
+    // First occurrence wins; avoids collapsing distinct entries unpredictably.
+    if (!map.has(k)) map.set(k, item);
+  }
   return map;
 }
 
+// Normalize a person's name for identity comparison so cosmetic differences
+// between two scrapes of the same page (accents, punctuation, middle initials,
+// extra whitespace) don't register as a player/coach being added or removed.
+function normName(s: string): string {
+  const tokens = s
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "") // strip accent marks
+    .replace(/[.,'’`-]/g, " ") // punctuation -> space
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(" ")
+    .filter((t) => t.length > 1); // drop single-char middle initials
+  return tokens.join(" ");
+}
+
+// Normalize a coach title (e.g. "Head Coach" vs "head  coach").
+function normTitle(s: string): string {
+  return s.toLowerCase().replace(/[^a-z ]/g, "").replace(/\s+/g, " ").trim();
+}
+
 export function diffSchools(before: SchoolData, after: SchoolData): DiffOutput {
-  const beforePlayers = indexBy(before.roster, (p) => p.name);
-  const afterPlayers = indexBy(after.roster, (p) => p.name);
+  const beforePlayers = indexBy(before.roster, (p) => normName(p.name));
+  const afterPlayers = indexBy(after.roster, (p) => normName(p.name));
 
   const playersAdded: PlayerChange[] = [];
-  for (const [name, player] of afterPlayers) {
-    if (!beforePlayers.has(name)) {
+  for (const [key, player] of afterPlayers) {
+    if (!beforePlayers.has(key)) {
       playersAdded.push({
-        name,
+        name: player.name, // original display name, not the normalized key
         position: player.position,
         class_year: player.class_year,
         jersey_number: player.jersey_number ?? null,
@@ -28,10 +53,10 @@ export function diffSchools(before: SchoolData, after: SchoolData): DiffOutput {
   }
 
   const playersRemoved: PlayerChange[] = [];
-  for (const [name, player] of beforePlayers) {
-    if (!afterPlayers.has(name)) {
+  for (const [key, player] of beforePlayers) {
+    if (!afterPlayers.has(key)) {
       playersRemoved.push({
-        name,
+        name: player.name,
         position: player.position,
         class_year: player.class_year,
         jersey_number: player.jersey_number ?? null,
@@ -41,11 +66,11 @@ export function diffSchools(before: SchoolData, after: SchoolData): DiffOutput {
 
   const beforeCoaches = indexBy(
     before.coaching_staff,
-    (c) => `${c.name}|${c.title}`
+    (c) => `${normName(c.name)}|${normTitle(c.title)}`
   );
   const afterCoaches = indexBy(
     after.coaching_staff,
-    (c) => `${c.name}|${c.title}`
+    (c) => `${normName(c.name)}|${normTitle(c.title)}`
   );
 
   const coachesAdded: CoachChange[] = [];
@@ -69,7 +94,11 @@ export function diffSchools(before: SchoolData, after: SchoolData): DiffOutput {
     /head coach/i.test(c.title)
   );
   let headCoachChanged: { from: string; to: string } | null = null;
-  if (beforeHead && afterHead && beforeHead.name !== afterHead.name) {
+  if (
+    beforeHead &&
+    afterHead &&
+    normName(beforeHead.name) !== normName(afterHead.name)
+  ) {
     headCoachChanged = { from: beforeHead.name, to: afterHead.name };
   }
 

@@ -85,6 +85,12 @@ export async function scrapeSchool(opts: ScrapeOptions): Promise<SchoolData> {
   const response = await opts.anthropic.messages.create({
     model: opts.model,
     max_tokens: 4096,
+    // Temperature 0 makes extraction near-deterministic. Critical: at the
+    // default (1.0) the same page yields slightly different rosters each
+    // run (middle initials, position notation), which the diff then reports
+    // as phantom roster changes. We need stable reads for clean week-over-week
+    // diffing.
+    temperature: 0,
     messages: [
       {
         role: "user",
