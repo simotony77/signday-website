@@ -1,0 +1,64 @@
+{
+  "team": "Tufts University Jumbos",
+  "season": 2025,
+  "record": "18-2-3",
+  "recent_results": [
+    {
+      "date": "Dec 4 (Thu)",
+      "opponent": "Emory University",
+      "home_away": "N",
+      "result": "L 0-3",
+      "is_win": false
+    },
+    {
+      "date": "Nov 23 (Sun)",
+      "opponent": "University of Mary Washington",
+      "home_away": "N",
+      "result": "W 1-0 OT",
+      "is_win": true
+    },
+    {
+      "date": "Nov 22 (Sat)",
+      "opponent": "Middlebury College",
+      "home_away": "A",
+      "result": "W 2-0",
+      "is_win": true
+    },
+    {
+      "date": "Nov 16 (Sun)",
+      "opponent": "Wesleyan University",
+      "home_away": "H",
+      "result": "W 2-0",
+      "is_win": true
+    },
+    {
+      "date": "Nov 15 (Sat)",
+      "opponent": "Lesley University",
+      "home_away": "H",
+      "result": "W 7-0",
+      "is_win": true
+    },
+    {
+      "date": "Nov 9 (Sun)",
+      "opponent": "Williams College",
+      "home_away": "H",
+      "result": "T 1-1",
+      "is_win": false
+    },
+    {
+      "date": "Nov 8 (Sat)",
+      "opponent": "Colby College",
+      "home_away": "H",
+      "result": "W 3-2",
+      "is_win": true
+    },
+    {
+      "date": "Nov 1 (Sat)",
+      "opponent": "Wesleyan University",
+      "home_away": "H",
+      "result": "W 2-1",
+      "is_win": true
+    }
+  ],
+  "upcoming": []
+}

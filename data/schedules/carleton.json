@@ -1,0 +1,64 @@
+{
+  "team": "Carleton Knights",
+  "season": 2025,
+  "record": "18-3-3",
+  "recent_results": [
+    {
+      "date": "Nov 23 (Sun)",
+      "opponent": "University of Chicago",
+      "home_away": "A",
+      "result": "L 1-2",
+      "is_win": false
+    },
+    {
+      "date": "Nov 22 (Sat)",
+      "opponent": "Swarthmore College",
+      "home_away": "N",
+      "result": "T 1-1",
+      "is_win": false
+    },
+    {
+      "date": "Nov 16 (Sun)",
+      "opponent": "Lake Forest College",
+      "home_away": "A",
+      "result": "W 2-0",
+      "is_win": true
+    },
+    {
+      "date": "Nov 15 (Sat)",
+      "opponent": "John Carroll University",
+      "home_away": "N",
+      "result": "W 1-0",
+      "is_win": true
+    },
+    {
+      "date": "Nov 8 (Sat)",
+      "opponent": "St. Catherine University",
+      "home_away": "A",
+      "result": "W 1-0",
+      "is_win": true
+    },
+    {
+      "date": "Nov 6 (Thu)",
+      "opponent": "St. Olaf College",
+      "home_away": "H",
+      "result": "W 1-0",
+      "is_win": true
+    },
+    {
+      "date": "Nov 1 (Sat)",
+      "opponent": "College of St. Scholastica",
+      "home_away": "H",
+      "result": "W 3-0",
+      "is_win": true
+    },
+    {
+      "date": "Oct 29 (Wed)",
+      "opponent": "University of Wisconsin-Platteville",
+      "home_away": "A",
+      "result": "W 2-0",
+      "is_win": true
+    }
+  ],
+  "upcoming": []
+}

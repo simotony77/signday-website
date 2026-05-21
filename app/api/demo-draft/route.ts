@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { SCHOOL_SCRAPES, type SchoolData } from "@/lib/schoolScrapes";
+import { SCHOOL_SCHEDULES } from "@/lib/schoolSchedules";
+import type { ScheduleData, GameResult } from "@/lib/agent/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -78,33 +80,52 @@ const POSITION_MATCHERS: Record<string, PositionRequirements> = {
   },
 };
 
-function buildTrigger(school: SchoolData, athletePosition: string): string {
+function mostRecentWin(schedule?: ScheduleData): GameResult | null {
+  if (!schedule?.recent_results?.length) return null;
+  return schedule.recent_results.find((g) => g.is_win) ?? null;
+}
+
+function buildTrigger(
+  school: SchoolData,
+  athletePosition: string,
+  schedule?: ScheduleData
+): string {
+  // Prefer a recent win as the lead reason to reach out (the most natural,
+  // timely hook), then add the roster/position angle as supporting context.
+  const win = mostRecentWin(schedule);
+  const winPart = win
+    ? `${school.team} won ${win.result} vs ${win.opponent}${win.date ? ` (${win.date})` : ""}. A recent win is a timely, specific reason to reach out now. `
+    : "";
+
   const matcher = POSITION_MATCHERS[athletePosition];
+  let rosterPart: string;
   if (!matcher) {
-    return `Class of 2027 introduction to ${school.team}.`;
-  }
-
-  const graduatingAtPosition = school.roster.filter(
-    (p) => p.graduating === true && matcher.match(p.position)
-  );
-  if (graduatingAtPosition.length === 0) {
-    // Fallback: any graduating senior in the roster signals the program is in transition
-    const anyGraduating = school.roster.filter((p) => p.graduating === true);
-    if (anyGraduating.length > 0) {
-      return `Senior class graduating this spring, exploring fit for next cycle at ${school.team}.`;
+    rosterPart = `Class of 2027 introduction to ${school.team}.`;
+  } else {
+    const graduatingAtPosition = school.roster.filter(
+      (p) => p.graduating === true && matcher.match(p.position)
+    );
+    if (graduatingAtPosition.length === 0) {
+      const anyGraduating = school.roster.filter((p) => p.graduating === true);
+      rosterPart =
+        anyGraduating.length > 0
+          ? `Senior class graduating this spring, exploring fit for next cycle at ${school.team}.`
+          : `Class of 2027 introduction to ${school.team}, looking ahead to next cycle.`;
+    } else {
+      const names = graduatingAtPosition.map((p) => p.name).join(", ");
+      const positionWord = matcher.label;
+      rosterPart = `Senior ${positionWord}${graduatingAtPosition.length === 1 ? "" : "s"} ${names} graduating spring 2026, program will need ${positionWord} depth next cycle.`;
     }
-    return `Class of 2027 introduction to ${school.team}, looking ahead to next cycle.`;
   }
 
-  const names = graduatingAtPosition.map((p) => p.name).join(", ");
-  const positionWord = matcher.label;
-  return `Senior ${positionWord}${graduatingAtPosition.length === 1 ? "" : "s"} ${names} graduating spring 2026, program will need ${positionWord} depth next cycle.`;
+  return (winPart + rosterPart).trim();
 }
 
 function buildUserPrompt(
   school: SchoolData,
   athlete: DemoRequest,
-  trigger: string
+  trigger: string,
+  schedule?: ScheduleData
 ): string {
   // Build a minimal athlete profile for the prompt
   const athleteProfile = {
@@ -114,6 +135,24 @@ function buildUserPrompt(
     club: athlete.club,
   };
 
+  let scheduleBlock = "";
+  if (schedule && (schedule.recent_results?.length || schedule.record)) {
+    scheduleBlock = `
+
+SCHEDULE CONTEXT (recent results and record, scraped from the program's schedule page):
+\`\`\`json
+${JSON.stringify(
+  {
+    record: schedule.record ?? null,
+    recent_results: schedule.recent_results?.slice(0, 5) ?? [],
+    next_game: schedule.upcoming?.[0] ?? null,
+  },
+  null,
+  2
+)}
+\`\`\``;
+  }
+
   return `SCHOOL CONTEXT (scraped from the program's athletics page):
 \`\`\`json
 ${JSON.stringify(school, null, 2)}
@@ -122,7 +161,7 @@ ${JSON.stringify(school, null, 2)}
 ATHLETE PROFILE:
 \`\`\`json
 ${JSON.stringify(athleteProfile, null, 2)}
-\`\`\`
+\`\`\`${scheduleBlock}
 
 TRIGGER (the specific reason this email is being sent now):
 ${trigger}
@@ -174,7 +213,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Input too long." }, { status: 400 });
   }
 
-  const trigger = buildTrigger(school, body.position);
+  const schedule: ScheduleData | undefined = SCHOOL_SCHEDULES[body.school_slug];
+  const trigger = buildTrigger(school, body.position, schedule);
   const headCoach = school.coaching_staff.find((c) => /head coach/i.test(c.title));
   const coachLabel = headCoach
     ? `${headCoach.name} (${school.team} Head Coach)`
@@ -191,7 +231,7 @@ export async function POST(req: Request) {
       messages: [
         {
           role: "user",
-          content: buildUserPrompt(school, body, trigger),
+          content: buildUserPrompt(school, body, trigger, schedule),
         },
       ],
     });
@@ -231,6 +271,9 @@ export async function POST(req: Request) {
           .map((c) => ({ name: c.name, title: c.title })),
         position_counts: positionCounts,
         graduating_seniors: graduatingSeniors,
+        record: schedule?.record ?? null,
+        recent_results: (schedule?.recent_results ?? []).slice(0, 5),
+        next_game: schedule?.upcoming?.[0] ?? null,
       },
       trigger,
       draft: {

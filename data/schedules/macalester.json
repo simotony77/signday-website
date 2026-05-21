@@ -1,0 +1,33 @@
+{
+  "team": "Macalester College",
+  "season": 2026,
+  "record": "0-0",
+  "recent_results": [],
+  "upcoming": [
+    {
+      "date": "Sep 4 (Fri) 4:00 PM",
+      "opponent": "University of Chicago",
+      "home_away": "A"
+    },
+    {
+      "date": "Sep 6 (Sun) 11:00 AM",
+      "opponent": "University of Wisconsin-Oshkosh",
+      "home_away": "A"
+    },
+    {
+      "date": "Sep 10 (Thu) 7:30 PM",
+      "opponent": "University of Wisconsin-Superior",
+      "home_away": "H"
+    },
+    {
+      "date": "Sep 13 (Sun) 11:00 AM",
+      "opponent": "Claremont-Mudd-Scripps Colleges",
+      "home_away": "H"
+    },
+    {
+      "date": "Sep 16 (Wed) 7:30 PM",
+      "opponent": "St. Catherine University",
+      "home_away": "H"
+    }
+  ]
+}

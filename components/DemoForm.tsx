@@ -29,6 +29,14 @@ const POSITIONS = [
 
 type Status = "idle" | "loading" | "success" | "error";
 
+interface GameResult {
+  date: string;
+  opponent: string;
+  home_away?: string | null;
+  result?: string | null;
+  is_win?: boolean;
+}
+
 interface Monitoring {
   team: string;
   season: number;
@@ -37,6 +45,9 @@ interface Monitoring {
   assistant_coaches: { name: string; title: string }[];
   position_counts: { GK: number; D: number; M: number; F: number };
   graduating_seniors: { name: string; position: string; class_year: string }[];
+  record?: string | null;
+  recent_results?: GameResult[];
+  next_game?: { date: string; opponent: string; home_away?: string | null } | null;
 }
 
 interface DraftResult {
@@ -289,6 +300,36 @@ export function DemoForm() {
                     </div>
                   )}
                 </div>
+
+                {result.monitoring.recent_results &&
+                  result.monitoring.recent_results.length > 0 && (
+                    <div className="sm:col-span-2">
+                      <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                        Recent results
+                        {result.monitoring.record
+                          ? ` (record ${result.monitoring.record})`
+                          : ""}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {result.monitoring.recent_results.map((g, i) => (
+                          <span
+                            key={i}
+                            className={`text-xs px-2.5 py-1 rounded-full border ${
+                              g.is_win
+                                ? "bg-green-50 border-green-200 text-green-800"
+                                : "bg-gray-50 border-gray-200 text-gray-600"
+                            }`}
+                          >
+                            {g.result ? `${g.result} ` : ""}
+                            vs {g.opponent}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="text-xs text-gray-400 mt-2">
+                        The agent re-reads the schedule weekly. A new win becomes a timely reason to reach out.
+                      </div>
+                    </div>
+                  )}
               </div>
             </div>
           </div>

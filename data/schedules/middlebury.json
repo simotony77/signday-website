@@ -1,0 +1,64 @@
+{
+  "team": "Middlebury College",
+  "season": 2025,
+  "record": "13-4-3",
+  "recent_results": [
+    {
+      "date": "Nov 22 (Sat)",
+      "opponent": "Tufts University",
+      "home_away": "H",
+      "result": "L 0-2",
+      "is_win": false
+    },
+    {
+      "date": "Nov 16 (Sun)",
+      "opponent": "University of Rochester",
+      "home_away": "H",
+      "result": "W 2-1",
+      "is_win": true
+    },
+    {
+      "date": "Nov 15 (Sat)",
+      "opponent": "Westfield State University",
+      "home_away": "H",
+      "result": "W 3-0",
+      "is_win": true
+    },
+    {
+      "date": "Nov 8 (Sat)",
+      "opponent": "Williams College",
+      "home_away": "N",
+      "result": "L 1-2",
+      "is_win": false
+    },
+    {
+      "date": "Nov 1 (Sat)",
+      "opponent": "Hamilton College",
+      "home_away": "H",
+      "result": "W 2-0",
+      "is_win": true
+    },
+    {
+      "date": "Oct 28 (Tue)",
+      "opponent": "Williams College",
+      "home_away": "A",
+      "result": "L 0-1",
+      "is_win": false
+    },
+    {
+      "date": "Oct 25 (Sat)",
+      "opponent": "Bates College",
+      "home_away": "H",
+      "result": "W 1-0",
+      "is_win": true
+    },
+    {
+      "date": "Oct 18 (Sat)",
+      "opponent": "Tufts University",
+      "home_away": "H",
+      "result": "T 0-0",
+      "is_win": false
+    }
+  ],
+  "upcoming": []
+}

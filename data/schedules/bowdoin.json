@@ -1,0 +1,64 @@
+{
+  "team": "Bowdoin College",
+  "season": 2025,
+  "record": "10-6",
+  "recent_results": [
+    {
+      "date": "Nov 1 (Sat)",
+      "opponent": "Williams",
+      "home_away": "A",
+      "result": "L 0-3",
+      "is_win": false
+    },
+    {
+      "date": "Oct 28 (Tue)",
+      "opponent": "Tufts",
+      "home_away": "A",
+      "result": "L 0-6",
+      "is_win": false
+    },
+    {
+      "date": "Oct 25 (Sat)",
+      "opponent": "Amherst",
+      "home_away": "H",
+      "result": "L 1-2",
+      "is_win": false
+    },
+    {
+      "date": "Oct 21 (Tue)",
+      "opponent": "Bates",
+      "home_away": "H",
+      "result": "W 3-0",
+      "is_win": true
+    },
+    {
+      "date": "Oct 18 (Sat)",
+      "opponent": "Wesleyan",
+      "home_away": "A",
+      "result": "W 2-0",
+      "is_win": true
+    },
+    {
+      "date": "Oct 11 (Sat)",
+      "opponent": "Trinity",
+      "home_away": "H",
+      "result": "W 1-0",
+      "is_win": true
+    },
+    {
+      "date": "Oct 7 (Tue)",
+      "opponent": "Maine Maritime",
+      "home_away": "H",
+      "result": "W 2-0",
+      "is_win": true
+    },
+    {
+      "date": "Oct 4 (Sat)",
+      "opponent": "Middlebury",
+      "home_away": "A",
+      "result": "W 2-1",
+      "is_win": true
+    }
+  ],
+  "upcoming": []
+}

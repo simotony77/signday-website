@@ -1,0 +1,33 @@
+{
+  "team": "Amherst College",
+  "season": 2026,
+  "record": "0-0",
+  "recent_results": [],
+  "upcoming": [
+    {
+      "date": "Sep 5 (Sat) 12 PM",
+      "opponent": "Connecticut College",
+      "home_away": "H"
+    },
+    {
+      "date": "Sep 8 (Tue) TBD",
+      "opponent": "Worcester Polytechnic Institute",
+      "home_away": "A"
+    },
+    {
+      "date": "Sep 12 (Sat) 12 PM",
+      "opponent": "Bowdoin College",
+      "home_away": "H"
+    },
+    {
+      "date": "Sep 13 (Sun) TBD",
+      "opponent": "Smith College",
+      "home_away": "A"
+    },
+    {
+      "date": "Sep 16 (Wed) 7 PM",
+      "opponent": "Springfield College",
+      "home_away": "H"
+    }
+  ]
+}

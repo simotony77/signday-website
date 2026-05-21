@@ -6,12 +6,12 @@ const BULLETS = [
   {
     icon: "🔍",
     title: "We watch your target schools",
-    body: "Graduating seniors at the position. New coaches. Schedule openings. Depth changes on the roster. We monitor 10–15 programs every week so you stop refreshing athletics sites at midnight.",
+    body: "Every week we re-read each program's roster, coaching staff, and game results. Graduating seniors at the position. New or departing coaches. A win worth congratulating. You stop refreshing athletics sites at midnight.",
   },
   {
     icon: "✉️",
     title: "We draft personalized outreach",
-    body: "Coach by coach, tailored to each program. We pull graduating positions, recent results, the program's style. Drafts arrive in your inbox, ready for your approval, sent from your athlete's own email so coaches actually read them.",
+    body: "When something opens a door (a senior at the position graduates, a coach change, a recent win), we draft a coach email grounded in that program's real roster and recent results. Ready for your approval, sent from your athlete's own Gmail so coaches actually read it.",
   },
   {
     icon: "🔁",
@@ -31,7 +31,7 @@ const FAQ = [
   },
   {
     q: "Won't coaches notice it's templated?",
-    a: "Each draft is researched per coach and program: graduating positions, recent results, the program's style. You always edit before sending. The point isn't to fake personal. It's to make personal fast.",
+    a: "Each draft is grounded in that program's real data: graduating seniors at the position, the head coach's name, recent game results, and recent program news we research. No invented claims about playing style, no unfilled brackets. You always edit before sending. The point isn't to fake personal. It's to make personal fast.",
   },
   {
     q: "What happens when my kid commits?",
@@ -178,7 +178,7 @@ export default function Home() {
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-3 ml-1 leading-relaxed">
-              Every draft pulls real research: graduating seniors at the position, the program&apos;s recent results, the coach&apos;s recent commits. Then your athlete edits in her voice and sends from her own Gmail. No SignDay tracking URL. No generic boilerplate. No unfilled brackets.
+              Every draft pulls real data: graduating seniors at the position, the program&apos;s recent results, and recent program news we research. Then your athlete edits in her voice and sends from her own Gmail. No SignDay tracking URL. No generic boilerplate. No unfilled brackets.
             </p>
           </div>
 

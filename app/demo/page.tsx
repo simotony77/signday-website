@@ -38,14 +38,14 @@ export default function DemoPage() {
                 <div className="text-2xl mb-1">👀</div>
                 <div className="text-xs font-semibold text-gray-900">1. Monitoring</div>
                 <div className="text-xs text-gray-500 leading-snug mt-1">
-                  Roster, coaches, graduating seniors at the school you pick
+                  Roster, coaches, graduating seniors, and recent results
                 </div>
               </div>
               <div>
                 <div className="text-2xl mb-1">⚡</div>
                 <div className="text-xs font-semibold text-gray-900">2. Detection</div>
                 <div className="text-xs text-gray-500 leading-snug mt-1">
-                  The trigger the agent surfaced this week
+                  A roster change or a recent win the agent surfaced
                 </div>
               </div>
               <div>

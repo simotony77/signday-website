@@ -1,0 +1,64 @@
+{
+  "team": "Wesleyan University",
+  "season": 2025,
+  "record": "9-5-4",
+  "recent_results": [
+    {
+      "date": "Nov 16 (Sun)",
+      "opponent": "No. 3 Tufts",
+      "home_away": "A",
+      "result": "L 0-2",
+      "is_win": false
+    },
+    {
+      "date": "Nov 15 (Sat)",
+      "opponent": "No. 21 NYU",
+      "home_away": "N",
+      "result": "T 1-1",
+      "is_win": false
+    },
+    {
+      "date": "Nov 1 (Sat)",
+      "opponent": "Tufts",
+      "home_away": "A",
+      "result": "L 1-2",
+      "is_win": false
+    },
+    {
+      "date": "Oct 28 (Tue)",
+      "opponent": "Conn. College",
+      "home_away": "H",
+      "result": "W 3-0",
+      "is_win": true
+    },
+    {
+      "date": "Oct 25 (Sat)",
+      "opponent": "Colby",
+      "home_away": "A",
+      "result": "W 1-0",
+      "is_win": true
+    },
+    {
+      "date": "Oct 18 (Sat)",
+      "opponent": "Bowdoin",
+      "home_away": "H",
+      "result": "L 0-2",
+      "is_win": false
+    },
+    {
+      "date": "Oct 14 (Tue)",
+      "opponent": "RIC",
+      "home_away": "H",
+      "result": "W 4-1",
+      "is_win": true
+    },
+    {
+      "date": "Oct 11 (Sat)",
+      "opponent": "No. 9 Williams",
+      "home_away": "A",
+      "result": "L 0-1",
+      "is_win": false
+    }
+  ],
+  "upcoming": []
+}

@@ -1,0 +1,64 @@
+{
+  "team": "Trinity College",
+  "season": 2025,
+  "record": "6-7-2",
+  "recent_results": [
+    {
+      "date": "Oct 28 (Tue)",
+      "opponent": "Amherst College",
+      "home_away": "A",
+      "result": "L 0-3",
+      "is_win": false
+    },
+    {
+      "date": "Oct 25 (Sat)",
+      "opponent": "Hamilton College",
+      "home_away": "A",
+      "result": "L 0-1",
+      "is_win": false
+    },
+    {
+      "date": "Oct 21 (Tue)",
+      "opponent": "Connecticut College",
+      "home_away": "H",
+      "result": "W 4-3",
+      "is_win": true
+    },
+    {
+      "date": "Oct 18 (Sat)",
+      "opponent": "Colby College",
+      "home_away": "H",
+      "result": "L 1-4",
+      "is_win": false
+    },
+    {
+      "date": "Oct 11 (Sat)",
+      "opponent": "Bowdoin College",
+      "home_away": "A",
+      "result": "L 0-1",
+      "is_win": false
+    },
+    {
+      "date": "Oct 8 (Wed)",
+      "opponent": "Eastern Connecticut State",
+      "home_away": "H",
+      "result": "W 3-0",
+      "is_win": true
+    },
+    {
+      "date": "Oct 4 (Sat)",
+      "opponent": "Tufts University",
+      "home_away": "H",
+      "result": "L 0-2",
+      "is_win": false
+    },
+    {
+      "date": "Sep 27 (Sat)",
+      "opponent": "Brandeis University",
+      "home_away": "H",
+      "result": "T 0-0",
+      "is_win": false
+    }
+  ],
+  "upcoming": []
+}

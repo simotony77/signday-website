@@ -1,0 +1,64 @@
+{
+  "team": "Hamilton College",
+  "season": 2025,
+  "record": "8-5-3",
+  "recent_results": [
+    {
+      "date": "Nov 1 (Sat)",
+      "opponent": "Middlebury",
+      "home_away": "A",
+      "result": "L 0-2",
+      "is_win": false
+    },
+    {
+      "date": "Oct 25 (Sat)",
+      "opponent": "Trinity",
+      "home_away": "H",
+      "result": "W 1-0",
+      "is_win": true
+    },
+    {
+      "date": "Oct 18 (Sat)",
+      "opponent": "Amherst",
+      "home_away": "A",
+      "result": "W 1-0",
+      "is_win": true
+    },
+    {
+      "date": "Oct 14 (Tue)",
+      "opponent": "Union",
+      "home_away": "H",
+      "result": "W 2-0",
+      "is_win": true
+    },
+    {
+      "date": "Oct 11 (Sat)",
+      "opponent": "Connecticut College",
+      "home_away": "H",
+      "result": "W 3-1",
+      "is_win": true
+    },
+    {
+      "date": "Oct 5 (Sun)",
+      "opponent": "Bates",
+      "home_away": "A",
+      "result": "W 3-2",
+      "is_win": true
+    },
+    {
+      "date": "Oct 4 (Sat)",
+      "opponent": "Colby",
+      "home_away": "A",
+      "result": "L 0-2",
+      "is_win": false
+    },
+    {
+      "date": "Sep 28 (Sun)",
+      "opponent": "St. Lawrence",
+      "home_away": "H",
+      "result": "T 1-1",
+      "is_win": false
+    }
+  ],
+  "upcoming": []
+}
