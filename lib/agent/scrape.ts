@@ -37,18 +37,40 @@ Page content:
 ---
 `;
 
-async function fetchPage(url: string): Promise<string> {
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 " +
-        "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    },
-  });
-  if (!res.ok) {
-    throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
+// Full set of headers a real Chrome request sends. Gets past UA-only blocks.
+const BROWSER_HEADERS: Record<string, string> = {
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+    "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+  Accept:
+    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+  "Accept-Language": "en-US,en;q=0.9",
+  "Sec-Ch-Ua": '"Chromium";v="131", "Not_A Brand";v="24", "Google Chrome";v="131"',
+  "Sec-Ch-Ua-Mobile": "?0",
+  "Sec-Ch-Ua-Platform": '"Windows"',
+  "Sec-Fetch-Dest": "document",
+  "Sec-Fetch-Mode": "navigate",
+  "Sec-Fetch-Site": "none",
+  "Sec-Fetch-User": "?1",
+  "Upgrade-Insecure-Requests": "1",
+};
+
+// Generate alternate URLs to try if the given one fails (wrong season path,
+// wsoc vs womens-soccer naming, etc.).
+function altUrls(url: string): string[] {
+  const out = new Set<string>();
+  // Drop a season segment like /2025-26/ or /2025/
+  const noSeason = url.replace(/\/(19|20)\d{2}(-\d{2})?(?=\/)/g, "");
+  if (noSeason !== url) out.add(noSeason);
+  // Swap common sport-slug spellings, with and without season.
+  for (const base of [url, noSeason]) {
+    if (base.includes("/wsoc/"))
+      out.add(base.replace("/wsoc/", "/womens-soccer/"));
+    if (base.includes("/womens-soccer/"))
+      out.add(base.replace("/womens-soccer/", "/wsoc/"));
   }
-  return res.text();
+  out.delete(url);
+  return [...out];
 }
 
 function htmlToMarkdown(html: string): string {
@@ -72,6 +94,82 @@ function stripCodeFences(text: string): string {
     .trim();
 }
 
+// Plain fetch + Turndown. Returns markdown, or throws on a blocked / empty page.
+async function fetchAsMarkdown(url: string): Promise<string> {
+  const res = await fetch(url, {
+    headers: BROWSER_HEADERS,
+    redirect: "follow",
+  });
+  if (!res.ok) {
+    throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
+  }
+  const html = await res.text();
+  // Bot-protected sites often return 200/202 with an empty or tiny body.
+  if (html.trim().length < 500) {
+    throw new Error(`Empty/blocked response (${html.trim().length} bytes)`);
+  }
+  return htmlToMarkdown(html);
+}
+
+// Rendering fallback: Firecrawl executes JS + bypasses bot challenges and
+// returns clean markdown. Only used if FIRECRAWL_API_KEY is set.
+async function firecrawlAsMarkdown(url: string): Promise<string> {
+  const key = process.env.FIRECRAWL_API_KEY;
+  if (!key) throw new Error("no FIRECRAWL_API_KEY");
+  const res = await fetch("https://api.firecrawl.dev/v1/scrape", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${key}`,
+    },
+    body: JSON.stringify({
+      url,
+      formats: ["markdown"],
+      onlyMainContent: true,
+      timeout: 45000,
+    }),
+  });
+  if (!res.ok) {
+    throw new Error(`Firecrawl failed: ${res.status} ${res.statusText}`);
+  }
+  const data = (await res.json()) as {
+    success?: boolean;
+    data?: { markdown?: string };
+  };
+  const md = data?.data?.markdown;
+  if (!md || md.trim().length < 200) {
+    throw new Error("Firecrawl returned empty markdown");
+  }
+  return md;
+}
+
+// Get roster page content as markdown. Tries the URL and a few sensible
+// variants with plain fetch, then falls back to Firecrawl rendering (if a
+// key is configured) for JS-protected sites.
+async function getPageMarkdown(url: string): Promise<string> {
+  const candidates = [url, ...altUrls(url)];
+  let lastErr: unknown;
+
+  for (const candidate of candidates) {
+    try {
+      return await fetchAsMarkdown(candidate);
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+
+  // Plain fetch failed for every candidate. Try the rendering service.
+  if (process.env.FIRECRAWL_API_KEY) {
+    try {
+      return await firecrawlAsMarkdown(url);
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+
+  throw lastErr instanceof Error ? lastErr : new Error(String(lastErr));
+}
+
 export interface ScrapeOptions {
   url: string;
   anthropic: Anthropic;
@@ -79,8 +177,7 @@ export interface ScrapeOptions {
 }
 
 export async function scrapeSchool(opts: ScrapeOptions): Promise<SchoolData> {
-  const html = await fetchPage(opts.url);
-  const markdown = trimContent(htmlToMarkdown(html));
+  const markdown = trimContent(await getPageMarkdown(opts.url));
 
   const response = await opts.anthropic.messages.create({
     model: opts.model,
