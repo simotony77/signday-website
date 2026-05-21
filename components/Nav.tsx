@@ -4,10 +4,15 @@ export function Nav() {
   return (
     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
       <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-        <Link href="/" className="text-xl font-bold text-brand-600">
+        <Link
+          href="/"
+          aria-label="SignDay home"
+          className="text-xl font-bold text-brand-600 hover:text-brand-700 transition-colors cursor-pointer"
+        >
           SignDay
         </Link>
         <div className="flex items-center gap-3 md:gap-6 text-sm text-gray-600">
+          <Link href="/" className="hidden md:inline hover:text-brand-600">Home</Link>
           <Link
             href="/demo"
             className="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-3 md:px-4 py-2 rounded-xl"
