@@ -1,5 +1,11 @@
 import Anthropic from "@anthropic-ai/sdk";
-import type { AthleteProfile, Draft, SchoolData } from "./types";
+import type {
+  AthleteProfile,
+  Draft,
+  SchoolData,
+  ScheduleData,
+  ResearchData,
+} from "./types";
 
 export const DRAFT_PROMPT_SYSTEM = `You are drafting a college coach outreach email on behalf of a high school athlete pursuing US college soccer recruiting.
 
@@ -17,7 +23,8 @@ VOICE RULES (these are not negotiable):
 GROUNDING RULES (most important rule):
 - Reference SOMETHING the coach would recognize as program-aware. But only use details that appear EXPLICITLY in the school context provided.
 - Specifically, do NOT invent claims about the program's playing style, tactics, or philosophy. If the school context does not mention how the team plays, do not write that. Inferring tactics from a roster is a tell. Coaches notice instantly.
-- Safe references include: graduating seniors at the position (provided in the trigger or roster), the coach's name, recent results if provided, the position transition needs.
+- Safe references include: graduating seniors at the position (from the roster), the coach's name, recent game results (from the SCHEDULE CONTEXT), recent program news (from the RESEARCH CONTEXT), and the position transition needs.
+- When a SCHEDULE CONTEXT or RESEARCH CONTEXT block is provided, prefer grounding the opening line in a SPECIFIC recent fact from it (a real result, a real program update). That specificity is what makes the email land. But never embellish beyond what those blocks state.
 - If you cannot ground a "fit" claim in provided data, replace it with something the athlete can credibly say about herself instead of about the program.
 
 STRUCTURE:
@@ -45,10 +52,41 @@ The body should be the full email body INCLUDING the greeting and sign-off, but 
 function buildUserPrompt(
   school: SchoolData,
   athlete: AthleteProfile,
-  triggerText: string
+  triggerText: string,
+  schedule?: ScheduleData | null,
+  research?: ResearchData | null
 ): string {
   const schoolJson = JSON.stringify(school, null, 2);
   const athleteJson = JSON.stringify(athlete, null, 2);
+
+  let scheduleBlock = "";
+  if (schedule && (schedule.recent_results?.length || schedule.record)) {
+    scheduleBlock = `
+
+SCHEDULE CONTEXT (recent results and record, scraped from the program's schedule page):
+\`\`\`json
+${JSON.stringify(
+  {
+    record: schedule.record ?? null,
+    recent_results: schedule.recent_results?.slice(0, 5) ?? [],
+    next_game: schedule.upcoming?.[0] ?? null,
+  },
+  null,
+  2
+)}
+\`\`\``;
+  }
+
+  let researchBlock = "";
+  if (research && research.items?.length) {
+    researchBlock = `
+
+RESEARCH CONTEXT (recent, verified program news from the web):
+\`\`\`json
+${JSON.stringify({ summary: research.summary, items: research.items }, null, 2)}
+\`\`\``;
+  }
+
   return `SCHOOL CONTEXT (scraped from the program's athletics page):
 \`\`\`json
 ${schoolJson}
@@ -57,7 +95,7 @@ ${schoolJson}
 ATHLETE PROFILE:
 \`\`\`json
 ${athleteJson}
-\`\`\`
+\`\`\`${scheduleBlock}${researchBlock}
 
 TRIGGER (the specific reason this email is being sent now):
 ${triggerText}
@@ -78,6 +116,8 @@ export interface GenerateDraftOptions {
   school: SchoolData;
   athlete: AthleteProfile;
   trigger: string;
+  schedule?: ScheduleData | null;
+  research?: ResearchData | null;
 }
 
 export async function generateDraft(opts: GenerateDraftOptions): Promise<Draft> {
@@ -88,7 +128,13 @@ export async function generateDraft(opts: GenerateDraftOptions): Promise<Draft> 
     messages: [
       {
         role: "user",
-        content: buildUserPrompt(opts.school, opts.athlete, opts.trigger),
+        content: buildUserPrompt(
+          opts.school,
+          opts.athlete,
+          opts.trigger,
+          opts.schedule,
+          opts.research
+        ),
       },
     ],
   });

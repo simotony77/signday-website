@@ -3,6 +3,8 @@ import type {
   DiffOutput,
   PlayerChange,
   CoachChange,
+  ScheduleData,
+  GameResult,
 } from "./types";
 
 function indexBy<T>(items: T[], key: (item: T) => string): Map<string, T> {
@@ -144,4 +146,43 @@ export function diffSchools(before: SchoolData, after: SchoolData): DiffOutput {
     head_coach_changed: headCoachChanged,
     triggers,
   };
+}
+
+// Identity key for a played game, tolerant of formatting drift.
+function resultKey(g: GameResult): string {
+  return `${normTitle(g.date)}|${normName(g.opponent)}`;
+}
+
+export interface ScheduleDiff {
+  triggers: string[];
+  new_results: GameResult[];
+}
+
+// Detect newly-played games since last week. We only TRIGGER on wins, because
+// a recent win is the most natural, non-creepy reason for an athlete to email
+// a coach. Losses/ties are tracked but don't generate outreach.
+export function diffSchedule(
+  before: ScheduleData | null | undefined,
+  after: ScheduleData | null | undefined
+): ScheduleDiff {
+  if (!after) return { triggers: [], new_results: [] };
+  // First time we've seen a schedule for this school: baseline, no triggers.
+  if (!before) return { triggers: [], new_results: [] };
+
+  const beforeKeys = new Set(before.recent_results.map(resultKey));
+  const newResults = after.recent_results.filter(
+    (g) => !beforeKeys.has(resultKey(g))
+  );
+
+  const triggers: string[] = [];
+  for (const g of newResults) {
+    if (g.is_win) {
+      const score = g.result || "a win";
+      triggers.push(
+        `Won ${score} vs ${g.opponent}${g.date ? ` (${g.date})` : ""}. A recent win is a strong, specific reason to reach out now.`
+      );
+    }
+  }
+
+  return { triggers, new_results: newResults };
 }

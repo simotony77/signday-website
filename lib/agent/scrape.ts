@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import TurndownService from "turndown";
-import type { SchoolData } from "./types";
+import type { SchoolData, ScheduleData } from "./types";
 
 const EXTRACTION_PROMPT = `You are extracting a women's college soccer team roster from the page content below.
 
@@ -170,10 +170,96 @@ async function getPageMarkdown(url: string): Promise<string> {
   throw lastErr instanceof Error ? lastErr : new Error(String(lastErr));
 }
 
+const SCHEDULE_PROMPT = `You are extracting a women's college soccer team's SCHEDULE and RESULTS from the page content below.
+
+Return a single JSON object with this exact shape:
+
+{
+  "team": "<official team name>",
+  "season": <year as number, e.g. 2025>,
+  "record": "<overall record like 8-2-1, or null if not shown>",
+  "recent_results": [
+    {
+      "date": "<date as listed>",
+      "opponent": "<opponent name>",
+      "home_away": "<H | A | N or null>",
+      "result": "<W 4-1 | L 0-2 | T 1-1, exactly as the team's result, or null if not played>",
+      "is_win": <true only if this team won, else false>
+    }
+  ],
+  "upcoming": [
+    { "date": "<date>", "opponent": "<opponent>", "home_away": "<H | A | N or null>" }
+  ]
+}
+
+Rules:
+- recent_results: ONLY games that have already been played and have a final score. Most recent first. Cap at 8.
+- "is_win" is true ONLY when THIS team won (not the opponent). Read the score from this team's perspective.
+- "result" should read from this team's side: a 4-1 win is "W 4-1", a 0-2 loss is "L 0-2".
+- upcoming: ONLY future games with no score yet. Cap at 5.
+- If the page shows no played games, return an empty recent_results array.
+- Return ONLY the JSON object, no markdown fences, no commentary.
+
+Page content:
+---
+`;
+
+// Derive likely schedule-page URLs from a roster URL. Most college athletics
+// sites mirror the path: /sports/womens-soccer/roster -> /.../schedule.
+function scheduleUrlCandidates(rosterUrl: string): string[] {
+  const out = new Set<string>();
+  if (/roster\/?$/.test(rosterUrl)) {
+    out.add(rosterUrl.replace(/roster\/?$/, "schedule"));
+    out.add(rosterUrl.replace(/roster\/?$/, "schedule/"));
+  }
+  // Also try swapping a /roster/ segment that isn't at the end.
+  if (rosterUrl.includes("/roster/")) {
+    out.add(rosterUrl.replace("/roster/", "/schedule/"));
+  }
+  out.delete(rosterUrl);
+  return [...out];
+}
+
 export interface ScrapeOptions {
   url: string;
   anthropic: Anthropic;
   model: string;
+}
+
+// Scrape a school's schedule/results. Derives the schedule URL from the
+// roster URL. Returns null-throwing on failure so callers can treat schedule
+// as best-effort (roster monitoring still works without it).
+export async function scrapeSchedule(opts: ScrapeOptions): Promise<ScheduleData> {
+  const candidates = scheduleUrlCandidates(opts.url);
+  if (candidates.length === 0) {
+    throw new Error("could not derive a schedule URL from roster URL");
+  }
+
+  let markdown: string | null = null;
+  let lastErr: unknown;
+  for (const url of candidates) {
+    try {
+      markdown = trimContent(await getPageMarkdown(url));
+      break;
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  if (markdown == null) {
+    throw lastErr instanceof Error ? lastErr : new Error(String(lastErr));
+  }
+
+  const response = await opts.anthropic.messages.create({
+    model: opts.model,
+    max_tokens: 3000,
+    temperature: 0,
+    messages: [{ role: "user", content: SCHEDULE_PROMPT + markdown }],
+  });
+  const firstBlock = response.content[0];
+  if (firstBlock.type !== "text") {
+    throw new Error("Expected text response from Claude");
+  }
+  return JSON.parse(stripCodeFences(firstBlock.text)) as ScheduleData;
 }
 
 export async function scrapeSchool(opts: ScrapeOptions): Promise<SchoolData> {

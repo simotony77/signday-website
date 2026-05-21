@@ -75,6 +75,50 @@ export interface Draft {
   body: string;
 }
 
+// ---- Schedule / results ----
+
+export interface GameResult {
+  date: string; // as listed on the page
+  opponent: string;
+  home_away?: string | null; // "H" | "A" | "N"
+  result?: string | null; // "W 4-1" | "L 0-2" | "T 1-1"
+  is_win?: boolean;
+}
+
+export interface UpcomingGame {
+  date: string;
+  opponent: string;
+  home_away?: string | null;
+}
+
+export interface ScheduleData {
+  team: string;
+  season: number;
+  record?: string | null; // "8-2-1"
+  recent_results: GameResult[]; // most recent first
+  upcoming: UpcomingGame[];
+}
+
+// ---- Research (web) ----
+
+export interface ResearchItem {
+  headline: string;
+  detail: string;
+  url?: string | null;
+}
+
+export interface ResearchData {
+  summary: string;
+  items: ResearchItem[];
+}
+
+// ---- Combined weekly snapshot stored per (customer, school) ----
+// Older snapshots stored just the SchoolData; readers normalize both shapes.
+export interface SchoolSnapshot {
+  school: SchoolData;
+  schedule?: ScheduleData | null;
+}
+
 // A school the agent tracks for a customer.
 export interface TrackedSchool {
   name: string;

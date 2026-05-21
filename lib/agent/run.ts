@@ -1,11 +1,18 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { Resend } from "resend";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { scrapeSchool } from "./scrape";
-import { diffSchools } from "./diff";
+import { scrapeSchool, scrapeSchedule } from "./scrape";
+import { diffSchools, diffSchedule } from "./diff";
 import { generateDraft } from "./draft";
+import { researchSchool } from "./research";
 import { buildDigest, type SchoolResult } from "./digest";
-import type { AthleteProfile, SchoolData, TrackedSchool } from "./types";
+import type {
+  AthleteProfile,
+  SchoolData,
+  ScheduleData,
+  SchoolSnapshot,
+  TrackedSchool,
+} from "./types";
 
 export interface CustomerRunInput {
   supabase: SupabaseClient;
@@ -47,12 +54,26 @@ function coachLabel(school: SchoolData): string {
     : `${school.team} Women's Soccer Coach`;
 }
 
+// Normalize a stored snapshot into the combined shape. Older rows stored a
+// bare SchoolData (with a `roster` array); newer rows store { school, schedule }.
+function normalizeSnapshot(raw: unknown): SchoolSnapshot | null {
+  if (!raw || typeof raw !== "object") return null;
+  const obj = raw as Record<string, unknown>;
+  if (obj.school && typeof obj.school === "object") {
+    return obj as unknown as SchoolSnapshot; // new shape
+  }
+  if (Array.isArray(obj.roster)) {
+    return { school: raw as SchoolData }; // old shape: bare SchoolData
+  }
+  return null;
+}
+
 // Fetch the most recent stored snapshot for a (email, roster_url) pair.
 async function getLastSnapshot(
   supabase: SupabaseClient,
   email: string,
   rosterUrl: string
-): Promise<SchoolData | null> {
+): Promise<SchoolSnapshot | null> {
   const { data } = await supabase
     .from("school_snapshots")
     .select("snapshot")
@@ -61,7 +82,7 @@ async function getLastSnapshot(
     .order("scraped_at", { ascending: false })
     .limit(1)
     .maybeSingle();
-  return (data?.snapshot as SchoolData) ?? null;
+  return normalizeSnapshot(data?.snapshot);
 }
 
 async function saveSnapshot(
@@ -70,7 +91,7 @@ async function saveSnapshot(
   email: string,
   schoolName: string,
   rosterUrl: string,
-  snapshot: SchoolData
+  snapshot: SchoolSnapshot
 ): Promise<void> {
   await supabase.from("school_snapshots").insert({
     customer_id: customerId,
@@ -115,14 +136,28 @@ export async function runForCustomer(
         model,
       });
 
+      // Schedule is best-effort. A failure here must not break roster monitoring.
+      let afterSchedule: ScheduleData | null = null;
+      try {
+        afterSchedule = await scrapeSchedule({
+          url: school.roster_url,
+          anthropic,
+          model,
+        });
+      } catch (e) {
+        console.error(
+          `schedule scrape failed for ${school.name}:`,
+          e instanceof Error ? e.message : e
+        );
+      }
+
       const before = await getLastSnapshot(
         supabase,
         customer.email,
         school.roster_url
       );
 
-      // Persist this week's snapshot (skipped on dry runs so we don't
-      // pollute week-over-week diff state).
+      // Persist this week's combined snapshot (skipped on dry runs).
       if (!dryRun) {
         await saveSnapshot(
           supabase,
@@ -130,7 +165,7 @@ export async function runForCustomer(
           customer.email,
           school.name,
           school.roster_url,
-          after
+          { school: after, schedule: afterSchedule }
         );
       }
 
@@ -148,9 +183,25 @@ export async function runForCustomer(
         continue;
       }
 
-      const diff = diffSchools(before, after);
+      // Combine roster changes + new wins into one trigger list.
+      const rosterDiff = diffSchools(before.school, after);
+      const scheduleDiff = diffSchedule(before.schedule, afterSchedule);
+      const triggers = [...rosterDiff.triggers, ...scheduleDiff.triggers];
+
+      // Research only runs when there's already something to write about, so
+      // it enriches real drafts instead of generating noise or burning cost.
+      let research = null;
+      if (triggers.length > 0) {
+        research = await researchSchool({
+          schoolName: school.name || after.team,
+          teamName: after.team,
+          anthropic,
+          model,
+        });
+      }
+
       const drafts: SchoolResult["drafts"] = [];
-      for (const trigger of diff.triggers) {
+      for (const trigger of triggers) {
         try {
           const draft = await generateDraft({
             anthropic,
@@ -158,6 +209,8 @@ export async function runForCustomer(
             school: after,
             athlete,
             trigger,
+            schedule: afterSchedule,
+            research,
           });
           drafts.push({ ...draft, trigger, coach: coachLabel(after) });
         } catch (e) {
@@ -173,7 +226,7 @@ export async function runForCustomer(
         school_name: school.name || after.team,
         roster_url: school.roster_url,
         is_baseline: false,
-        triggers: diff.triggers,
+        triggers,
         drafts,
         roster_size: after.roster.length,
         head_coach: headCoachOf(after),
