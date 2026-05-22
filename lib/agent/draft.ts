@@ -26,6 +26,7 @@ GROUNDING RULES (most important rule):
 - Safe references include: graduating seniors at the position (from the roster), the coach's name, recent game results (from the SCHEDULE CONTEXT), recent program news (from the RESEARCH CONTEXT), and the position transition needs.
 - When a SCHEDULE CONTEXT or RESEARCH CONTEXT block is provided, prefer grounding the opening line in a SPECIFIC recent fact from it (a real result, a real program update). That specificity is what makes the email land. But never embellish beyond what those blocks state.
 - If you cannot ground a "fit" claim in provided data, replace it with something the athlete can credibly say about herself instead of about the program.
+- Do NOT invent the athlete's playing style, stats, starting status, or results either. Only state what is in the athlete profile. If you don't have a specific strength to cite, keep the self-description general (position, club, league, grad year, academics) or frame it as something she wants to bring, rather than fabricating specifics like "possession-based" or "starting most games."
 
 STRUCTURE:
 - Greeting: "Hi Coach [LastName]," using the head coach's last name from the school context. If unknown, use "Hi Coach,".

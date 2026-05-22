@@ -69,10 +69,15 @@ export function DemoForm() {
   const [position, setPosition] = useState("M");
   const [club, setClub] = useState("");
   const [school, setSchool] = useState("williams");
+  const [customSchool, setCustomSchool] = useState("");
 
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
   const [result, setResult] = useState<ApiResponse | null>(null);
+
+  // A typed custom school routes to the live endpoint (find + scrape on the
+  // fly). Otherwise we use the instant cached path for the popular schools.
+  const isLive = customSchool.trim().length > 0;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -87,17 +92,29 @@ export function DemoForm() {
     setResult(null);
 
     try {
-      const res = await fetch("/api/demo-draft", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          first_name: firstName.trim(),
-          grad_year: gradYear,
-          position,
-          club: club.trim(),
-          school_slug: school,
-        }),
-      });
+      const res = isLive
+        ? await fetch("/api/demo-live", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              first_name: firstName.trim(),
+              grad_year: gradYear,
+              position,
+              club: club.trim(),
+              school_name: customSchool.trim(),
+            }),
+          })
+        : await fetch("/api/demo-draft", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              first_name: firstName.trim(),
+              grad_year: gradYear,
+              position,
+              club: club.trim(),
+              school_slug: school,
+            }),
+          });
 
       const data = await res.json();
       if (!res.ok) {
@@ -192,7 +209,8 @@ export function DemoForm() {
           <select
             value={school}
             onChange={(e) => setSchool(e.target.value)}
-            className="w-full rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
+            disabled={isLive}
+            className="w-full rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white disabled:opacity-50"
           >
             {SCHOOLS.map((s) => (
               <option key={s.slug} value={s.slug}>
@@ -201,8 +219,26 @@ export function DemoForm() {
             ))}
           </select>
           <p className="text-xs text-gray-500 mt-2">
-            Demo only — these 12 D3 programs are pre-scraped so the walkthrough runs in seconds. <span className="font-semibold text-gray-700">Once you subscribe, the agent tracks any school you want</span> (D3, D2, D1, NAIA, in any state — up to your full target list).
+            These {SCHOOLS.length} programs are pre-loaded so the demo runs in seconds. Or type any other college below and the agent will find and read it live.
           </p>
+
+          <div className="mt-3">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Or type any college (runs live)
+            </label>
+            <input
+              type="text"
+              value={customSchool}
+              onChange={(e) => setCustomSchool(e.target.value)}
+              placeholder="e.g. Spelman College, MIT, UC San Diego..."
+              className="w-full rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
+            />
+            {isLive && (
+              <p className="text-xs text-brand-700 mt-2">
+                Live mode: the agent will find {customSchool.trim()}&apos;s roster and schedule and read them on the spot. Takes about 30-40 seconds. Clear this box to use the pre-loaded list instead.
+              </p>
+            )}
+          </div>
         </div>
 
         <button
@@ -210,7 +246,13 @@ export function DemoForm() {
           disabled={status === "loading"}
           className="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-60 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
         >
-          {status === "loading" ? "Running the agent (10-15 sec)..." : "Run the agent on this school"}
+          {status === "loading"
+            ? isLive
+              ? "Finding and reading the school live (30-40 sec)..."
+              : "Running the agent (10-15 sec)..."
+            : isLive
+            ? `Run the agent on ${customSchool.trim() || "this school"}`
+            : "Run the agent on this school"}
         </button>
 
         {status === "error" && (
