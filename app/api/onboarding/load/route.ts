@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { verifyAccessToken, accessTokensEnabled } from "@/lib/accessToken";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -27,6 +28,17 @@ export async function GET(req: Request) {
   const email = (searchParams.get("email") || "").trim().toLowerCase();
   if (!email || !EMAIL_RE.test(email)) {
     return NextResponse.json({ error: "Invalid email." }, { status: 400 });
+  }
+
+  // This returns a minor athlete's PII, so require a valid emailed token.
+  if (accessTokensEnabled()) {
+    const token = searchParams.get("token") || "";
+    if (!verifyAccessToken(email, token)) {
+      return NextResponse.json(
+        { error: "This link is invalid or expired. Request a fresh link from the account page." },
+        { status: 401 }
+      );
+    }
   }
 
   const supabase = createClient(supabaseUrl, supabaseServiceKey);

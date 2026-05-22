@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { findRosterUrl } from "@/lib/agent/findRosterUrl";
+import { rateLimit } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,6 +16,16 @@ export async function POST(req: Request) {
     return NextResponse.json(
       { error: "Server not configured (missing ANTHROPIC_API_KEY)." },
       { status: 500 }
+    );
+  }
+
+  // Onboarding auto-find calls this up to ~12 times per session, so allow
+  // headroom but cap runaway use: 40/IP/hour.
+  const rl = await rateLimit(req, "find-roster-url", 40, 3600);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many lookups in a short window. Give it a few minutes." },
+      { status: 429 }
     );
   }
 

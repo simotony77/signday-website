@@ -47,7 +47,13 @@ function emptyRow(): SchoolRow {
   return { name: "", roster_url: "" };
 }
 
-export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string }) {
+export function OnboardingForm({
+  initialEmail = "",
+  token = "",
+}: {
+  initialEmail?: string;
+  token?: string;
+}) {
   // Athlete fields
   const [email, setEmail] = useState(initialEmail);
   const [firstName, setFirstName] = useState("");
@@ -92,7 +98,7 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
     (async () => {
       try {
         const res = await fetch(
-          `/api/onboarding/load?email=${encodeURIComponent(e)}`,
+          `/api/onboarding/load?email=${encodeURIComponent(e)}&token=${encodeURIComponent(token)}`,
           { method: "GET" }
         );
         if (!res.ok) return;
@@ -138,7 +144,7 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
     return () => {
       cancelled = true;
     };
-  }, [initialEmail]);
+  }, [initialEmail, token]);
 
   function updateSchool(index: number, field: keyof SchoolRow, value: string) {
     setSchools((prev) => {
@@ -239,6 +245,7 @@ export function OnboardingForm({ initialEmail = "" }: { initialEmail?: string })
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: email.trim().toLowerCase(),
+          token,
           athlete: {
             first_name: firstName.trim(),
             last_name: lastName.trim(),

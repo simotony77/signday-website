@@ -10,10 +10,11 @@ export const metadata = {
 export default async function OnboardingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ email?: string; mode?: string }>;
+  searchParams: Promise<{ email?: string; mode?: string; token?: string }>;
 }) {
   const params = await searchParams;
   const initialEmail = params.email || "";
+  const token = params.token || "";
   const isUpdateMode = params.mode === "update";
 
   return (
@@ -40,7 +41,7 @@ export default async function OnboardingPage({
 
       <section className="pb-20 md:pb-24 bg-white">
         <div className="max-w-3xl mx-auto px-6">
-          <OnboardingForm initialEmail={initialEmail} />
+          <OnboardingForm initialEmail={initialEmail} token={token} />
         </div>
       </section>
 

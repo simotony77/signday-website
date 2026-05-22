@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { findRosterUrl } from "@/lib/agent/findRosterUrl";
 import { scrapeSchool, scrapeSchedule } from "@/lib/agent/scrape";
 import { generateDraft } from "@/lib/agent/draft";
+import { rateLimit } from "@/lib/rateLimit";
 import type {
   AthleteProfile,
   SchoolData,
@@ -74,19 +75,6 @@ function buildTrigger(
   return (winPart + rosterPart).trim();
 }
 
-// Best-effort per-IP throttle. Module-level, so it only catches bursts that
-// hit the same warm serverless instance; it resets on cold start. Good enough
-// to blunt casual hammering without new infra. (Anthropic's own key rate
-// limits cap the worst case.)
-const hits = new Map<string, number[]>();
-function tooManyRequests(ip: string, max = 6, windowMs = 3_600_000): boolean {
-  const now = Date.now();
-  const recent = (hits.get(ip) || []).filter((t) => now - t < windowMs);
-  recent.push(now);
-  hits.set(ip, recent);
-  return recent.length > max;
-}
-
 export async function POST(req: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
@@ -96,9 +84,10 @@ export async function POST(req: Request) {
     );
   }
 
-  const ip =
-    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  if (tooManyRequests(ip)) {
+  // Live runs are the most expensive call (web search + multiple model calls),
+  // so the tightest limit: 6 per IP per hour.
+  const rl = await rateLimit(req, "demo-live", 6, 3600);
+  if (!rl.allowed) {
     return NextResponse.json(
       { error: "You've run a lot of live demos in a short window. Give it a few minutes, or pick one of the popular schools above." },
       { status: 429 }

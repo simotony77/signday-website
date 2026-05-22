@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
-import { randomUUID } from "node:crypto";
+import { mintAccessToken } from "@/lib/accessToken";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -62,7 +62,6 @@ export async function POST(req: Request) {
         }
 
         // Upsert customer row
-        const onboardingToken = randomUUID();
         const { error: insertError } = await supabase
           .from("customers")
           .upsert(
@@ -82,8 +81,15 @@ export async function POST(req: Request) {
         if (resendApiKey) {
           const resend = new Resend(resendApiKey);
           const origin =
-            process.env.NEXT_PUBLIC_SITE_ORIGIN || "https://signdayapp.com";
-          const onboardingUrl = `${origin}/onboarding?email=${encodeURIComponent(email)}&token=${onboardingToken}`;
+            process.env.NEXT_PUBLIC_SITE_ORIGIN || "https://www.signdayapp.com";
+          // 30-day signed token gives them time to onboard and manage their
+          // account from these emailed links without re-verifying.
+          const accessToken = mintAccessToken(email, 30 * 24 * 3600);
+          const tokenParam = accessToken
+            ? `&token=${encodeURIComponent(accessToken)}`
+            : "";
+          const onboardingUrl = `${origin}/onboarding?email=${encodeURIComponent(email)}${tokenParam}`;
+          const accountUrl = `${origin}/account?email=${encodeURIComponent(email)}${tokenParam}`;
 
           try {
             await resend.emails.send({
@@ -102,7 +108,7 @@ ${onboardingUrl}
 Reply to this email if anything goes sideways. I read every reply personally.
 
 Manage your subscription, or update your school list any time:
-${origin}/account
+${accountUrl}
 (cancel / update payment / view invoices, or add / remove schools)
 
 Tony

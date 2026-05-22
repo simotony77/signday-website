@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
+import { verifyAccessToken, accessTokensEnabled } from "@/lib/accessToken";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -28,6 +29,7 @@ export async function POST(req: Request) {
 
   let body: {
     email?: string;
+    token?: string;
     athlete?: Record<string, unknown>;
     schools?: SchoolEntry[];
     notes?: string | null;
@@ -41,6 +43,18 @@ export async function POST(req: Request) {
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
   if (!email || !EMAIL_RE.test(email)) {
     return NextResponse.json({ error: "Invalid email." }, { status: 400 });
+  }
+
+  // Saving onboarding writes a customer's athlete/school data, so require a
+  // valid emailed token (from the welcome email or the account link).
+  if (accessTokensEnabled()) {
+    const token = typeof body.token === "string" ? body.token : "";
+    if (!verifyAccessToken(email, token)) {
+      return NextResponse.json(
+        { error: "This onboarding link is invalid or expired. Open the link from your welcome email, or request a fresh one at /account." },
+        { status: 401 }
+      );
+    }
   }
 
   if (!body.athlete || typeof body.athlete !== "object") {

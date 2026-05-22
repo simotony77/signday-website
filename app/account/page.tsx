@@ -10,10 +10,11 @@ export const metadata = {
 export default async function AccountPage({
   searchParams,
 }: {
-  searchParams: Promise<{ email?: string; ok?: string }>;
+  searchParams: Promise<{ email?: string; ok?: string; token?: string }>;
 }) {
   const params = await searchParams;
   const initialEmail = params.email || "";
+  const token = params.token || "";
   const justReturned = params.ok === "1";
 
   return (
@@ -39,7 +40,7 @@ export default async function AccountPage({
             </div>
           )}
           <div className="bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-sm">
-            <AccountForm initialEmail={initialEmail} />
+            <AccountForm initialEmail={initialEmail} token={token} />
           </div>
           <p className="text-xs text-gray-500 mt-6 text-center">
             Trouble? Email{" "}

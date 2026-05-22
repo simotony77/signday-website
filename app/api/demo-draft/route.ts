@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { SCHOOL_SCRAPES, type SchoolData } from "@/lib/schoolScrapes";
 import { SCHOOL_SCHEDULES } from "@/lib/schoolSchedules";
+import { rateLimit } from "@/lib/rateLimit";
 import type { ScheduleData, GameResult } from "@/lib/agent/types";
 
 export const runtime = "nodejs";
@@ -182,6 +183,15 @@ export async function POST(req: Request) {
     return NextResponse.json(
       { error: "Server not configured (missing ANTHROPIC_API_KEY)." },
       { status: 500 }
+    );
+  }
+
+  // Cached path: cheaper (one model call), so a looser limit: 25/IP/hour.
+  const rl = await rateLimit(req, "demo-draft", 25, 3600);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many demo runs in a short window. Give it a few minutes." },
+      { status: 429 }
     );
   }
 

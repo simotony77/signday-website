@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
+import { verifyAccessToken, accessTokensEnabled } from "@/lib/accessToken";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,7 +18,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Server not configured." }, { status: 500 });
   }
 
-  let body: { email?: string };
+  let body: { email?: string; token?: string };
   try {
     body = await req.json();
   } catch {
@@ -27,6 +28,18 @@ export async function POST(req: Request) {
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
   if (!email || !EMAIL_RE.test(email)) {
     return NextResponse.json({ error: "Invalid email." }, { status: 400 });
+  }
+
+  // Require a valid emailed token to prove ownership of this email (gates
+  // billing actions). Degrades gracefully if token gating isn't configured yet.
+  if (accessTokensEnabled()) {
+    const token = typeof body.token === "string" ? body.token : "";
+    if (!verifyAccessToken(email, token)) {
+      return NextResponse.json(
+        { error: "This link is invalid or expired. Request a fresh link from the account page." },
+        { status: 401 }
+      );
+    }
   }
 
   const supabase = createClient(supabaseUrl, supabaseServiceKey);

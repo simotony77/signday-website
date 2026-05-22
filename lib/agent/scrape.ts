@@ -94,8 +94,40 @@ function stripCodeFences(text: string): string {
     .trim();
 }
 
+// Reject URLs that could be used for SSRF (non-http(s), localhost, private or
+// link-local hosts). Roster/schedule pages are always public https sites.
+function assertSafeUrl(url: string): void {
+  let u: URL;
+  try {
+    u = new URL(url);
+  } catch {
+    throw new Error("Invalid URL");
+  }
+  if (u.protocol !== "http:" && u.protocol !== "https:") {
+    throw new Error("Only http(s) URLs are allowed");
+  }
+  const host = u.hostname.toLowerCase();
+  if (
+    host === "localhost" ||
+    host === "0.0.0.0" ||
+    host === "::1" ||
+    host.endsWith(".local") ||
+    host.endsWith(".internal") ||
+    /^127\./.test(host) ||
+    /^10\./.test(host) ||
+    /^192\.168\./.test(host) ||
+    /^169\.254\./.test(host) || // link-local (incl. cloud metadata 169.254.169.254)
+    /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
+    /^(fc|fd)[0-9a-f]{2}:/i.test(host) || // unique local IPv6
+    /^fe80:/i.test(host) // link-local IPv6
+  ) {
+    throw new Error("URL host is not allowed");
+  }
+}
+
 // Plain fetch + Turndown. Returns markdown, or throws on a blocked / empty page.
 async function fetchAsMarkdown(url: string): Promise<string> {
+  assertSafeUrl(url);
   const res = await fetch(url, {
     headers: BROWSER_HEADERS,
     redirect: "follow",
@@ -147,6 +179,7 @@ async function firecrawlAsMarkdown(url: string): Promise<string> {
 // variants with plain fetch, then falls back to Firecrawl rendering (if a
 // key is configured) for JS-protected sites.
 async function getPageMarkdown(url: string): Promise<string> {
+  assertSafeUrl(url); // also covers the Firecrawl fallback below
   const candidates = [url, ...altUrls(url)];
   let lastErr: unknown;
 
