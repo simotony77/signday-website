@@ -277,7 +277,7 @@ export function DemoForm() {
           <select
             value={school}
             onChange={(e) => setSchool(e.target.value)}
-            disabled={isLive}
+            disabled={gender === "boys"}
             className="w-full rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white disabled:opacity-50"
           >
             {SCHOOLS.map((s) => (
