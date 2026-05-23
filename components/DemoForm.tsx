@@ -266,7 +266,9 @@ export function DemoForm() {
             ))}
           </select>
           <p className="text-xs text-gray-500 mt-2">
-            These {SCHOOLS.length} programs are pre-loaded so the demo runs in seconds. Or type any other college below and the agent will find and read it live.
+            {gender === "boys"
+              ? `These ${SCHOOLS.length} presets are women's programs. For boys, type any school below and the agent reads the men's roster live.`
+              : `These ${SCHOOLS.length} programs are pre-loaded so the demo runs in seconds. Or type any other college below and the agent will find and read it live.`}
           </p>
 
           <div className="mt-3">
@@ -280,9 +282,11 @@ export function DemoForm() {
               placeholder="e.g. Spelman College, MIT, UC San Diego..."
               className="w-full rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
             />
-            {isLive && (
+            {isLive && customSchool.trim() && (
               <p className="text-xs text-brand-700 mt-2">
-                Live mode: the agent will find {customSchool.trim()}&apos;s roster and schedule and read them on the spot. Takes about 30-40 seconds. Clear this box to use the pre-loaded list instead.
+                Live mode: the agent will find {customSchool.trim()}&apos;s{" "}
+                {gender === "boys" ? "men's" : "women's"} roster and schedule and read them on the spot. Takes about 30-40 seconds.
+                {gender === "girls" && " Clear this box to use the pre-loaded list instead."}
               </p>
             )}
           </div>

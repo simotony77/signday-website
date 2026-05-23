@@ -16,14 +16,14 @@ const BULLETS = [
   {
     icon: "🔁",
     title: "We chase the follow-ups",
-    body: "Every stalled thread, every Sunday digest. We track what coaches say, when they go silent, and queue the right follow-up at the right time. Until your daughter commits.",
+    body: "Every stalled thread, every Sunday digest. We track what coaches say, when they go silent, and queue the right follow-up at the right time. Until your athlete commits.",
   },
 ];
 
 const FAQ = [
   {
     q: "What sports does it cover?",
-    a: "D3 women's soccer to start. Expanding from there once we've nailed it for D3 families.",
+    a: "D3 men's and women's soccer, boys and girls. Started with my daughter's world (D3 women's) and expanded to boys. We'll add D2 and D1 once we've nailed it for D3 families.",
   },
   {
     q: "Who actually sends the emails?",
@@ -56,15 +56,15 @@ export default function Home() {
       <section className="relative overflow-hidden bg-gradient-to-b from-brand-50 via-white to-white">
         <div className="max-w-4xl mx-auto px-6 pt-16 pb-20 md:pt-24 md:pb-28 text-center">
           <div className="inline-block bg-brand-100 text-brand-700 text-xs font-semibold px-3 py-1 rounded-full mb-6 uppercase tracking-wider">
-            For parents of D3 women&apos;s soccer recruits
+            For parents of D3 soccer recruits
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight tracking-tight">
             The recruiting work<br />you don&apos;t have time to do.<br />
             <span className="text-brand-600">done for you.</span>
           </h1>
           <p className="text-lg md:text-xl text-gray-600 mt-6 max-w-2xl mx-auto leading-relaxed">
-            An AI assistant for parents of D3 women&apos;s soccer recruits. We monitor your target schools,
-            draft outreach to coaches, and chase follow-ups, so you can stop spending Sundays in your daughter&apos;s recruiting spreadsheet.
+            An AI assistant for parents of D3 soccer recruits, boys and girls. We monitor your target schools,
+            draft outreach to coaches, and chase follow-ups, so you can stop spending Sundays in your athlete&apos;s recruiting spreadsheet.
           </p>
 
           <div className="mt-10 flex flex-col items-center">
@@ -359,7 +359,7 @@ export default function Home() {
       <section className="py-20 md:py-24 bg-gradient-to-br from-brand-50 to-white">
         <div className="max-w-2xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Stop spending Sundays in your daughter&apos;s recruiting spreadsheet.
+            Stop spending Sundays in your athlete&apos;s recruiting spreadsheet.
           </h2>
           <p className="text-lg text-gray-600 mb-8">
             Start today. $99/month, cancel anytime. Your first weekly digest arrives this Sunday at 7 AM Eastern.
