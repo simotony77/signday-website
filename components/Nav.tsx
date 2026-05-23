@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export function Nav() {
   return (
@@ -7,9 +8,17 @@ export function Nav() {
         <Link
           href="/"
           aria-label="SignDay home"
-          className="text-xl font-bold text-brand-600 hover:text-brand-700 transition-colors cursor-pointer"
+          className="flex items-center gap-2 text-xl font-bold text-brand-600 hover:text-brand-700 transition-colors cursor-pointer"
         >
-          SignDay
+          <Image
+            src="/logo.png"
+            alt="SignDay"
+            width={36}
+            height={36}
+            className="h-9 w-9 object-contain"
+            priority
+          />
+          <span>SignDay</span>
         </Link>
         <div className="flex items-center gap-3 md:gap-6 text-sm text-gray-600">
           <Link href="/" className="hidden md:inline hover:text-brand-600">Home</Link>

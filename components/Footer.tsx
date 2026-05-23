@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -6,8 +7,14 @@ export function Footer() {
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-8">
           <div>
-            <Link href="/" className="text-2xl font-bold text-brand-600">
-              SignDay
+            <Link href="/" className="inline-block" aria-label="SignDay home">
+              <Image
+                src="/logo.png"
+                alt="SignDay — Your journey. Their future."
+                width={120}
+                height={120}
+                className="h-24 w-24 object-contain"
+              />
             </Link>
             <p className="text-sm text-gray-500 mt-2 max-w-xs">
               The college soccer recruiting companion for families.
