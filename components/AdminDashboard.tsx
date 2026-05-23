@@ -17,6 +17,7 @@ interface Stats {
     not_onboarded: number;
     onboarding_rate: number;
     not_onboarded_emails: string[];
+    referred_signups: number;
   };
   agent: {
     digests_sent: number;
@@ -211,7 +212,7 @@ export function AdminDashboard() {
         <Stat label="Total signups" value={funnel.signups_total} />
         <Stat label="New (7 days)" value={funnel.signups_7d} />
         <Stat label="Paid, not onboarded" value={funnel.not_onboarded} sub="chase these" />
-        <Stat label="Athletes set up" value={athletes.total} />
+        <Stat label="Referred signups" value={funnel.referred_signups} sub="from referral links" />
       </div>
       {funnel.not_onboarded_emails.length > 0 && (
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-8 text-sm">

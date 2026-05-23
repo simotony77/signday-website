@@ -20,7 +20,7 @@ export interface CustomerRunInput {
   resend: Resend | null; // null = dry run (build digest but don't send)
   model: string;
   fromEmail: string;
-  customer: { id: string | null; email: string };
+  customer: { id: string | null; email: string; referral_code?: string | null };
   athlete: AthleteProfile;
   schools: TrackedSchool[];
   // When true, don't persist snapshots or log the digest. Used for diagnostic
@@ -244,7 +244,16 @@ export async function runForCustomer(
   }
 
   const athleteName = athlete.first_name || "your athlete";
-  const digest = buildDigest({ athlete_name: athleteName, results });
+  const origin =
+    process.env.NEXT_PUBLIC_SITE_ORIGIN || "https://www.signdayapp.com";
+  const referralLink = customer.referral_code
+    ? `${origin}/?ref=${encodeURIComponent(customer.referral_code)}`
+    : undefined;
+  const digest = buildDigest({
+    athlete_name: athleteName,
+    results,
+    referral_link: referralLink,
+  });
 
   let sent = false;
   let messageId: string | undefined;

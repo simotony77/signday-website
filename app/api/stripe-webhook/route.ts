@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
 import { mintAccessToken } from "@/lib/accessToken";
+import { generateReferralCode, referralLink } from "@/lib/referral";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -61,6 +62,19 @@ export async function POST(req: Request) {
           break;
         }
 
+        const referredBy =
+          (session.metadata?.referred_by || "").trim() || null;
+
+        // Resolve a stable referral code: reuse the existing one if this
+        // customer already has it (Stripe can retry events), else generate.
+        const { data: existing } = await supabase
+          .from("customers")
+          .select("referral_code")
+          .eq("stripe_customer_id", stripeCustomerId)
+          .maybeSingle();
+        const referralCode =
+          existing?.referral_code || generateReferralCode();
+
         // Upsert customer row
         const { error: insertError } = await supabase
           .from("customers")
@@ -70,6 +84,8 @@ export async function POST(req: Request) {
               stripe_customer_id: stripeCustomerId,
               stripe_subscription_id: stripeSubscriptionId,
               subscription_status: "active",
+              referral_code: referralCode,
+              referred_by: referredBy,
             },
             { onConflict: "stripe_customer_id" }
           );
@@ -90,6 +106,7 @@ export async function POST(req: Request) {
             : "";
           const onboardingUrl = `${origin}/onboarding?email=${encodeURIComponent(email)}${tokenParam}`;
           const accountUrl = `${origin}/account?email=${encodeURIComponent(email)}${tokenParam}`;
+          const refLink = referralLink(origin, referralCode);
 
           try {
             await resend.emails.send({
@@ -111,6 +128,10 @@ Manage your subscription, or update your school list any time:
 ${accountUrl}
 (cancel / update payment / view invoices, or add / remove schools)
 
+Know another family drowning in recruiting? Send them your link:
+${refLink}
+When they subscribe, you both get your next month free.
+
 Tony
 `,
             });
@@ -129,6 +150,8 @@ Email:           ${email}
 Stripe customer: ${stripeCustomerId}
 Subscription:    ${stripeSubscriptionId}
 Time:            ${new Date().toISOString()}
+Referral code:   ${referralCode}
+${referredBy ? `Referred by:     ${referredBy}  >>> ACTION: comp BOTH this customer and the referrer a free month in Stripe.` : "Referred by:     (organic, not a referral)"}
 
 Onboarding link sent to customer:
 ${onboardingUrl}

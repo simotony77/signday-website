@@ -20,6 +20,15 @@ export async function POST(req: Request) {
     process.env.NEXT_PUBLIC_SITE_ORIGIN ||
     "https://signdayapp.com";
 
+  // Optional referral code captured from a ?ref= link on the site.
+  let referredBy = "";
+  try {
+    const body = await req.json();
+    if (typeof body?.ref === "string") referredBy = body.ref.trim().slice(0, 32);
+  } catch {
+    /* no body is fine */
+  }
+
   const stripe = new Stripe(stripeSecret);
 
   try {
@@ -31,6 +40,8 @@ export async function POST(req: Request) {
       cancel_url: `${origin}/?checkout=cancelled`,
       allow_promotion_codes: true,
       billing_address_collection: "auto",
+      // session.metadata is readable in the checkout.session.completed webhook.
+      metadata: { referred_by: referredBy },
       subscription_data: {
         metadata: {
           source: "signdayapp.com",

@@ -66,7 +66,7 @@ async function main() {
   // Active + onboarded customers.
   let query = supabase
     .from("customers")
-    .select("id, email, subscription_status, onboarded_at")
+    .select("id, email, subscription_status, onboarded_at, referral_code")
     .eq("subscription_status", "active");
   if (onlyEmail) query = query.eq("email", onlyEmail);
 
@@ -119,7 +119,7 @@ async function main() {
         resend,
         model,
         fromEmail,
-        customer: { id: c.id, email: c.email },
+        customer: { id: c.id, email: c.email, referral_code: c.referral_code },
         athlete,
         schools,
         dryRun,

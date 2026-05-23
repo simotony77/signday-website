@@ -15,6 +15,7 @@ export interface SchoolResult {
 export interface DigestInput {
   athlete_name: string;
   results: SchoolResult[];
+  referral_link?: string;
 }
 
 export interface BuiltDigest {
@@ -36,7 +37,7 @@ function escapeHtml(s: string): string {
 }
 
 export function buildDigest(input: DigestInput): BuiltDigest {
-  const { athlete_name, results } = input;
+  const { athlete_name, results, referral_link } = input;
 
   const ok = results.filter((r) => !r.error);
   const failed = results.filter((r) => r.error);
@@ -100,6 +101,11 @@ export function buildDigest(input: DigestInput): BuiltDigest {
   if (failed.length > 0) {
     t.push(`\nHeads up, I couldn't read these pages this week (I'll retry next run):`);
     for (const r of failed) t.push(`  - ${r.school_name}: ${r.error}`);
+  }
+  if (referral_link) {
+    t.push(
+      `\nKnow another family drowning in this? Forward them your link: ${referral_link}\nWhen they subscribe, you both get your next month free.`
+    );
   }
   t.push("\nTony @ SignDay");
 
@@ -180,6 +186,11 @@ export function buildDigest(input: DigestInput): BuiltDigest {
     h.push(`</ul>`);
   }
 
+  if (referral_link) {
+    h.push(
+      `<p style="color:#374151; font-size: 13px; margin-top: 24px; padding-top:16px; border-top:1px solid #E5E7EB;">Know another family drowning in this? <a href="${escapeHtml(referral_link)}" style="color:#1A56DB;">Forward them your link</a>. When they subscribe, you both get your next month free.</p>`
+    );
+  }
   h.push(
     `<p style="color:#9CA3AF; font-size: 12px; margin-top: 28px;">Tony @ SignDay &middot; <a href="https://www.signdayapp.com/account" style="color:#9CA3AF;">manage subscription</a></p>`
   );

@@ -30,6 +30,7 @@ interface CustomerRow {
   subscription_status: string | null;
   onboarded_at: string | null;
   created_at: string;
+  referred_by: string | null;
 }
 interface SubmissionRow {
   email: string;
@@ -72,7 +73,7 @@ export async function GET(req: Request) {
   const [customersRes, subsRes, digestsRes, demoRes] = await Promise.all([
     supabase
       .from("customers")
-      .select("email, subscription_status, onboarded_at, created_at")
+      .select("email, subscription_status, onboarded_at, created_at, referred_by")
       .order("created_at", { ascending: false }),
     supabase
       .from("onboarding_submissions")
@@ -195,6 +196,7 @@ export async function GET(req: Request) {
           ? Math.round((onboardedActive.length / active.length) * 100)
           : 0,
       not_onboarded_emails: notOnboarded.map((c) => c.email),
+      referred_signups: customers.filter((c) => c.referred_by).length,
     },
     agent: {
       digests_sent: digestsSent,

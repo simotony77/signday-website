@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const REF_STORAGE = "signday_ref";
 
 export function BuyButton({
   className,
@@ -12,14 +14,32 @@ export function BuyButton({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Capture a ?ref= referral code on load and remember it through checkout.
+  useEffect(() => {
+    try {
+      const ref = new URLSearchParams(window.location.search).get("ref");
+      if (ref) localStorage.setItem(REF_STORAGE, ref.slice(0, 32));
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
   async function handleClick() {
     setLoading(true);
     setError("");
+
+    let ref = "";
+    try {
+      ref = localStorage.getItem(REF_STORAGE) || "";
+    } catch {
+      /* ignore */
+    }
 
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ref }),
       });
       const data = await res.json();
       if (!res.ok || !data.url) {
