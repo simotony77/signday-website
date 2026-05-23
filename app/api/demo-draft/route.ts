@@ -56,6 +56,7 @@ interface DemoRequest {
   position: string;
   club: string;
   school_slug: string;
+  source?: string;
 }
 
 interface PositionRequirements {
@@ -271,7 +272,7 @@ export async function POST(req: Request) {
       .filter((p) => p.graduating === true)
       .map((p) => ({ name: p.name, position: p.position, class_year: p.class_year }));
 
-    await logDemoRun(req, "cached", body.school_slug);
+    await logDemoRun(req, "cached", body.school_slug, body.source);
 
     return NextResponse.json({
       monitoring: {

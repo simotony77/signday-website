@@ -18,7 +18,8 @@ function getSupabase(): SupabaseClient | null {
 export async function logDemoRun(
   req: Request,
   kind: "cached" | "live",
-  school: string
+  school: string,
+  source?: string | null
 ): Promise<void> {
   try {
     const supabase = getSupabase();
@@ -30,9 +31,13 @@ export async function logDemoRun(
     const ipHash = ip
       ? createHash("sha256").update(ip).digest("hex").slice(0, 16)
       : null;
+    const cleanSource =
+      typeof source === "string" && source.trim()
+        ? source.trim().slice(0, 40)
+        : "direct";
     await supabase
       .from("demo_runs")
-      .insert({ kind, school: school || null, ip_hash: ipHash });
+      .insert({ kind, school: school || null, ip_hash: ipHash, source: cleanSource });
   } catch {
     /* analytics must never break the demo */
   }

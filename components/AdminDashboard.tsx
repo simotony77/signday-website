@@ -46,6 +46,7 @@ interface Stats {
     unique_visitors_7d: number;
     last_run_at: string | null;
     top_demoed_schools: { name: string; count: number }[];
+    by_source: Record<string, number>;
   };
   recent_customers: {
     email: string;
@@ -242,6 +243,9 @@ export function AdminDashboard() {
           value={`${demo.live_runs} / ${demo.cached_runs}`}
           sub="typed-any-school / preset"
         />
+      </div>
+      <div className="mb-4">
+        <Breakdown title="Demo runs by source (google = ad, direct = organic)" data={demo.by_source} />
       </div>
       <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-8">
         <div className="text-sm font-bold text-gray-900 mb-1">Most-demoed schools</div>

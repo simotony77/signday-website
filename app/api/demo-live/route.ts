@@ -23,6 +23,7 @@ interface LiveRequest {
   club?: string;
   school_name?: string;
   gender?: "boys" | "girls";
+  source?: string;
 }
 
 const POSITION_LABEL: Record<string, string> = {
@@ -209,7 +210,7 @@ export async function POST(req: Request) {
     .filter((p) => p.graduating === true)
     .map((p) => ({ name: p.name, position: p.position, class_year: p.class_year }));
 
-  await logDemoRun(req, "live", schoolName);
+  await logDemoRun(req, "live", schoolName, body.source);
 
   return NextResponse.json({
     monitoring: {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BuyButton } from "@/components/BuyButton";
 
 const SCHOOLS = [
@@ -76,6 +76,25 @@ export function DemoForm() {
   const [error, setError] = useState("");
   const [result, setResult] = useState<ApiResponse | null>(null);
 
+  // Capture utm_source (e.g. from a Google ad) so demo runs are attributable
+  // to ad vs organic in the admin dashboard.
+  useEffect(() => {
+    try {
+      const src = new URLSearchParams(window.location.search).get("utm_source");
+      if (src) localStorage.setItem("signday_src", src.slice(0, 40));
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  function getSource(): string {
+    try {
+      return localStorage.getItem("signday_src") || "direct";
+    } catch {
+      return "direct";
+    }
+  }
+
   // Boys always run live (our cached demo data is women's programs). A typed
   // custom school also routes to the live endpoint; otherwise the instant
   // cached path is used for the popular girls programs.
@@ -114,6 +133,7 @@ export function DemoForm() {
               club: club.trim(),
               school_name: customSchool.trim(),
               gender,
+              source: getSource(),
             }),
           })
         : await fetch("/api/demo-draft", {
@@ -125,6 +145,7 @@ export function DemoForm() {
               position,
               club: club.trim(),
               school_slug: school,
+              source: getSource(),
             }),
           });
 

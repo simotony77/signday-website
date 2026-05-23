@@ -85,7 +85,7 @@ export async function GET(req: Request) {
       .order("sent_at", { ascending: false }),
     supabase
       .from("demo_runs")
-      .select("kind, school, ip_hash, created_at")
+      .select("kind, school, ip_hash, source, created_at")
       .order("created_at", { ascending: false })
       .limit(5000),
   ]);
@@ -97,6 +97,7 @@ export async function GET(req: Request) {
     kind: string;
     school: string | null;
     ip_hash: string | null;
+    source: string | null;
     created_at: string;
   }[];
 
@@ -228,6 +229,7 @@ export async function GET(req: Request) {
       unique_visitors_7d: uniqueVisitors7d,
       last_run_at: demoRuns[0]?.created_at || null,
       top_demoed_schools: demoTopSchools,
+      by_source: tally(demoRuns.map((r) => r.source || "direct")),
     },
     recent_customers: customers.slice(0, 15).map((c) => ({
       email: c.email,
