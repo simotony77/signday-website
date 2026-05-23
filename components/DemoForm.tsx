@@ -70,19 +70,30 @@ export function DemoForm() {
   const [club, setClub] = useState("");
   const [school, setSchool] = useState("williams");
   const [customSchool, setCustomSchool] = useState("");
+  const [gender, setGender] = useState<"girls" | "boys">("girls");
 
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
   const [result, setResult] = useState<ApiResponse | null>(null);
 
-  // A typed custom school routes to the live endpoint (find + scrape on the
-  // fly). Otherwise we use the instant cached path for the popular schools.
-  const isLive = customSchool.trim().length > 0;
+  // Boys always run live (our cached demo data is women's programs). A typed
+  // custom school also routes to the live endpoint; otherwise the instant
+  // cached path is used for the popular girls programs.
+  const isLive = gender === "boys" || customSchool.trim().length > 0;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!firstName.trim() || !club.trim()) {
       setError("Please fill in first name and club.");
+      setStatus("error");
+      return;
+    }
+    if (isLive && !customSchool.trim()) {
+      setError(
+        gender === "boys"
+          ? "Type a school name to run (boys programs run live)."
+          : "Type a school name to run live."
+      );
       setStatus("error");
       return;
     }
@@ -102,6 +113,7 @@ export function DemoForm() {
               position,
               club: club.trim(),
               school_name: customSchool.trim(),
+              gender,
             }),
           })
         : await fetch("/api/demo-draft", {
@@ -138,6 +150,41 @@ export function DemoForm() {
         onSubmit={handleSubmit}
         className="bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-sm space-y-5"
       >
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Soccer program
+          </label>
+          <div className="inline-flex rounded-xl border-2 border-gray-200 p-1">
+            <button
+              type="button"
+              onClick={() => setGender("girls")}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                gender === "girls"
+                  ? "bg-brand-600 text-white"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              Girls / Women&apos;s
+            </button>
+            <button
+              type="button"
+              onClick={() => setGender("boys")}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                gender === "boys"
+                  ? "bg-brand-600 text-white"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              Boys / Men&apos;s
+            </button>
+          </div>
+          {gender === "boys" && (
+            <p className="text-xs text-gray-500 mt-2">
+              Boys programs run live, so type the school below and the agent reads the men&apos;s roster on the spot.
+            </p>
+          )}
+        </div>
+
         <div className="grid sm:grid-cols-2 gap-5">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">

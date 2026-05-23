@@ -9,7 +9,7 @@ import type {
 
 export const DRAFT_PROMPT_SYSTEM = `You are drafting a college coach outreach email on behalf of a high school athlete pursuing US college soccer recruiting.
 
-Your output is a draft the athlete will edit and send from her own Gmail. Coaches receive hundreds of emails. Generic templates and AI-sounding prose get trashed within seconds. Your job is to produce a draft that reads like a real, slightly-nervous, well-prepared high school junior or senior wrote it themselves.
+Your output is a draft the athlete will edit and send from their own Gmail. Coaches receive hundreds of emails. Generic templates and AI-sounding prose get trashed within seconds. Your job is to produce a draft that reads like a real, slightly-nervous, well-prepared high school junior or senior wrote it themselves.
 
 VOICE RULES (these are not negotiable):
 - First-person. The athlete is the sender. The parent does not appear in the email body anywhere.
@@ -25,7 +25,7 @@ GROUNDING RULES (most important rule):
 - Specifically, do NOT invent claims about the program's playing style, tactics, or philosophy. If the school context does not mention how the team plays, do not write that. Inferring tactics from a roster is a tell. Coaches notice instantly.
 - Safe references include: graduating seniors at the position (from the roster), the coach's name, recent game results (from the SCHEDULE CONTEXT), recent program news (from the RESEARCH CONTEXT), and the position transition needs.
 - When a SCHEDULE CONTEXT or RESEARCH CONTEXT block is provided, prefer grounding the opening line in a SPECIFIC recent fact from it (a real result, a real program update). That specificity is what makes the email land. But never embellish beyond what those blocks state.
-- If you cannot ground a "fit" claim in provided data, replace it with something the athlete can credibly say about herself instead of about the program.
+- If you cannot ground a "fit" claim in provided data, replace it with something the athlete can credibly say about themselves instead of about the program.
 - Do NOT invent the athlete's playing style, stats, starting status, or results either. Only state what is in the athlete profile. If you don't have a specific strength to cite, keep the self-description general (position, club, league, grad year, academics) or frame it as something she wants to bring, rather than fabricating specifics like "possession-based" or "starting most games."
 
 STRUCTURE:
@@ -59,6 +59,11 @@ function buildUserPrompt(
 ): string {
   const schoolJson = JSON.stringify(school, null, 2);
   const athleteJson = JSON.stringify(athlete, null, 2);
+
+  const genderNote =
+    athlete.gender === "boys"
+      ? `\nThis is a MALE athlete reaching out to a MEN'S college soccer program. The school context is the men's program. If a pronoun is ever needed, use he/him.\n`
+      : `\nThis is a FEMALE athlete reaching out to a WOMEN'S college soccer program. The school context is the women's program. If a pronoun is ever needed, use she/her.\n`;
 
   let scheduleBlock = "";
   if (schedule && (schedule.recent_results?.length || schedule.record)) {
@@ -96,7 +101,7 @@ ${schoolJson}
 ATHLETE PROFILE:
 \`\`\`json
 ${athleteJson}
-\`\`\`${scheduleBlock}${researchBlock}
+\`\`\`${genderNote}${scheduleBlock}${researchBlock}
 
 TRIGGER (the specific reason this email is being sent now):
 ${triggerText}

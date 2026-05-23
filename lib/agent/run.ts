@@ -315,6 +315,7 @@ export function toAthleteProfile(raw: Record<string, unknown>): AthleteProfile {
     last_name: String(raw.last_name ?? ""),
     grad_year: typeof raw.grad_year === "number" ? raw.grad_year : Number(raw.grad_year) || 0,
     position: String(raw.position ?? ""),
+    gender: raw.gender === "boys" ? "boys" : "girls",
     current_league: raw.current_league ? String(raw.current_league) : undefined,
     division: raw.division ? String(raw.division) : undefined,
     club: String(raw.club ?? ""),

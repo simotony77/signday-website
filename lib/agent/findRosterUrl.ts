@@ -1,13 +1,19 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-const SYSTEM_PROMPT = `You are a research agent. Your job is to find the official URL of the WOMEN'S SOCCER ROSTER page for a US college.
+export type Program = "mens" | "womens";
 
-The roster page is the page on the school's official athletics website that lists the current women's soccer team players (their names, positions, class years). It is NOT the schedule, news, coaching staff, or homepage.
+function systemPrompt(program: Program): string {
+  const word = program === "mens" ? "MEN'S" : "WOMEN'S";
+  const slug = program === "mens" ? "mens-soccer" : "womens-soccer";
+  const abbr = program === "mens" ? "msoc" : "wsoc";
+  return `You are a research agent. Your job is to find the official URL of the ${word} SOCCER ROSTER page for a US college.
+
+The roster page is the page on the school's official athletics website that lists the current ${word.toLowerCase()} soccer team players (their names, positions, class years). It is NOT the schedule, news, coaching staff, or homepage. Make sure it is the ${word.toLowerCase()} team, not the other gender's team.
 
 Common URL patterns:
-- https://athletics.<school>.edu/sports/womens-soccer/roster
-- https://<school>athletics.com/sports/wsoc/roster
-- https://goathletics.com/sports/womens-soccer/roster
+- https://athletics.<school>.edu/sports/${slug}/roster
+- https://<school>athletics.com/sports/${abbr}/roster
+- https://goathletics.com/sports/${slug}/roster
 
 Use web search to confirm. Verify the page actually lists player names before returning it.
 
@@ -18,6 +24,7 @@ If you cannot find a reliable roster page, return:
 { "url": null, "confidence": "low", "reason": "short reason" }
 
 Do NOT return anything other than the JSON object as your final message.`;
+}
 
 export interface FindRosterResult {
   url: string | null;
@@ -56,23 +63,26 @@ export interface FindRosterOptions {
   schoolName: string;
   anthropic: Anthropic;
   model: string;
+  program?: Program; // defaults to womens
 }
 
-// Find the women's soccer roster URL for a school name, using Claude's hosted
-// web search tool. Returns { url: null } on failure rather than throwing.
+// Find the men's/women's soccer roster URL for a school name, using Claude's
+// hosted web search tool. Returns { url: null } on failure rather than throwing.
 export async function findRosterUrl(
   opts: FindRosterOptions
 ): Promise<FindRosterResult> {
+  const program: Program = opts.program ?? "womens";
+  const word = program === "mens" ? "men's" : "women's";
   try {
     const response = await opts.anthropic.messages.create({
       model: opts.model,
       max_tokens: 2048,
-      system: SYSTEM_PROMPT,
+      system: systemPrompt(program),
       tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 4 }],
       messages: [
         {
           role: "user",
-          content: `Find the women's soccer roster URL for: ${opts.schoolName}`,
+          content: `Find the ${word} soccer roster URL for: ${opts.schoolName}`,
         },
       ],
     });

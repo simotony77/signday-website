@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import TurndownService from "turndown";
 import type { SchoolData, ScheduleData } from "./types";
 
-const EXTRACTION_PROMPT = `You are extracting a women's college soccer team roster from the page content below.
+const EXTRACTION_PROMPT = `You are extracting a college soccer team roster from the page content below. The page may be a men's or a women's program; extract whichever roster is shown.
 
 Return a single JSON object with this exact shape:
 
@@ -203,7 +203,7 @@ async function getPageMarkdown(url: string): Promise<string> {
   throw lastErr instanceof Error ? lastErr : new Error(String(lastErr));
 }
 
-const SCHEDULE_PROMPT = `You are extracting a women's college soccer team's SCHEDULE and RESULTS from the page content below.
+const SCHEDULE_PROMPT = `You are extracting a college soccer team's SCHEDULE and RESULTS from the page content below. The page may be a men's or a women's program.
 
 Return a single JSON object with this exact shape:
 

@@ -29,6 +29,9 @@ export interface AthleteProfile {
   grad_year: number;
   position: string;
   position_detail?: string;
+  // "boys" tracks men's college programs; "girls" tracks women's. Defaults to
+  // girls for backward compatibility with existing data.
+  gender?: "boys" | "girls";
   current_league?: string;
   division?: string;
   club: string;

@@ -60,6 +60,7 @@ export function OnboardingForm({
   const [lastName, setLastName] = useState("");
   const [gradYear, setGradYear] = useState(2027);
   const [position, setPosition] = useState("M");
+  const [gender, setGender] = useState<"girls" | "boys">("girls");
   const [currentLeague, setCurrentLeague] = useState("ECNL");
   const [division, setDivision] = useState("D3");
   const [club, setClub] = useState("");
@@ -111,6 +112,7 @@ export function OnboardingForm({
         if (typeof a.last_name === "string") setLastName(a.last_name);
         if (typeof a.grad_year === "number") setGradYear(a.grad_year);
         if (typeof a.position === "string") setPosition(a.position);
+        if (a.gender === "boys" || a.gender === "girls") setGender(a.gender);
         if (typeof a.current_league === "string") setCurrentLeague(a.current_league);
         if (typeof a.division === "string") setDivision(a.division);
         if (typeof a.club === "string") setClub(a.club);
@@ -175,7 +177,7 @@ export function OnboardingForm({
       const res = await fetch("/api/find-roster-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ school_name: name }),
+        body: JSON.stringify({ school_name: name, gender }),
       });
       const data = await res.json();
       if (res.ok && data.url) {
@@ -251,6 +253,7 @@ export function OnboardingForm({
             last_name: lastName.trim(),
             grad_year: gradYear,
             position,
+            gender,
             current_league: currentLeague,
             division,
             club: club.trim(),
@@ -357,6 +360,14 @@ export function OnboardingForm({
                 Position: {p.label}
               </option>
             ))}
+          </select>
+          <select
+            value={gender}
+            onChange={(e) => setGender(e.target.value as "girls" | "boys")}
+            className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
+          >
+            <option value="girls">Plays: Girls / Women&apos;s soccer</option>
+            <option value="boys">Plays: Boys / Men&apos;s soccer</option>
           </select>
           <select
             value={currentLeague}

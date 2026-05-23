@@ -22,6 +22,7 @@ interface LiveRequest {
   position?: string;
   club?: string;
   school_name?: string;
+  gender?: "boys" | "girls";
 }
 
 const POSITION_LABEL: Record<string, string> = {
@@ -123,9 +124,11 @@ export async function POST(req: Request) {
 
   const model = process.env.CLAUDE_MODEL || "claude-sonnet-4-5";
   const anthropic = new Anthropic({ apiKey });
+  const gender: "boys" | "girls" = body.gender === "boys" ? "boys" : "girls";
+  const program = gender === "boys" ? "mens" : "womens";
 
   // 1. Find the roster URL.
-  const found = await findRosterUrl({ schoolName, anthropic, model });
+  const found = await findRosterUrl({ schoolName, anthropic, model, program });
   if (!found.url) {
     return NextResponse.json(
       {
@@ -167,6 +170,7 @@ export async function POST(req: Request) {
     last_name: "",
     grad_year: gradYear,
     position,
+    gender,
     club,
     gpa: null,
     email: "",
