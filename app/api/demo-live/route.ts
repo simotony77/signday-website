@@ -130,9 +130,14 @@ export async function POST(req: Request) {
   // 1. Find the roster URL.
   const found = await findRosterUrl({ schoolName, anthropic, model, program });
   if (!found.url) {
+    const word = gender === "boys" ? "men's" : "women's";
+    const boysHint =
+      gender === "boys"
+        ? " Heads up: many colleges field women's soccer but not men's, so this school may not have a men's team."
+        : "";
     return NextResponse.json(
       {
-        error: `I couldn't find a women's soccer roster page for "${schoolName}" automatically. Try the exact school name (e.g. "Williams College"), or pick one of the popular schools above.`,
+        error: `I couldn't find a ${word} soccer roster page for "${schoolName}" automatically.${boysHint} Try the exact school name (e.g. "Amherst College"), or pick one of the popular schools above.`,
       },
       { status: 422 }
     );

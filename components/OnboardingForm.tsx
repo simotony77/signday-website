@@ -10,16 +10,27 @@ const POSITIONS = [
 ];
 
 // Youth leagues the athlete currently plays in. Coaches use league as a quick
-// signal of competitive level. ECNL / GA are top-tier girls leagues; NPL / NL
-// are next; state leagues are typical for athletes building toward club soccer.
-const CURRENT_LEAGUES = [
+// signal of competitive level. The top leagues differ by gender: ECNL/GA for
+// girls, MLS Next/ECNL Boys for boys.
+const GIRLS_LEAGUES = [
   { value: "ECNL", label: "ECNL" },
   { value: "GA", label: "Girls Academy (GA)" },
   { value: "ECNL-RL", label: "ECNL Regional League (ECRL)" },
   { value: "NPL", label: "NPL" },
   { value: "NL", label: "National League" },
-  { value: "MLS_NEXT", label: "MLS Next (boys)" },
   { value: "USL_ACADEMY", label: "USL Academy" },
+  { value: "STATE", label: "State League" },
+  { value: "HS_ONLY", label: "High school only" },
+  { value: "OTHER", label: "Other (explain in notes)" },
+];
+
+const BOYS_LEAGUES = [
+  { value: "MLS_NEXT", label: "MLS Next" },
+  { value: "ECNL_BOYS", label: "ECNL Boys" },
+  { value: "USL_ACADEMY", label: "USL Academy" },
+  { value: "NAL", label: "National Academy League (NAL)" },
+  { value: "NPL", label: "NPL" },
+  { value: "NL", label: "National League" },
   { value: "STATE", label: "State League" },
   { value: "HS_ONLY", label: "High school only" },
   { value: "OTHER", label: "Other (explain in notes)" },
@@ -191,7 +202,13 @@ export function OnboardingForm({
             : "Found (low confidence). Please verify."
         );
       } else {
-        setLookup(index, "failed", data.reason || "Couldn't find. Paste it manually.");
+        // Many schools field women's soccer but not men's, so a boys lookup
+        // can dead-end legitimately. Say so instead of a generic failure.
+        const fail =
+          gender === "boys"
+            ? "Couldn't find a men's program (many schools don't field men's soccer). Paste the URL or skip this one."
+            : "Couldn't find it. Paste the URL manually.";
+        setLookup(index, "failed", fail);
       }
     } catch {
       setLookup(index, "failed", "Network error. Paste it manually.");
@@ -363,7 +380,13 @@ export function OnboardingForm({
           </select>
           <select
             value={gender}
-            onChange={(e) => setGender(e.target.value as "girls" | "boys")}
+            onChange={(e) => {
+              const g = e.target.value as "girls" | "boys";
+              setGender(g);
+              // Reset league to that gender's default so a girls-only league
+              // (or boys-only) isn't left selected for the wrong gender.
+              setCurrentLeague(g === "boys" ? "MLS_NEXT" : "ECNL");
+            }}
             className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
           >
             <option value="girls">Plays: Girls / Women&apos;s soccer</option>
@@ -374,7 +397,7 @@ export function OnboardingForm({
             onChange={(e) => setCurrentLeague(e.target.value)}
             className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
           >
-            {CURRENT_LEAGUES.map((l) => (
+            {(gender === "boys" ? BOYS_LEAGUES : GIRLS_LEAGUES).map((l) => (
               <option key={l.value} value={l.value}>
                 Current league: {l.label}
               </option>
