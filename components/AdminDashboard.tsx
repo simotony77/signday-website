@@ -36,6 +36,16 @@ interface Stats {
     avg_per_athlete: number;
     top_schools: { name: string; count: number }[];
   };
+  demo: {
+    total_runs: number;
+    runs_24h: number;
+    runs_7d: number;
+    live_runs: number;
+    cached_runs: number;
+    unique_visitors_7d: number;
+    last_run_at: string | null;
+    top_demoed_schools: { name: string; count: number }[];
+  };
   recent_customers: {
     email: string;
     status: string | null;
@@ -165,7 +175,7 @@ export function AdminDashboard() {
     );
   }
 
-  const { revenue, funnel, agent, athletes, schools, recent_customers } = stats;
+  const { revenue, funnel, agent, athletes, schools, demo, recent_customers } = stats;
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
@@ -218,6 +228,38 @@ export function AdminDashboard() {
         <Stat label="Drafts generated" value={agent.drafts_generated} />
         <Stat label="Triggers detected" value={agent.triggers_detected} />
         <Stat label="Last digest" value={fmtDate(agent.last_digest_at)} />
+      </div>
+
+      {/* Demo usage */}
+      <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Demo usage</h2>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <Stat label="Demo runs (total)" value={demo.total_runs} />
+        <Stat label="Last 7 days" value={demo.runs_7d} sub={`${demo.runs_24h} in last 24h`} />
+        <Stat label="Unique visitors (7d)" value={demo.unique_visitors_7d} />
+        <Stat
+          label="Live vs cached"
+          value={`${demo.live_runs} / ${demo.cached_runs}`}
+          sub="typed-any-school / preset"
+        />
+      </div>
+      <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-8">
+        <div className="text-sm font-bold text-gray-900 mb-1">Most-demoed schools</div>
+        <div className="text-xs text-gray-400 mb-3">
+          What prospects actually try. Live entries are schools they typed themselves.
+        </div>
+        {demo.top_demoed_schools.length === 0 ? (
+          <div className="text-xs text-gray-400">No demo runs yet.</div>
+        ) : (
+          <ol className="space-y-1.5 text-sm">
+            {demo.top_demoed_schools.map((s, i) => (
+              <li key={s.name} className="flex justify-between">
+                <span className="text-gray-700">{i + 1}. {s.name}</span>
+                <span className="text-gray-900 font-medium">{s.count}</span>
+              </li>
+            ))}
+          </ol>
+        )}
+        <div className="text-xs text-gray-400 mt-3">Last demo run: {fmtDate(demo.last_run_at)}</div>
       </div>
 
       {/* Who's signing up */}

@@ -4,6 +4,7 @@ import { findRosterUrl } from "@/lib/agent/findRosterUrl";
 import { scrapeSchool, scrapeSchedule } from "@/lib/agent/scrape";
 import { generateDraft } from "@/lib/agent/draft";
 import { rateLimit } from "@/lib/rateLimit";
+import { logDemoRun } from "@/lib/demoLog";
 import type {
   AthleteProfile,
   SchoolData,
@@ -198,6 +199,8 @@ export async function POST(req: Request) {
   const graduatingSeniors = school.roster
     .filter((p) => p.graduating === true)
     .map((p) => ({ name: p.name, position: p.position, class_year: p.class_year }));
+
+  await logDemoRun(req, "live", schoolName);
 
   return NextResponse.json({
     monitoring: {

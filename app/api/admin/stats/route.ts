@@ -69,7 +69,7 @@ export async function GET(req: Request) {
   }
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-  const [customersRes, subsRes, digestsRes] = await Promise.all([
+  const [customersRes, subsRes, digestsRes, demoRes] = await Promise.all([
     supabase
       .from("customers")
       .select("email, subscription_status, onboarded_at, created_at")
@@ -82,13 +82,25 @@ export async function GET(req: Request) {
       .from("digests")
       .select("drafts_count, triggers_count, schools_tracked, is_baseline, sent_at")
       .order("sent_at", { ascending: false }),
+    supabase
+      .from("demo_runs")
+      .select("kind, school, ip_hash, created_at")
+      .order("created_at", { ascending: false })
+      .limit(5000),
   ]);
 
   const customers = (customersRes.data || []) as CustomerRow[];
   const subs = (subsRes.data || []) as SubmissionRow[];
   const digests = (digestsRes.data || []) as DigestRow[];
+  const demoRuns = (demoRes.data || []) as {
+    kind: string;
+    school: string | null;
+    ip_hash: string | null;
+    created_at: string;
+  }[];
 
   const now = Date.now();
+  const dayAgo = now - 24 * 3600 * 1000;
   const weekAgo = now - 7 * 24 * 3600 * 1000;
 
   // ---- Revenue / customers ----
@@ -148,6 +160,23 @@ export async function GET(req: Request) {
     .slice(0, 10)
     .map(([name, count]) => ({ name, count }));
 
+  // ---- Demo usage ----
+  const demoRuns24h = demoRuns.filter(
+    (r) => new Date(r.created_at).getTime() >= dayAgo
+  );
+  const demoRuns7d = demoRuns.filter(
+    (r) => new Date(r.created_at).getTime() >= weekAgo
+  );
+  const uniqueVisitors7d = new Set(
+    demoRuns7d.map((r) => r.ip_hash).filter(Boolean)
+  ).size;
+  const demoTopSchools = Object.entries(
+    tally(demoRuns.map((r) => r.school))
+  )
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+    .map(([name, count]) => ({ name, count }));
+
   return NextResponse.json({
     generated_at: new Date().toISOString(),
     revenue: {
@@ -187,6 +216,16 @@ export async function GET(req: Request) {
           ? Math.round((totalSchoolEntries / latestSubs.length) * 10) / 10
           : 0,
       top_schools: topSchools,
+    },
+    demo: {
+      total_runs: demoRuns.length,
+      runs_24h: demoRuns24h.length,
+      runs_7d: demoRuns7d.length,
+      live_runs: demoRuns.filter((r) => r.kind === "live").length,
+      cached_runs: demoRuns.filter((r) => r.kind === "cached").length,
+      unique_visitors_7d: uniqueVisitors7d,
+      last_run_at: demoRuns[0]?.created_at || null,
+      top_demoed_schools: demoTopSchools,
     },
     recent_customers: customers.slice(0, 15).map((c) => ({
       email: c.email,

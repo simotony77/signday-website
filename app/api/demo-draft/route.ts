@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { SCHOOL_SCRAPES, type SchoolData } from "@/lib/schoolScrapes";
 import { SCHOOL_SCHEDULES } from "@/lib/schoolSchedules";
 import { rateLimit } from "@/lib/rateLimit";
+import { logDemoRun } from "@/lib/demoLog";
 import type { ScheduleData, GameResult } from "@/lib/agent/types";
 
 export const runtime = "nodejs";
@@ -269,6 +270,8 @@ export async function POST(req: Request) {
     const graduatingSeniors = school.roster
       .filter((p) => p.graduating === true)
       .map((p) => ({ name: p.name, position: p.position, class_year: p.class_year }));
+
+    await logDemoRun(req, "cached", body.school_slug);
 
     return NextResponse.json({
       monitoring: {
