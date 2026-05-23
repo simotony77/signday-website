@@ -332,9 +332,9 @@ export default function Home() {
             Built by a dad in the middle of his own daughter&apos;s D3 recruiting.
           </h2>
           <blockquote className="text-lg md:text-xl leading-relaxed text-blue-100 italic">
-            &quot;I&apos;m a soccer dad. My daughter is Class of 2027, deep in D3 recruiting right now. I built SignDay because I couldn&apos;t keep up with the work. The rosters, the emails, the follow-ups. This is the tool I needed.&quot;
+            &quot;I&apos;m a soccer dad and a software engineer. My daughter is Class of 2027, deep in D3 recruiting right now. I built SignDay because I couldn&apos;t keep up with the work. The rosters, the emails, the follow-ups. This is the tool I needed, so I built it myself.&quot;
           </blockquote>
-          <p className="text-sm text-blue-200 mt-4">Tony, Future Think LLC</p>
+          <p className="text-sm text-blue-200 mt-4">Tony, software engineer &amp; soccer dad &middot; Future Think LLC</p>
         </div>
       </section>
 
