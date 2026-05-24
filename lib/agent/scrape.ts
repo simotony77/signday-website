@@ -158,7 +158,10 @@ async function firecrawlAsMarkdown(url: string): Promise<string> {
       url,
       formats: ["markdown"],
       onlyMainContent: true,
-      timeout: 45000,
+      // Give slow JS-rendered athletics sites (e.g. CMU/Sidearm) room to finish
+      // loading the roster table before capture; waitFor must be < timeout.
+      waitFor: 6000,
+      timeout: 60000,
     }),
   });
   if (!res.ok) {
