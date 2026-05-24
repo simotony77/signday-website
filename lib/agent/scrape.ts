@@ -162,6 +162,10 @@ async function firecrawlAsMarkdown(url: string): Promise<string> {
       // loading the roster table before capture; waitFor must be < timeout.
       waitFor: 6000,
       timeout: 60000,
+      // Stealth proxy solves Cloudflare/anti-bot challenges that the standard
+      // render can't pass (costs more credits, but Firecrawl is only ever hit
+      // as a fallback for sites that already blocked a plain fetch).
+      proxy: "stealth",
     }),
   });
   if (!res.ok) {
