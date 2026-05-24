@@ -47,6 +47,26 @@ function headCoachOf(school: SchoolData): string | null {
   );
 }
 
+// Pick at most ONE genuine reason to email a coach this week. Real outreach
+// moments only: a recent win, or a coaching change. Player adds/removes are
+// deliberately NOT outreach reasons (they're noisy, unreliable from scraping,
+// and a weird thing to cite to a coach), so they never spawn a draft.
+function chooseOutreachTrigger(
+  rosterTriggersDiff: ReturnType<typeof diffSchools>,
+  scheduleTriggers: string[]
+): string | null {
+  if (scheduleTriggers.length > 0) return scheduleTriggers[0]; // recent win
+  if (rosterTriggersDiff.head_coach_changed) {
+    const c = rosterTriggersDiff.head_coach_changed;
+    return `Head coach changed from ${c.from} to ${c.to}. A natural moment to introduce yourself to the new staff.`;
+  }
+  const newCoach = rosterTriggersDiff.coaches_added[0];
+  if (newCoach) {
+    return `New coach on staff: ${newCoach.name} (${newCoach.title}). A natural reason to reach out.`;
+  }
+  return null;
+}
+
 function coachLabel(school: SchoolData): string {
   const head = school.coaching_staff.find((c) => /head coach/i.test(c.title));
   return head
@@ -157,20 +177,18 @@ export async function runForCustomer(
         school.roster_url
       );
 
-      // Persist this week's combined snapshot (skipped on dry runs).
-      if (!dryRun) {
-        await saveSnapshot(
-          supabase,
-          customer.id,
-          customer.email,
-          school.name,
-          school.roster_url,
-          { school: after, schedule: afterSchedule }
-        );
-      }
-
       if (!before) {
-        // Baseline week: nothing to diff against yet.
+        // Baseline week: nothing to diff against yet. Save and report.
+        if (!dryRun) {
+          await saveSnapshot(
+            supabase,
+            customer.id,
+            customer.email,
+            school.name,
+            school.roster_url,
+            { school: after, schedule: afterSchedule }
+          );
+        }
         results.push({
           school_name: school.name || after.team,
           roster_url: school.roster_url,
@@ -183,40 +201,81 @@ export async function runForCustomer(
         continue;
       }
 
-      // Combine roster changes + new wins into one trigger list.
       const rosterDiff = diffSchools(before.school, after);
       const scheduleDiff = diffSchedule(before.schedule, afterSchedule);
-      const triggers = [...rosterDiff.triggers, ...scheduleDiff.triggers];
 
-      // Research only runs when there's already something to write about, so
-      // it enriches real drafts instead of generating noise or burning cost.
-      let research = null;
-      if (triggers.length > 0) {
-        research = await researchSchool({
+      // Safety net: a real roster doesn't lose a big chunk of players in a week.
+      // If it looks like it did, this week's scrape was almost certainly partial,
+      // so we DON'T trust it: skip drafts and keep the last good snapshot (don't
+      // overwrite) so next week diffs against clean data.
+      const beforeSize = before.school.roster?.length || 0;
+      const removed = rosterDiff.players_removed.length;
+      const badScrape =
+        beforeSize >= 12 &&
+        ((removed > 5 && removed / beforeSize > 0.3) ||
+          after.roster.length < beforeSize * 0.6);
+
+      if (badScrape) {
+        results.push({
+          school_name: school.name || after.team,
+          roster_url: school.roster_url,
+          is_baseline: false,
+          triggers: [],
+          drafts: [],
+          roster_size: beforeSize,
+          head_coach: headCoachOf(before.school),
+          error: `Roster page didn't read cleanly this week (${after.roster.length} of ~${beforeSize} players). Skipped to avoid false changes; will retry next run.`,
+        });
+        continue; // do NOT save snapshot — preserve the last good baseline
+      }
+
+      // Trusted read: persist this week's snapshot (skipped on dry runs).
+      if (!dryRun) {
+        await saveSnapshot(
+          supabase,
+          customer.id,
+          customer.email,
+          school.name,
+          school.roster_url,
+          { school: after, schedule: afterSchedule }
+        );
+      }
+
+      // Informational "what changed" summary for the digest (capped).
+      const changeSummary = [
+        ...rosterDiff.triggers,
+        ...scheduleDiff.triggers,
+      ].slice(0, 8);
+
+      // At most ONE draft per school per week, on a real outreach moment only.
+      const outreachTrigger = chooseOutreachTrigger(
+        rosterDiff,
+        scheduleDiff.triggers
+      );
+
+      const drafts: SchoolResult["drafts"] = [];
+      if (outreachTrigger) {
+        // Research only runs when we're actually going to draft.
+        const research = await researchSchool({
           schoolName: school.name || after.team,
           teamName: after.team,
           anthropic,
           model,
         });
-      }
-
-      const drafts: SchoolResult["drafts"] = [];
-      for (const trigger of triggers) {
         try {
           const draft = await generateDraft({
             anthropic,
             model,
             school: after,
             athlete,
-            trigger,
+            trigger: outreachTrigger,
             schedule: afterSchedule,
             research,
           });
-          drafts.push({ ...draft, trigger, coach: coachLabel(after) });
+          drafts.push({ ...draft, trigger: outreachTrigger, coach: coachLabel(after) });
         } catch (e) {
-          // A single draft failure shouldn't sink the school's whole entry.
           console.error(
-            `draft failed for ${school.name} (${trigger}):`,
+            `draft failed for ${school.name}:`,
             e instanceof Error ? e.message : e
           );
         }
@@ -226,7 +285,7 @@ export async function runForCustomer(
         school_name: school.name || after.team,
         roster_url: school.roster_url,
         is_baseline: false,
-        triggers,
+        triggers: changeSummary,
         drafts,
         roster_size: after.roster.length,
         head_coach: headCoachOf(after),

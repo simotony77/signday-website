@@ -295,31 +295,87 @@ export async function scrapeSchedule(opts: ScrapeOptions): Promise<ScheduleData>
   return JSON.parse(stripCodeFences(firstBlock.text)) as ScheduleData;
 }
 
-export async function scrapeSchool(opts: ScrapeOptions): Promise<SchoolData> {
-  const markdown = trimContent(await getPageMarkdown(opts.url));
+// Normalize a name for de-duplication (some athletics pages render the roster
+// twice, so the model extracts each player multiple times).
+function normNameKey(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[.,'’`-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
+function dedupeRoster(data: SchoolData): SchoolData {
+  const seenP = new Set<string>();
+  const roster = [];
+  for (const p of data.roster || []) {
+    const k = normNameKey(p.name || "");
+    if (k && !seenP.has(k)) {
+      seenP.add(k);
+      roster.push(p);
+    }
+  }
+  const seenC = new Set<string>();
+  const coaching_staff = [];
+  for (const c of data.coaching_staff || []) {
+    const k = `${normNameKey(c.name || "")}|${(c.title || "").toLowerCase().trim()}`;
+    if (!seenC.has(k)) {
+      seenC.add(k);
+      coaching_staff.push(c);
+    }
+  }
+  return { ...data, roster, coaching_staff };
+}
+
+// A real college soccer roster is ~18-30 players. Below this we treat the read
+// as degraded (partial/blocked page) rather than a real, shrunken roster.
+const MIN_ROSTER = 12;
+
+async function extractRosterOnce(
+  opts: ScrapeOptions,
+  markdown: string
+): Promise<SchoolData> {
   const response = await opts.anthropic.messages.create({
     model: opts.model,
     max_tokens: 4096,
     // Temperature 0 makes extraction near-deterministic. Critical: at the
     // default (1.0) the same page yields slightly different rosters each
     // run (middle initials, position notation), which the diff then reports
-    // as phantom roster changes. We need stable reads for clean week-over-week
-    // diffing.
+    // as phantom roster changes.
     temperature: 0,
-    messages: [
-      {
-        role: "user",
-        content: EXTRACTION_PROMPT + markdown,
-      },
-    ],
+    messages: [{ role: "user", content: EXTRACTION_PROMPT + markdown }],
   });
-
   const firstBlock = response.content[0];
   if (firstBlock.type !== "text") {
     throw new Error("Expected text response from Claude");
   }
-  const jsonText = stripCodeFences(firstBlock.text);
-  const data = JSON.parse(jsonText) as SchoolData;
-  return data;
+  return dedupeRoster(JSON.parse(stripCodeFences(firstBlock.text)) as SchoolData);
+}
+
+// Scrape a roster, guarding against the degraded/partial reads some athletics
+// sites intermittently serve (which would otherwise produce huge false diffs).
+// We re-fetch and re-extract up to 3 times and keep the most complete read.
+// If we never get a plausibly-complete roster, we throw so the caller skips the
+// school this week instead of inventing roster changes.
+export async function scrapeSchool(opts: ScrapeOptions): Promise<SchoolData> {
+  let best: SchoolData | null = null;
+  let lastErr: unknown;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const markdown = trimContent(await getPageMarkdown(opts.url));
+      const data = await extractRosterOnce(opts, markdown);
+      if (data.roster.length >= MIN_ROSTER) return data;
+      if (!best || data.roster.length > best.roster.length) best = data;
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  if (best && best.roster.length > 0) {
+    throw new Error(
+      `Roster read incomplete (${best.roster.length} players after retries) — likely a partial/blocked page`
+    );
+  }
+  throw lastErr instanceof Error ? lastErr : new Error("scrape failed");
 }
