@@ -38,12 +38,17 @@ interface SubmissionRow {
   schools: { name?: string; roster_url?: string }[] | null;
   created_at: string;
 }
+interface DigestDetail {
+  results?: { school?: string; error?: string | null }[];
+  held?: boolean;
+}
 interface DigestRow {
   drafts_count: number | null;
   triggers_count: number | null;
   schools_tracked: number | null;
   is_baseline: boolean | null;
   sent_at: string;
+  detail: DigestDetail | null;
 }
 
 export async function GET(req: Request) {
@@ -81,7 +86,7 @@ export async function GET(req: Request) {
       .order("created_at", { ascending: false }),
     supabase
       .from("digests")
-      .select("drafts_count, triggers_count, schools_tracked, is_baseline, sent_at")
+      .select("drafts_count, triggers_count, schools_tracked, is_baseline, sent_at, detail")
       .order("sent_at", { ascending: false }),
     supabase
       .from("demo_runs")
@@ -126,6 +131,27 @@ export async function GET(req: Request) {
     0
   );
   const lastDigestAt = digests[0]?.sent_at || null;
+
+  // ---- Scrape health (last 7 days): how many schools the agent skipped for a
+  // bad/partial read, which schools are repeatedly flaky, and held digests. ----
+  const digests7d = digests.filter(
+    (d) => new Date(d.sent_at).getTime() >= weekAgo
+  );
+  const flakySchoolNames: string[] = [];
+  let skips7d = 0;
+  for (const d of digests7d) {
+    for (const r of d.detail?.results || []) {
+      if (r.error) {
+        skips7d++;
+        if (r.school) flakySchoolNames.push(r.school.trim());
+      }
+    }
+  }
+  const held7d = digests7d.filter((d) => d.detail?.held).length;
+  const flakySchools = Object.entries(tally(flakySchoolNames))
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+    .map(([name, count]) => ({ name, count }));
 
   // ---- Athlete + school breakdowns (latest submission per email) ----
   const latestByEmail = new Map<string, SubmissionRow>();
@@ -204,6 +230,11 @@ export async function GET(req: Request) {
       drafts_generated: draftsGenerated,
       triggers_detected: triggersDetected,
       last_digest_at: lastDigestAt,
+    },
+    scrape_health: {
+      skips_7d: skips7d,
+      held_7d: held7d,
+      flaky_schools: flakySchools,
     },
     athletes: {
       total: latestSubs.length,

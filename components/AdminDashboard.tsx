@@ -25,6 +25,11 @@ interface Stats {
     triggers_detected: number;
     last_digest_at: string | null;
   };
+  scrape_health: {
+    skips_7d: number;
+    held_7d: number;
+    flaky_schools: { name: string; count: number }[];
+  };
   athletes: {
     total: number;
     by_grad_year: Record<string, number>;
@@ -177,7 +182,7 @@ export function AdminDashboard() {
     );
   }
 
-  const { revenue, funnel, agent, athletes, schools, demo, recent_customers } = stats;
+  const { revenue, funnel, agent, scrape_health, athletes, schools, demo, recent_customers } = stats;
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
@@ -230,6 +235,31 @@ export function AdminDashboard() {
         <Stat label="Drafts generated" value={agent.drafts_generated} />
         <Stat label="Triggers detected" value={agent.triggers_detected} />
         <Stat label="Last digest" value={fmtDate(agent.last_digest_at)} />
+      </div>
+
+      {/* Scrape health */}
+      <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Scrape health (last 7 days)</h2>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <Stat label="Schools skipped" value={scrape_health.skips_7d} sub="bad/partial read, auto-retried" />
+        <Stat label="Digests held" value={scrape_health.held_7d} sub="abnormal volume, not sent" />
+      </div>
+      <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-8">
+        <div className="text-sm font-bold text-gray-900 mb-1">Flaky schools</div>
+        <div className="text-xs text-gray-400 mb-3">
+          Pages the scraper couldn&apos;t read cleanly. Repeat offenders may need a different roster URL.
+        </div>
+        {scrape_health.flaky_schools.length === 0 ? (
+          <div className="text-xs text-gray-400">No skips in the last 7 days. All schools read cleanly.</div>
+        ) : (
+          <ol className="space-y-1.5 text-sm">
+            {scrape_health.flaky_schools.map((s, i) => (
+              <li key={s.name} className="flex justify-between">
+                <span className="text-gray-700">{i + 1}. {s.name}</span>
+                <span className="text-amber-700 font-medium">{s.count}×</span>
+              </li>
+            ))}
+          </ol>
+        )}
       </div>
 
       {/* Demo usage */}

@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "sync-legal": "node scripts/sync-legal.mjs",
-    "agent:weekly": "tsx scripts/weekly-digest.ts"
+    "agent:weekly": "tsx scripts/weekly-digest.ts",
+    "test": "node --import tsx --test lib/agent/guards.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.96.0",

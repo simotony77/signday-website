@@ -297,7 +297,7 @@ export async function scrapeSchedule(opts: ScrapeOptions): Promise<ScheduleData>
 
 // Normalize a name for de-duplication (some athletics pages render the roster
 // twice, so the model extracts each player multiple times).
-function normNameKey(s: string): string {
+export function normNameKey(s: string): string {
   return s
     .toLowerCase()
     .normalize("NFKD")
@@ -307,7 +307,7 @@ function normNameKey(s: string): string {
     .trim();
 }
 
-function dedupeRoster(data: SchoolData): SchoolData {
+export function dedupeRoster(data: SchoolData): SchoolData {
   const seenP = new Set<string>();
   const roster = [];
   for (const p of data.roster || []) {
@@ -331,7 +331,7 @@ function dedupeRoster(data: SchoolData): SchoolData {
 
 // A real college soccer roster is ~18-30 players. Below this we treat the read
 // as degraded (partial/blocked page) rather than a real, shrunken roster.
-const MIN_ROSTER = 12;
+export const MIN_ROSTER = 12;
 
 async function extractRosterOnce(
   opts: ScrapeOptions,

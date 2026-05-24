@@ -5,6 +5,7 @@ import { scrapeSchool, scrapeSchedule } from "./scrape";
 import { diffSchools, diffSchedule } from "./diff";
 import { generateDraft } from "./draft";
 import { researchSchool } from "./research";
+import { MIN_ROSTER } from "./scrape";
 import { buildDigest, type SchoolResult } from "./digest";
 import type {
   AthleteProfile,
@@ -26,6 +27,12 @@ export interface CustomerRunInput {
   // When true, don't persist snapshots or log the digest. Used for diagnostic
   // dry runs so they don't mutate state or pollute week-over-week diffing.
   dryRun?: boolean;
+  // Circuit breaker: if a single customer's digest would contain MORE than this
+  // many drafts, we HOLD it (don't send) and flag it for human review instead.
+  // A backstop for unanticipated failure modes — with the 1-draft-per-school cap
+  // a normal week is 0-2 drafts, so an abnormal volume signals something wrong.
+  // Defaults to no limit when unset.
+  maxDraftsBeforeHold?: number;
 }
 
 export interface CustomerRunResult {
@@ -39,6 +46,9 @@ export interface CustomerRunResult {
   sent: boolean;
   message_id?: string;
   skipped_reason?: string;
+  // True when the digest was built but withheld by the circuit breaker
+  // (drafts_count exceeded maxDraftsBeforeHold) for human review.
+  held?: boolean;
 }
 
 function headCoachOf(school: SchoolData): string | null {
@@ -51,7 +61,7 @@ function headCoachOf(school: SchoolData): string | null {
 // moments only: a recent win, or a coaching change. Player adds/removes are
 // deliberately NOT outreach reasons (they're noisy, unreliable from scraping,
 // and a weird thing to cite to a coach), so they never spawn a draft.
-function chooseOutreachTrigger(
+export function chooseOutreachTrigger(
   rosterTriggersDiff: ReturnType<typeof diffSchools>,
   scheduleTriggers: string[]
 ): string | null {
@@ -65,6 +75,21 @@ function chooseOutreachTrigger(
     return `New coach on staff: ${newCoach.name} (${newCoach.title}). A natural reason to reach out.`;
   }
   return null;
+}
+
+// A real roster doesn't lose a big chunk of players in a single week. When it
+// looks like it did, this week's scrape was almost certainly partial/degraded,
+// so we don't trust it. Only applies once we have a real baseline to compare
+// against (>= MIN_ROSTER players last week); tiny rosters are left alone.
+export function isDegradedRoster(
+  beforeSize: number,
+  removedCount: number,
+  afterSize: number
+): boolean {
+  if (beforeSize < MIN_ROSTER) return false;
+  if (removedCount > 5 && removedCount / beforeSize > 0.3) return true;
+  if (afterSize < beforeSize * 0.6) return true;
+  return false;
 }
 
 function coachLabel(school: SchoolData): string {
@@ -210,10 +235,7 @@ export async function runForCustomer(
       // overwrite) so next week diffs against clean data.
       const beforeSize = before.school.roster?.length || 0;
       const removed = rosterDiff.players_removed.length;
-      const badScrape =
-        beforeSize >= 12 &&
-        ((removed > 5 && removed / beforeSize > 0.3) ||
-          after.roster.length < beforeSize * 0.6);
+      const badScrape = isDegradedRoster(beforeSize, removed, after.roster.length);
 
       if (badScrape) {
         results.push({
@@ -314,9 +336,19 @@ export async function runForCustomer(
     referral_link: referralLink,
   });
 
+  // Circuit breaker: an abnormal number of drafts in one digest signals a
+  // failure mode we didn't anticipate (e.g. a new way a page reads dirty). Hold
+  // the whole digest for human review rather than emailing a suspicious volume.
+  const draftCap = input.maxDraftsBeforeHold ?? Infinity;
+  const held = digest.drafts_count > draftCap;
+
   let sent = false;
   let messageId: string | undefined;
-  if (resend) {
+  if (held) {
+    console.error(
+      `[HOLD] ${customer.email}: ${digest.drafts_count} drafts exceeds cap of ${draftCap} — NOT sending, flagged for review`
+    );
+  } else if (resend) {
     const result = await resend.emails.send({
       from: fromEmail,
       to: customer.email,
@@ -350,6 +382,7 @@ export async function runForCustomer(
           error: r.error ?? null,
         })),
         message_id: messageId ?? null,
+        held,
       },
     });
   }
@@ -370,6 +403,10 @@ export async function runForCustomer(
       })),
     sent,
     message_id: messageId,
+    held,
+    skipped_reason: held
+      ? `held for review: ${digest.drafts_count} drafts exceeded cap of ${draftCap}`
+      : undefined,
   };
 }
 
