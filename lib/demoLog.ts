@@ -42,3 +42,29 @@ export async function logDemoRun(
     /* analytics must never break the demo */
   }
 }
+
+// Persist a warm demo lead (prospect opted in to be emailed their draft).
+// Best-effort: never throws so a storage hiccup can't block the email send.
+export async function saveDemoLead(fields: {
+  email: string;
+  first_name?: string | null;
+  school_name?: string | null;
+  source?: string | null;
+}): Promise<void> {
+  try {
+    const supabase = getSupabase();
+    if (!supabase) return;
+    const cleanSource =
+      typeof fields.source === "string" && fields.source.trim()
+        ? fields.source.trim().slice(0, 40)
+        : "direct";
+    await supabase.from("demo_leads").insert({
+      email: fields.email.trim().toLowerCase().slice(0, 200),
+      first_name: fields.first_name?.trim().slice(0, 50) || null,
+      school_name: fields.school_name?.trim().slice(0, 120) || null,
+      source: cleanSource,
+    });
+  } catch {
+    /* lead capture must never break the email send */
+  }
+}

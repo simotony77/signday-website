@@ -75,7 +75,7 @@ export async function GET(req: Request) {
   }
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-  const [customersRes, subsRes, digestsRes, demoRes] = await Promise.all([
+  const [customersRes, subsRes, digestsRes, demoRes, leadsRes] = await Promise.all([
     supabase
       .from("customers")
       .select("email, subscription_status, onboarded_at, created_at, referred_by")
@@ -93,6 +93,11 @@ export async function GET(req: Request) {
       .select("kind, school, ip_hash, source, created_at")
       .order("created_at", { ascending: false })
       .limit(5000),
+    supabase
+      .from("demo_leads")
+      .select("email, first_name, school_name, source, created_at")
+      .order("created_at", { ascending: false })
+      .limit(2000),
   ]);
 
   const customers = (customersRes.data || []) as CustomerRow[];
@@ -102,6 +107,13 @@ export async function GET(req: Request) {
     kind: string;
     school: string | null;
     ip_hash: string | null;
+    source: string | null;
+    created_at: string;
+  }[];
+  const leads = (leadsRes.data || []) as {
+    email: string;
+    first_name: string | null;
+    school_name: string | null;
     source: string | null;
     created_at: string;
   }[];
@@ -205,6 +217,18 @@ export async function GET(req: Request) {
     .slice(0, 10)
     .map(([name, count]) => ({ name, count }));
 
+  // ---- Demo leads (prospects who asked to be emailed their draft) ----
+  const leads7d = leads.filter(
+    (l) => new Date(l.created_at).getTime() >= weekAgo
+  ).length;
+  const recentLeads = leads.slice(0, 25).map((l) => ({
+    email: l.email,
+    first_name: l.first_name,
+    school: l.school_name,
+    source: l.source || "direct",
+    created_at: l.created_at,
+  }));
+
   return NextResponse.json({
     generated_at: new Date().toISOString(),
     revenue: {
@@ -261,6 +285,11 @@ export async function GET(req: Request) {
       last_run_at: demoRuns[0]?.created_at || null,
       top_demoed_schools: demoTopSchools,
       by_source: tally(demoRuns.map((r) => r.source || "direct")),
+    },
+    leads: {
+      total: leads.length,
+      last_7d: leads7d,
+      recent: recentLeads,
     },
     recent_customers: customers.slice(0, 15).map((c) => ({
       email: c.email,

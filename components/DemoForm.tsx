@@ -20,6 +20,23 @@ const SCHOOLS = [
 
 const GRAD_YEARS = [2027, 2028, 2029, 2030];
 
+// Stash demo athlete info so onboarding can pre-fill it after checkout
+// (survives the Stripe redirect via localStorage on the same domain).
+const DEMO_ATHLETE_KEY = "signday_demo_athlete";
+
+// The next Sunday's date, for the "digest lands Sunday" mockup. Computed so the
+// demo never shows a stale past date.
+function upcomingSundayLabel(): string {
+  const d = new Date();
+  const day = d.getDay(); // 0 = Sunday
+  d.setDate(d.getDate() + (day === 0 ? 7 : 7 - day));
+  return d.toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  });
+}
+
 const POSITIONS = [
   { value: "GK", label: "Goalkeeper" },
   { value: "D", label: "Defender" },
@@ -76,6 +93,13 @@ export function DemoForm() {
   const [error, setError] = useState("");
   const [result, setResult] = useState<ApiResponse | null>(null);
 
+  // Email-capture (lead) state: prospect can have their draft emailed to them.
+  const [leadEmail, setLeadEmail] = useState("");
+  const [leadStatus, setLeadStatus] = useState<
+    "idle" | "sending" | "sent" | "error"
+  >("idle");
+  const [leadError, setLeadError] = useState("");
+
   // Capture utm_source (e.g. from a Google ad) so demo runs are attributable
   // to ad vs organic in the admin dashboard.
   useEffect(() => {
@@ -120,6 +144,24 @@ export function DemoForm() {
     setStatus("loading");
     setError("");
     setResult(null);
+    setLeadStatus("idle");
+    setLeadError("");
+
+    // Remember the athlete so onboarding can pre-fill it after they buy.
+    try {
+      localStorage.setItem(
+        DEMO_ATHLETE_KEY,
+        JSON.stringify({
+          first_name: firstName.trim(),
+          grad_year: gradYear,
+          position,
+          club: club.trim(),
+          gender,
+        })
+      );
+    } catch {
+      /* ignore */
+    }
 
     try {
       const res = isLive
@@ -161,6 +203,42 @@ export function DemoForm() {
     } catch {
       setError("Network error. Try again in a minute.");
       setStatus("error");
+    }
+  }
+
+  async function sendLead() {
+    if (!result) return;
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(leadEmail.trim())) {
+      setLeadError("Please enter a valid email.");
+      setLeadStatus("error");
+      return;
+    }
+    setLeadStatus("sending");
+    setLeadError("");
+    try {
+      const res = await fetch("/api/demo-lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: leadEmail.trim(),
+          first_name: firstName.trim(),
+          school_name: result.draft.school_name,
+          subject: result.draft.subject,
+          body: result.draft.body,
+          trigger: result.trigger,
+          source: getSource(),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setLeadError(data.error || "Couldn't send. Try again in a minute.");
+        setLeadStatus("error");
+        return;
+      }
+      setLeadStatus("sent");
+    } catch {
+      setLeadError("Network error. Try again in a minute.");
+      setLeadStatus("error");
     }
   }
 
@@ -397,7 +475,7 @@ export function DemoForm() {
                 </div>
                 <div className="sm:col-span-2">
                   <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                    Graduating spring 2026 ({result.monitoring.graduating_seniors.length})
+                    Graduating seniors ({result.monitoring.graduating_seniors.length}) &middot; roster spots opening
                   </div>
                   {result.monitoring.graduating_seniors.length === 0 ? (
                     <div className="text-sm text-gray-500">No graduating seniors flagged on the current roster.</div>
@@ -558,7 +636,7 @@ export function DemoForm() {
                   </div>
                   <div className="flex-1">
                     <div className="text-sm font-semibold text-gray-900">SignDay Agent</div>
-                    <div className="text-xs text-gray-500">to you · Sun May 17, 7:00 AM</div>
+                    <div className="text-xs text-gray-500">to you · {upcomingSundayLabel()}, 7:00 AM</div>
                   </div>
                 </div>
                 <div className="mt-3 text-base font-semibold text-gray-900">
@@ -570,7 +648,7 @@ export function DemoForm() {
                   <div className="font-semibold text-gray-900 mb-2">What changed this week:</div>
                   <ul className="space-y-1.5 text-gray-700 leading-relaxed">
                     <li>• {result.monitoring.team}: {result.trigger.slice(0, 110)}{result.trigger.length > 110 ? "..." : ""}</li>
-                    <li className="text-gray-500">• (plus changes at your other 11 tracked schools)</li>
+                    <li className="text-gray-500">• (plus changes at your other tracked schools)</li>
                   </ul>
                 </div>
                 <div>
@@ -584,19 +662,67 @@ export function DemoForm() {
             </div>
           </div>
 
+          {/* Email me this draft (lead capture) */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 md:p-7 shadow-sm">
+            {leadStatus === "sent" ? (
+              <div className="text-center py-2">
+                <div className="text-2xl mb-2">📬</div>
+                <h3 className="text-lg font-bold text-gray-900 mb-1">Sent. Check your inbox.</h3>
+                <p className="text-sm text-gray-600">
+                  This draft for {firstName || "your athlete"} is on its way (give it a minute, and check spam if it&apos;s shy).
+                </p>
+              </div>
+            ) : (
+              <>
+                <h3 className="text-lg font-bold text-gray-900 mb-1">
+                  Not ready to subscribe yet? Take the draft with you.
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  We&apos;ll email you this draft plus a sample Sunday digest, so you can sit with it. No spam, just the one email.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 max-w-xl">
+                  <input
+                    type="email"
+                    value={leadEmail}
+                    onChange={(e) => setLeadEmail(e.target.value)}
+                    placeholder="you@email.com"
+                    className="flex-1 rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
+                  />
+                  <button
+                    type="button"
+                    onClick={sendLead}
+                    disabled={leadStatus === "sending"}
+                    className="bg-gray-900 hover:bg-gray-800 disabled:opacity-60 text-white font-semibold px-5 py-3 rounded-xl transition-colors whitespace-nowrap"
+                  >
+                    {leadStatus === "sending" ? "Sending..." : "Email me this draft"}
+                  </button>
+                </div>
+                {leadStatus === "error" && (
+                  <p className="text-sm text-red-600 mt-2">{leadError}</p>
+                )}
+              </>
+            )}
+          </div>
+
           {/* CTA */}
           <div className="bg-brand-50 border border-brand-100 rounded-2xl p-8 text-center">
             <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">
               Want this running every Sunday on your real target list?
             </h3>
-            <p className="text-base text-gray-700 mb-6 max-w-2xl mx-auto leading-relaxed">
-              Your athlete keeps playing, you keep being present at games, and the agent does the spreadsheet + email work in the background. Drafts land in your inbox. You approve and send via Gmail. $99/month, cancel anytime.
+            <p className="text-base text-gray-700 mb-5 max-w-2xl mx-auto leading-relaxed">
+              Your athlete keeps playing, you keep being present at games, and the agent does the spreadsheet + email work in the background. Drafts land in your inbox. You approve and send via Gmail.
             </p>
+            <div className="flex flex-wrap justify-center gap-2 mb-6 text-sm">
+              <span className="bg-white border border-brand-100 text-gray-700 px-3 py-1.5 rounded-full">$99/month</span>
+              <span className="bg-white border border-brand-100 text-gray-700 px-3 py-1.5 rounded-full">Cancel anytime, one click</span>
+              <span className="bg-white border border-brand-100 text-gray-700 px-3 py-1.5 rounded-full">No contract</span>
+              <span className="bg-white border border-brand-100 text-gray-700 px-3 py-1.5 rounded-full">First digest {upcomingSundayLabel()}</span>
+            </div>
             <div className="flex justify-center">
               <BuyButton />
             </div>
             <p className="text-xs text-gray-500 mt-3">
-              Secure checkout via Stripe. Cancel anytime, one click. Your first weekly digest arrives this Sunday at 7 AM Eastern.
+              Secure checkout via Stripe. Your details from this demo carry over, so onboarding takes a minute.
             </p>
           </div>
         </div>

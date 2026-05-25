@@ -45,6 +45,10 @@ const DIVISIONS = [
   { value: "Other", label: "Other / mixed (explain in notes)" },
 ];
 
+// Set by the public demo so a new customer doesn't retype what they just
+// entered. Real saved-submission data (loaded below) always wins over this.
+const DEMO_ATHLETE_KEY = "signday_demo_athlete";
+
 type Status = "idle" | "submitting" | "success" | "error";
 
 type LookupStatus = "idle" | "looking" | "found" | "failed";
@@ -98,6 +102,28 @@ export function OnboardingForm({
   // Existing-submission flag: switches button label + success copy from
   // "Finish onboarding" to "Save changes" once we've loaded prior data.
   const [isUpdate, setIsUpdate] = useState(false);
+
+  // Pre-fill from the demo the prospect just ran (if any). Runs first; the
+  // async saved-submission load below overrides it when real data exists.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DEMO_ATHLETE_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      if (typeof d.first_name === "string" && d.first_name) setFirstName(d.first_name);
+      if (typeof d.grad_year === "number") setGradYear(d.grad_year);
+      if (typeof d.position === "string" && d.position) setPosition(d.position);
+      if (typeof d.club === "string" && d.club) setClub(d.club);
+      if (d.gender === "boys" || d.gender === "girls") {
+        setGender(d.gender);
+        // Match the league default to the gender so a girls-only league isn't
+        // left selected for a boys athlete (mirrors the gender onChange).
+        setCurrentLeague(d.gender === "boys" ? "MLS_NEXT" : "ECNL");
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   // On mount, if we have an initial email, try to load an existing onboarding
   // submission for that customer and prefill the form. Lets paying customers

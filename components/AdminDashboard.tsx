@@ -53,6 +53,17 @@ interface Stats {
     top_demoed_schools: { name: string; count: number }[];
     by_source: Record<string, number>;
   };
+  leads: {
+    total: number;
+    last_7d: number;
+    recent: {
+      email: string;
+      first_name: string | null;
+      school: string | null;
+      source: string;
+      created_at: string;
+    }[];
+  };
   recent_customers: {
     email: string;
     status: string | null;
@@ -182,7 +193,7 @@ export function AdminDashboard() {
     );
   }
 
-  const { revenue, funnel, agent, scrape_health, athletes, schools, demo, recent_customers } = stats;
+  const { revenue, funnel, agent, scrape_health, athletes, schools, demo, leads, recent_customers } = stats;
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
@@ -295,6 +306,41 @@ export function AdminDashboard() {
           </ol>
         )}
         <div className="text-xs text-gray-400 mt-3">Last demo run: {fmtDate(demo.last_run_at)}</div>
+      </div>
+
+      {/* Demo leads */}
+      <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Demo leads (asked to be emailed their draft)</h2>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <Stat label="Leads (total)" value={leads.total} />
+        <Stat label="New (7 days)" value={leads.last_7d} sub="warm — follow up" />
+      </div>
+      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden mb-8">
+        {leads.recent.length === 0 ? (
+          <div className="p-5 text-xs text-gray-400">No demo leads yet. They appear when a prospect asks the demo to email them their draft.</div>
+        ) : (
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wider">
+              <tr>
+                <th className="text-left px-4 py-2 font-semibold">Email</th>
+                <th className="text-left px-4 py-2 font-semibold">Athlete</th>
+                <th className="text-left px-4 py-2 font-semibold">School</th>
+                <th className="text-left px-4 py-2 font-semibold">Source</th>
+                <th className="text-left px-4 py-2 font-semibold">When</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {leads.recent.map((l, i) => (
+                <tr key={`${l.email}-${i}`}>
+                  <td className="px-4 py-2 text-gray-900">{l.email}</td>
+                  <td className="px-4 py-2 text-gray-700">{l.first_name || "—"}</td>
+                  <td className="px-4 py-2 text-gray-700">{l.school || "—"}</td>
+                  <td className="px-4 py-2 text-gray-500">{l.source}</td>
+                  <td className="px-4 py-2 text-gray-500">{fmtDate(l.created_at)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
       {/* Who's signing up */}
