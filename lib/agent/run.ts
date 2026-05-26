@@ -57,6 +57,19 @@ function headCoachOf(school: SchoolData): string | null {
   );
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Head coach's email, but ONLY if the scrape captured a real, valid-looking
+// address (the extractor is told never to invent one). The athlete still sees
+// and confirms the recipient in Gmail before sending, so this just saves a
+// lookup; a missing/invalid value safely leaves the "To" blank.
+function headCoachEmailOf(school: SchoolData): string | null {
+  const email = school.coaching_staff
+    .find((c) => /head coach/i.test(c.title))
+    ?.email?.trim();
+  return email && EMAIL_RE.test(email) ? email : null;
+}
+
 // Pick at most ONE genuine reason to email a coach this week. Real outreach
 // moments only: a recent win, or a coaching change. Player adds/removes are
 // deliberately NOT outreach reasons (they're noisy, unreliable from scraping,
@@ -294,7 +307,12 @@ export async function runForCustomer(
             schedule: afterSchedule,
             research,
           });
-          drafts.push({ ...draft, trigger: outreachTrigger, coach: coachLabel(after) });
+          drafts.push({
+            ...draft,
+            trigger: outreachTrigger,
+            coach: coachLabel(after),
+            coach_email: headCoachEmailOf(after),
+          });
         } catch (e) {
           console.error(
             `draft failed for ${school.name}:`,

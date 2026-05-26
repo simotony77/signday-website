@@ -8,7 +8,7 @@ export interface SchoolResult {
   is_baseline: boolean; // first time we've scraped this school for this customer
   error?: string; // set if scraping/parsing failed
   triggers: string[]; // human-readable change descriptions
-  drafts: (Draft & { trigger: string; coach: string })[];
+  drafts: (Draft & { trigger: string; coach: string; coach_email?: string | null })[];
   roster_size?: number;
   head_coach?: string | null;
 }
@@ -87,7 +87,7 @@ export function buildDigest(input: DigestInput): BuiltDigest {
         t.push(`  Subject: ${d.subject}`);
         const bodyLines = d.body.split("\n");
         for (const line of bodyLines) t.push(`    ${line}`);
-        t.push(`    Open in Gmail: ${gmailComposeUrl({ subject: d.subject, body: d.body })}`);
+        t.push(`    Open in Gmail: ${gmailComposeUrl({ to: d.coach_email || undefined, subject: d.subject, body: d.body })}`);
       });
       t.push("");
     }
@@ -169,7 +169,7 @@ export function buildDigest(input: DigestInput): BuiltDigest {
           `<pre style="font-family: ui-monospace, Menlo, monospace; font-size: 13px; white-space: pre-wrap; margin-top: 12px; padding: 12px; background:#fff; border:1px solid #E5E7EB; border-radius: 6px;">${escapeHtml(d.body)}</pre>`
         );
         h.push(
-          `<a href="${gmailComposeUrl({ subject: d.subject, body: d.body }).replace(/&/g, "&amp;")}" style="display:inline-block; margin-top:10px; background:#1A56DB; color:#fff; text-decoration:none; font-weight:600; font-size:13px; padding:8px 14px; border-radius:8px;">Open in Gmail to edit &amp; send</a>`
+          `<a href="${gmailComposeUrl({ to: d.coach_email || undefined, subject: d.subject, body: d.body }).replace(/&/g, "&amp;")}" style="display:inline-block; margin-top:10px; background:#1A56DB; color:#fff; text-decoration:none; font-weight:600; font-size:13px; padding:8px 14px; border-radius:8px;">Open in Gmail to edit &amp; send</a>`
         );
         h.push(`</div>`);
       }

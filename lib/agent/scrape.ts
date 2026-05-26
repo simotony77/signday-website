@@ -20,7 +20,7 @@ Return a single JSON object with this exact shape:
     }
   ],
   "coaching_staff": [
-    { "name": "<full name>", "title": "<Head Coach | Assistant Coach | etc.>" }
+    { "name": "<full name>", "title": "<Head Coach | Assistant Coach | etc.>", "email": "<email if shown verbatim on the page, otherwise null>" }
   ],
   "seniors_graduating_next": ["<name>", "..."]
 }
@@ -31,6 +31,7 @@ Rules:
 - If the page lists no goalkeepers, still include the field.
 - If jersey numbers are not shown, set to null.
 - If position uses combinations (e.g. "M/D" or "F/M"), keep them as-is.
+- "email": include a coach's email address ONLY if it appears verbatim on the page (e.g. in a staff directory). NEVER guess, construct, or infer an email from a name or pattern. If no email is shown for that coach, set it to null.
 - Return ONLY the JSON object, no markdown fences, no commentary.
 
 Page content:

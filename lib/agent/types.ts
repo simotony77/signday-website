@@ -13,6 +13,7 @@ export interface Player {
 export interface Coach {
   name: string;
   title: string;
+  email?: string | null; // only set when listed verbatim on the page
 }
 
 export interface SchoolData {
