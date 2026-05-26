@@ -50,10 +50,29 @@ Return ONLY this JSON object. No markdown code fences. No commentary.
 
 The body should be the full email body INCLUDING the greeting and sign-off, but NOT the subject line. Use plain \\n for line breaks between paragraphs.`;
 
+export type DraftKind = "standard" | "followup" | "first_touch";
+
+// Extra framing so a re-engagement reads like a real follow-up (not a cold
+// intro), and a first-touch reads like a confident opener.
+function outreachFraming(kind: DraftKind): string {
+  if (kind === "followup") {
+    return `
+OUTREACH CONTEXT: This is a FOLLOW-UP. The athlete already emailed this coach before and has not heard back. Do NOT introduce yourself from scratch as if this is first contact. Open by briefly and warmly acknowledging the earlier email (e.g. "I reached out a few weeks back and wanted to follow up"), then give a fresh, specific reason to reconnect now (a recent result, an update, an upcoming camp). Keep it short and low-pressure. One or two lines of self-reminder is enough, not a full reintroduction.
+`;
+  }
+  if (kind === "first_touch") {
+    return `
+OUTREACH CONTEXT: This is a FIRST CONTACT. The athlete has not emailed this coach before. Introduce yourself clearly and confidently (grad year, position, club, league, academics) and give one concrete next step.
+`;
+  }
+  return "";
+}
+
 function buildUserPrompt(
   school: SchoolData,
   athlete: AthleteProfile,
   triggerText: string,
+  kind: DraftKind,
   schedule?: ScheduleData | null,
   research?: ResearchData | null
 ): string {
@@ -101,7 +120,7 @@ ${schoolJson}
 ATHLETE PROFILE:
 \`\`\`json
 ${athleteJson}
-\`\`\`${genderNote}${scheduleBlock}${researchBlock}
+\`\`\`${genderNote}${scheduleBlock}${researchBlock}${outreachFraming(kind)}
 
 TRIGGER (the specific reason this email is being sent now):
 ${triggerText}
@@ -122,6 +141,7 @@ export interface GenerateDraftOptions {
   school: SchoolData;
   athlete: AthleteProfile;
   trigger: string;
+  kind?: DraftKind; // defaults to "standard"
   schedule?: ScheduleData | null;
   research?: ResearchData | null;
 }
@@ -138,6 +158,7 @@ export async function generateDraft(opts: GenerateDraftOptions): Promise<Draft> 
           opts.school,
           opts.athlete,
           opts.trigger,
+          opts.kind ?? "standard",
           opts.schedule,
           opts.research
         ),

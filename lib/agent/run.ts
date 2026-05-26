@@ -3,7 +3,7 @@ import { Resend } from "resend";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { scrapeSchool, scrapeSchedule } from "./scrape";
 import { diffSchools, diffSchedule } from "./diff";
-import { generateDraft } from "./draft";
+import { generateDraft, type DraftKind } from "./draft";
 import { researchSchool } from "./research";
 import { MIN_ROSTER } from "./scrape";
 import { mintAccessToken } from "../accessToken";
@@ -76,6 +76,7 @@ interface OutreachStatusRow {
   school_name: string;
   status: string;
   last_contacted_at: string | null;
+  agent_note?: string | null;
 }
 
 function normSchoolKey(s: string): string {
@@ -100,7 +101,7 @@ async function getOutreachStatuses(
   try {
     const { data } = await supabase
       .from("outreach_status")
-      .select("school_name, status, last_contacted_at")
+      .select("school_name, status, last_contacted_at, agent_note")
       .eq("email", email);
     for (const r of (data as OutreachStatusRow[]) || []) {
       map.set(normSchoolKey(r.school_name), r);
@@ -109,6 +110,45 @@ async function getOutreachStatuses(
     /* tracker is best-effort; never break the run */
   }
   return map;
+}
+
+// When the agent detects a head-coach change, record it on the tracker row
+// without clobbering the parent's status/notes (partial upsert updates only
+// agent_note). Best-effort. Also updates the in-memory map so this week's
+// digest snapshot reflects it.
+async function flagCoachChangeOnTracker(
+  supabase: SupabaseClient,
+  statusMap: Map<string, OutreachStatusRow>,
+  customerId: string | null,
+  email: string,
+  school: TrackedSchool,
+  note: string
+): Promise<void> {
+  try {
+    await supabase.from("outreach_status").upsert(
+      {
+        customer_id: customerId,
+        email,
+        school_name: school.name,
+        roster_url: school.roster_url || null,
+        agent_note: note,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "email,school_name" }
+    );
+    const key = normSchoolKey(school.name);
+    const existing = statusMap.get(key);
+    if (existing) existing.agent_note = note;
+    else
+      statusMap.set(key, {
+        school_name: school.name,
+        status: "not_contacted",
+        last_contacted_at: null,
+        agent_note: note,
+      });
+  } catch {
+    /* tracker write is best-effort; never break the run */
+  }
 }
 
 // Pick at most ONE genuine reason to email a coach this week, by priority:
@@ -232,6 +272,10 @@ export async function runForCustomer(
   // re-engagement drafts. Best-effort; absent for customers who never set them.
   const statusMap = await getOutreachStatuses(supabase, customer.email);
 
+  // At most ONE first-touch (opener for a never-contacted school) per run, so
+  // we never flood the digest or trip the circuit breaker.
+  let firstTouchRemaining = 1;
+
   const results: SchoolResult[] = [];
 
   for (const school of schools) {
@@ -330,6 +374,22 @@ export async function runForCustomer(
         ...scheduleDiff.triggers,
       ].slice(0, 8);
 
+      // If the head coach changed, flag it on the tracker (non-destructive:
+      // updates only agent_note, leaving the parent's status/notes intact).
+      if (!dryRun && rosterDiff.head_coach_changed) {
+        const c = rosterDiff.head_coach_changed;
+        await flagCoachChangeOnTracker(
+          supabase,
+          statusMap,
+          customer.id,
+          customer.email,
+          school,
+          `New head coach: ${c.to} (was ${c.from}), detected ${new Date()
+            .toISOString()
+            .slice(0, 10)}. Consider restarting outreach.`
+        );
+      }
+
       // Re-engagement: if the parent logged a sent email 21+ days ago with no
       // reply, that silence becomes a (lowest-priority) reason to nudge.
       const sd = silentDays(statusMap.get(normSchoolKey(school.name)));
@@ -338,15 +398,30 @@ export async function runForCustomer(
           ? `It has been ${sd} days since the last logged email to this coach with no reply. A short, low-pressure re-engagement (a recent result, an updated reel, or an upcoming camp) is a natural nudge.`
           : null;
 
-      // At most ONE draft per school per week, on a real outreach moment only.
+      // At most ONE draft per school per week. Priority: a win/coaching change
+      // (standard) > a 21-day silence (follow-up) > a first-touch opener for a
+      // school the parent explicitly marked "not contacted".
       const outreachTrigger = chooseOutreachTrigger(
         rosterDiff,
         scheduleDiff.triggers,
         silenceTrigger
       );
 
+      let draftTrigger: string | null = outreachTrigger;
+      let draftKind: DraftKind = "standard";
+      if (outreachTrigger && silenceTrigger && outreachTrigger === silenceTrigger) {
+        draftKind = "followup";
+      } else if (!outreachTrigger) {
+        const st = statusMap.get(normSchoolKey(school.name));
+        if (st?.status === "not_contacted" && firstTouchRemaining > 0) {
+          firstTouchRemaining--;
+          draftTrigger = `First contact: no prior outreach to ${after.team} has been logged yet. Open the conversation with a strong, specific introduction.`;
+          draftKind = "first_touch";
+        }
+      }
+
       const drafts: SchoolResult["drafts"] = [];
-      if (outreachTrigger) {
+      if (draftTrigger) {
         // Research only runs when we're actually going to draft.
         const research = await researchSchool({
           schoolName: school.name || after.team,
@@ -360,13 +435,14 @@ export async function runForCustomer(
             model,
             school: after,
             athlete,
-            trigger: outreachTrigger,
+            trigger: draftTrigger,
+            kind: draftKind,
             schedule: afterSchedule,
             research,
           });
           drafts.push({
             ...draft,
-            trigger: outreachTrigger,
+            trigger: draftTrigger,
             coach: coachLabel(after),
             coach_email: headCoachEmailOf(after),
           });
@@ -415,9 +491,29 @@ export async function runForCustomer(
 
   // Schools the parent marked 'sent' that have gone quiet (no reply logged).
   const quietSchools: { school: string; days: number }[] = [];
+  // Compact per-school board for the digest. Only shown if the parent has
+  // actually engaged the tracker (some non-default signal somewhere).
+  const trackerSummary: {
+    school: string;
+    status: string;
+    days_silent: number | null;
+    agent_note?: string | null;
+  }[] = [];
+  let trackerEngaged = false;
   for (const school of schools) {
-    const d = silentDays(statusMap.get(normSchoolKey(school.name)));
+    const st = statusMap.get(normSchoolKey(school.name));
+    const d = silentDays(st);
     if (d !== null && d >= 14) quietSchools.push({ school: school.name, days: d });
+    const status = st?.status || "not_contacted";
+    if (status !== "not_contacted" || st?.last_contacted_at || st?.agent_note) {
+      trackerEngaged = true;
+    }
+    trackerSummary.push({
+      school: school.name,
+      status,
+      days_silent: d,
+      agent_note: st?.agent_note ?? null,
+    });
   }
 
   const digest = buildDigest({
@@ -427,6 +523,7 @@ export async function runForCustomer(
     camp_note: campCountdownNote(athlete),
     quiet_schools: quietSchools,
     tracker_link: trackerLink,
+    tracker_summary: trackerEngaged ? trackerSummary : undefined,
   });
 
   // Circuit breaker: an abnormal number of drafts in one digest signals a

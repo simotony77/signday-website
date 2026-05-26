@@ -16,9 +16,13 @@ create table if not exists public.outreach_status (
   status text not null default 'not_contacted',
   last_contacted_at date,   -- when the athlete last emailed the coach
   last_reply_at date,       -- when the coach last replied (optional)
-  notes text,
+  notes text,               -- parent's own note
+  agent_note text,          -- agent-detected event (e.g. coach change); never overwrites parent's note
   updated_at timestamptz not null default now()
 );
+
+-- Safe to re-run if the table already existed without this column.
+alter table public.outreach_status add column if not exists agent_note text;
 
 -- One status row per school per customer; upserts target this.
 create unique index if not exists outreach_status_email_school_idx

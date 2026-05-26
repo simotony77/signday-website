@@ -60,7 +60,7 @@ export async function GET(req: Request) {
 
   const { data: statuses } = await supabase
     .from("outreach_status")
-    .select("school_name, roster_url, status, last_contacted_at, last_reply_at, notes")
+    .select("school_name, roster_url, status, last_contacted_at, last_reply_at, notes, agent_note")
     .eq("email", email);
 
   return NextResponse.json({

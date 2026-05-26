@@ -9,6 +9,7 @@ interface Row {
   last_contacted_at: string; // yyyy-mm-dd or ""
   last_reply_at: string;
   notes: string;
+  agent_note: string; // agent-detected event (read-only), e.g. coach change
 }
 
 const STATUS_OPTIONS = [
@@ -90,6 +91,7 @@ export function TrackerBoard({
             last_contacted_at: (st.last_contacted_at as string) || "",
             last_reply_at: (st.last_reply_at as string) || "",
             notes: (st.notes as string) || "",
+            agent_note: (st.agent_note as string) || "",
           };
         });
         setRows(merged);
@@ -215,6 +217,11 @@ export function TrackerBoard({
                   />
                 </div>
               </div>
+              {r.agent_note && (
+                <p className="mt-3 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                  {r.agent_note}
+                </p>
+              )}
             </div>
           );
         })}

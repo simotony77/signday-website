@@ -23,6 +23,34 @@ export interface DigestInput {
   quiet_schools?: { school: string; days: number }[];
   // Tokened link to the school tracker, so they can update statuses.
   tracker_link?: string;
+  // Compact per-school status board (only when the parent has used the tracker).
+  tracker_summary?: {
+    school: string;
+    status: string;
+    days_silent: number | null;
+    agent_note?: string | null;
+  }[];
+}
+
+const STATUS_LABEL: Record<string, string> = {
+  not_contacted: "Not contacted",
+  sent: "Awaiting reply",
+  replied: "Replied",
+  visit: "Visit invite",
+  not_pursuing: "Not pursuing",
+};
+
+function statusLine(s: {
+  status: string;
+  days_silent: number | null;
+  agent_note?: string | null;
+}): string {
+  let label = STATUS_LABEL[s.status] || s.status;
+  if (s.status === "sent" && s.days_silent !== null) {
+    label = `Awaiting reply (${s.days_silent}d)`;
+  }
+  if (s.agent_note) label += ` — ${s.agent_note}`;
+  return label;
 }
 
 export interface BuiltDigest {
@@ -44,8 +72,15 @@ function escapeHtml(s: string): string {
 }
 
 export function buildDigest(input: DigestInput): BuiltDigest {
-  const { athlete_name, results, referral_link, camp_note, quiet_schools, tracker_link } =
-    input;
+  const {
+    athlete_name,
+    results,
+    referral_link,
+    camp_note,
+    quiet_schools,
+    tracker_link,
+    tracker_summary,
+  } = input;
 
   const ok = results.filter((r) => !r.error);
   const failed = results.filter((r) => r.error);
@@ -106,6 +141,11 @@ export function buildDigest(input: DigestInput): BuiltDigest {
     t.push(`Schools watched this week:`);
     for (const r of ok) t.push(`  - ${r.school_name}`);
     t.push(`\nI'll keep watching and ping you the moment something opens up.`);
+  }
+
+  if (tracker_summary && tracker_summary.length > 0) {
+    t.push(`\nYour tracker:`);
+    for (const s of tracker_summary) t.push(`  - ${s.school}: ${statusLine(s)}`);
   }
 
   if (quiet_schools && quiet_schools.length > 0) {
@@ -203,6 +243,16 @@ export function buildDigest(input: DigestInput): BuiltDigest {
     h.push(
       `<p style="color:#374151; font-size:14px;">I'll keep watching and ping you the moment something opens up.</p>`
     );
+  }
+
+  if (tracker_summary && tracker_summary.length > 0) {
+    h.push(
+      `<h3 style="margin-top:28px; font-size:15px; border-bottom:1px solid #E5E7EB; padding-bottom:6px;">Your tracker</h3>`
+    );
+    h.push(`<ul style="line-height:1.6; padding-left:20px; color:#374151;">`);
+    for (const s of tracker_summary)
+      h.push(`<li><b>${escapeHtml(s.school)}</b>: ${escapeHtml(statusLine(s))}</li>`);
+    h.push(`</ul>`);
   }
 
   if (quiet_schools && quiet_schools.length > 0) {
