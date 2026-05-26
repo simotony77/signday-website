@@ -19,6 +19,8 @@ export interface DigestInput {
   referral_link?: string;
   // Optional time-sensitive nudge, e.g. "4 weeks until the New England ID Camp."
   camp_note?: string;
+  // Schools the parent marked 'sent' that have gone quiet (no reply logged).
+  quiet_schools?: { school: string; days: number }[];
 }
 
 export interface BuiltDigest {
@@ -40,7 +42,7 @@ function escapeHtml(s: string): string {
 }
 
 export function buildDigest(input: DigestInput): BuiltDigest {
-  const { athlete_name, results, referral_link, camp_note } = input;
+  const { athlete_name, results, referral_link, camp_note, quiet_schools } = input;
 
   const ok = results.filter((r) => !r.error);
   const failed = results.filter((r) => r.error);
@@ -101,6 +103,12 @@ export function buildDigest(input: DigestInput): BuiltDigest {
     t.push(`Schools watched this week:`);
     for (const r of ok) t.push(`  - ${r.school_name}`);
     t.push(`\nI'll keep watching and ping you the moment something opens up.`);
+  }
+
+  if (quiet_schools && quiet_schools.length > 0) {
+    t.push(`\nSchools that have gone quiet (no reply logged yet):`);
+    for (const q of quiet_schools)
+      t.push(`  - ${q.school}: ${q.days} days since your last email. Worth a re-engagement.`);
   }
 
   if (failed.length > 0) {
@@ -187,6 +195,18 @@ export function buildDigest(input: DigestInput): BuiltDigest {
     h.push(
       `<p style="color:#374151; font-size:14px;">I'll keep watching and ping you the moment something opens up.</p>`
     );
+  }
+
+  if (quiet_schools && quiet_schools.length > 0) {
+    h.push(
+      `<h3 style="margin-top:28px; font-size:15px; border-bottom:1px solid #E5E7EB; padding-bottom:6px;">Gone quiet (no reply logged yet)</h3>`
+    );
+    h.push(`<ul style="line-height:1.6; padding-left:20px; color:#374151;">`);
+    for (const q of quiet_schools)
+      h.push(
+        `<li>${escapeHtml(q.school)}: ${q.days} days since your last email. Worth a re-engagement.</li>`
+      );
+    h.push(`</ul>`);
   }
 
   if (failed.length > 0) {

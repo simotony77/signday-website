@@ -107,6 +107,21 @@ test("chooseOutreachTrigger: a new assistant coach is a valid reason", () => {
   assert.match(t || "", /Sam Rivera/);
 });
 
+test("chooseOutreachTrigger: silence re-engagement is the lowest-priority fallback", () => {
+  // With nothing else, a silence note becomes the trigger.
+  assert.match(
+    chooseOutreachTrigger(emptyDiff(), [], "It has been 25 days, re-engage.") || "",
+    /re-engage/i
+  );
+  // But a real win still outranks silence.
+  assert.match(
+    chooseOutreachTrigger(emptyDiff(), ["Won 2-0 vs Rival."], "re-engage") || "",
+    /Won 2-0/
+  );
+  // No silence + nothing else = no draft.
+  assert.equal(chooseOutreachTrigger(emptyDiff(), [], null), null);
+});
+
 test("chooseOutreachTrigger: player add/remove NEVER triggers a draft", () => {
   const diff = emptyDiff({
     players_added: [{ name: "New Kid", position: "FW", class_year: "Fr." }],

@@ -70,13 +70,55 @@ function headCoachEmailOf(school: SchoolData): string | null {
   return email && EMAIL_RE.test(email) ? email : null;
 }
 
-// Pick at most ONE genuine reason to email a coach this week. Real outreach
-// moments only: a recent win, or a coaching change. Player adds/removes are
-// deliberately NOT outreach reasons (they're noisy, unreliable from scraping,
-// and a weird thing to cite to a coach), so they never spawn a draft.
+// Manual outreach status the parent maintains on the tracker page.
+interface OutreachStatusRow {
+  school_name: string;
+  status: string;
+  last_contacted_at: string | null;
+}
+
+function normSchoolKey(s: string): string {
+  return s.trim().toLowerCase();
+}
+
+// Days since the athlete last emailed this coach, but ONLY while awaiting a
+// reply (status 'sent'). Returns null otherwise (replied / not contacted /
+// dropped / no date), so silence never fires once a coach has engaged.
+function silentDays(row?: OutreachStatusRow): number | null {
+  if (!row || row.status !== "sent" || !row.last_contacted_at) return null;
+  const d = new Date(`${row.last_contacted_at}T00:00:00`);
+  if (isNaN(d.getTime())) return null;
+  return Math.floor((Date.now() - d.getTime()) / 86_400_000);
+}
+
+async function getOutreachStatuses(
+  supabase: SupabaseClient,
+  email: string
+): Promise<Map<string, OutreachStatusRow>> {
+  const map = new Map<string, OutreachStatusRow>();
+  try {
+    const { data } = await supabase
+      .from("outreach_status")
+      .select("school_name, status, last_contacted_at")
+      .eq("email", email);
+    for (const r of (data as OutreachStatusRow[]) || []) {
+      map.set(normSchoolKey(r.school_name), r);
+    }
+  } catch {
+    /* tracker is best-effort; never break the run */
+  }
+  return map;
+}
+
+// Pick at most ONE genuine reason to email a coach this week, by priority:
+// a recent win, a head coach change, a new coach, then (lowest) a re-engagement
+// nudge when a sent email has gone unanswered. Player adds/removes are
+// deliberately NOT outreach reasons (noisy, unreliable, weird to cite), so they
+// never spawn a draft.
 export function chooseOutreachTrigger(
   rosterTriggersDiff: ReturnType<typeof diffSchools>,
-  scheduleTriggers: string[]
+  scheduleTriggers: string[],
+  silenceTrigger?: string | null
 ): string | null {
   if (scheduleTriggers.length > 0) return scheduleTriggers[0]; // recent win
   if (rosterTriggersDiff.head_coach_changed) {
@@ -87,6 +129,7 @@ export function chooseOutreachTrigger(
   if (newCoach) {
     return `New coach on staff: ${newCoach.name} (${newCoach.title}). A natural reason to reach out.`;
   }
+  if (silenceTrigger) return silenceTrigger;
   return null;
 }
 
@@ -183,6 +226,10 @@ export async function runForCustomer(
       skipped_reason: "no schools with roster URLs",
     };
   }
+
+  // Manual outreach statuses (tracker page) drive silence detection +
+  // re-engagement drafts. Best-effort; absent for customers who never set them.
+  const statusMap = await getOutreachStatuses(supabase, customer.email);
 
   const results: SchoolResult[] = [];
 
@@ -282,10 +329,19 @@ export async function runForCustomer(
         ...scheduleDiff.triggers,
       ].slice(0, 8);
 
+      // Re-engagement: if the parent logged a sent email 21+ days ago with no
+      // reply, that silence becomes a (lowest-priority) reason to nudge.
+      const sd = silentDays(statusMap.get(normSchoolKey(school.name)));
+      const silenceTrigger =
+        sd !== null && sd >= 21
+          ? `It has been ${sd} days since the last logged email to this coach with no reply. A short, low-pressure re-engagement (a recent result, an updated reel, or an upcoming camp) is a natural nudge.`
+          : null;
+
       // At most ONE draft per school per week, on a real outreach moment only.
       const outreachTrigger = chooseOutreachTrigger(
         rosterDiff,
-        scheduleDiff.triggers
+        scheduleDiff.triggers,
+        silenceTrigger
       );
 
       const drafts: SchoolResult["drafts"] = [];
@@ -348,11 +404,20 @@ export async function runForCustomer(
   const referralLink = customer.referral_code
     ? `${origin}/?ref=${encodeURIComponent(customer.referral_code)}`
     : undefined;
+
+  // Schools the parent marked 'sent' that have gone quiet (no reply logged).
+  const quietSchools: { school: string; days: number }[] = [];
+  for (const school of schools) {
+    const d = silentDays(statusMap.get(normSchoolKey(school.name)));
+    if (d !== null && d >= 14) quietSchools.push({ school: school.name, days: d });
+  }
+
   const digest = buildDigest({
     athlete_name: athleteName,
     results,
     referral_link: referralLink,
     camp_note: campCountdownNote(athlete),
+    quiet_schools: quietSchools,
   });
 
   // Circuit breaker: an abnormal number of drafts in one digest signals a
