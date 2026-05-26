@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { BuyButton } from "@/components/BuyButton";
+import { gmailComposeUrl } from "@/lib/gmailCompose";
 
 const SCHOOLS = [
   { slug: "williams", name: "Williams College" },
@@ -584,29 +585,21 @@ export function DemoForm() {
               <div className="p-6 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
                 {result.draft.body}
               </div>
-              <div className="bg-gray-50 border-t border-gray-100 px-6 py-3 flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  disabled
-                  className="bg-brand-600 text-white text-sm font-semibold px-4 py-2 rounded-lg opacity-70 cursor-not-allowed"
-                  title="Available to subscribers"
+              <div className="bg-gray-50 border-t border-gray-100 px-6 py-3">
+                <a
+                  href={gmailComposeUrl({
+                    subject: result.draft.subject,
+                    body: result.draft.body,
+                  })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
                 >
-                  Edit &amp; send via Gmail
-                </button>
-                <button
-                  type="button"
-                  disabled
-                  className="bg-white border border-gray-200 text-sm text-gray-700 px-4 py-2 rounded-lg opacity-70 cursor-not-allowed"
-                >
-                  Re-draft
-                </button>
-                <button
-                  type="button"
-                  disabled
-                  className="bg-white border border-gray-200 text-sm text-gray-700 px-4 py-2 rounded-lg opacity-70 cursor-not-allowed"
-                >
-                  Skip this week
-                </button>
+                  Open in Gmail to edit &amp; send
+                </a>
+                <p className="text-xs text-gray-500 mt-2">
+                  Opens Gmail with this draft ready. Add the coach&apos;s address, tweak it in your athlete&apos;s voice, and send. This is exactly what each Sunday digest gives you.
+                </p>
               </div>
             </div>
           </div>

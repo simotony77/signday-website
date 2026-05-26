@@ -48,6 +48,10 @@ export interface AthleteProfile {
   reel_url?: string;
   email: string;
   next_us_window?: string;
+  // Optional: the athlete's next ID camp / showcase, for a time-sensitive
+  // countdown nudge in the weekly digest.
+  next_camp_name?: string;
+  next_camp_date?: string; // ISO date string (yyyy-mm-dd)
 }
 
 export interface PlayerChange {

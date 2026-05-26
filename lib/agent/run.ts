@@ -334,6 +334,7 @@ export async function runForCustomer(
     athlete_name: athleteName,
     results,
     referral_link: referralLink,
+    camp_note: campCountdownNote(athlete),
   });
 
   // Circuit breaker: an abnormal number of drafts in one digest signals a
@@ -429,5 +430,22 @@ export function toAthleteProfile(raw: Record<string, unknown>): AthleteProfile {
     reel_url: raw.reel_url ? String(raw.reel_url) : undefined,
     video_url: raw.reel_url ? String(raw.reel_url) : undefined,
     email: String(raw.email ?? ""),
+    next_camp_name: raw.next_camp_name ? String(raw.next_camp_name) : undefined,
+    next_camp_date: raw.next_camp_date ? String(raw.next_camp_date) : undefined,
   };
+}
+
+// A short, time-sensitive countdown to the athlete's next ID camp / showcase,
+// for the top of the weekly digest. Returns undefined if there's no upcoming
+// camp date (or it's already passed).
+export function campCountdownNote(athlete: AthleteProfile): string | undefined {
+  if (!athlete.next_camp_date) return undefined;
+  const when = new Date(athlete.next_camp_date);
+  if (isNaN(when.getTime())) return undefined;
+  const days = Math.ceil((when.getTime() - Date.now()) / 86_400_000);
+  if (days < 0) return undefined; // camp already happened
+  const name = athlete.next_camp_name?.trim() || "your next ID camp";
+  if (days === 0) return `${name} is today. Good week to make sure outreach is in.`;
+  if (days < 14) return `${days} day${days === 1 ? "" : "s"} until ${name}.`;
+  return `${Math.round(days / 7)} weeks until ${name}.`;
 }

@@ -83,6 +83,8 @@ export function OnboardingForm({
   const [testScore, setTestScore] = useState("");
   const [reelUrl, setReelUrl] = useState("");
   const [athleteEmail, setAthleteEmail] = useState("");
+  const [campName, setCampName] = useState("");
+  const [campDate, setCampDate] = useState("");
   const [notes, setNotes] = useState("");
 
   // Schools — start with 12 empty rows
@@ -157,6 +159,8 @@ export function OnboardingForm({
         if (typeof a.test_score === "number") setTestScore(String(a.test_score));
         if (typeof a.reel_url === "string") setReelUrl(a.reel_url || "");
         if (typeof a.email === "string") setAthleteEmail(a.email);
+        if (typeof a.next_camp_name === "string") setCampName(a.next_camp_name);
+        if (typeof a.next_camp_date === "string") setCampDate(a.next_camp_date);
 
         const savedSchools = Array.isArray(sub.schools) ? sub.schools : [];
         if (savedSchools.length > 0) {
@@ -304,6 +308,8 @@ export function OnboardingForm({
             test_score: testScore.trim() ? parseInt(testScore, 10) : null,
             reel_url: reelUrl.trim() || null,
             email: athleteEmail.trim().toLowerCase(),
+            next_camp_name: campName.trim() || null,
+            next_camp_date: campDate.trim() || null,
           },
           schools: filledSchools,
           notes: notes.trim() || null,
@@ -485,6 +491,25 @@ export function OnboardingForm({
         />
         <p className="text-xs text-gray-500 mt-2">
           This is the email coaches see on outreach. Should be your athlete&apos;s own Gmail. Not yours.
+        </p>
+
+        <div className="mt-4 grid sm:grid-cols-2 gap-4">
+          <input
+            type="text"
+            value={campName}
+            onChange={(e) => setCampName(e.target.value)}
+            placeholder="Next ID camp / showcase (optional)"
+            className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
+          />
+          <input
+            type="date"
+            value={campDate}
+            onChange={(e) => setCampDate(e.target.value)}
+            className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900"
+          />
+        </div>
+        <p className="text-xs text-gray-500 mt-2">
+          Optional. Add an upcoming camp or showcase date and your weekly digest counts down to it, so outreach lands in time.
         </p>
       </section>
 

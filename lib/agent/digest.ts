@@ -1,4 +1,5 @@
 import type { Draft } from "./types";
+import { gmailComposeUrl } from "../gmailCompose";
 
 // Result of running the agent against one school for one customer this week.
 export interface SchoolResult {
@@ -16,6 +17,8 @@ export interface DigestInput {
   athlete_name: string;
   results: SchoolResult[];
   referral_link?: string;
+  // Optional time-sensitive nudge, e.g. "4 weeks until the New England ID Camp."
+  camp_note?: string;
 }
 
 export interface BuiltDigest {
@@ -37,7 +40,7 @@ function escapeHtml(s: string): string {
 }
 
 export function buildDigest(input: DigestInput): BuiltDigest {
-  const { athlete_name, results, referral_link } = input;
+  const { athlete_name, results, referral_link, camp_note } = input;
 
   const ok = results.filter((r) => !r.error);
   const failed = results.filter((r) => r.error);
@@ -59,6 +62,7 @@ export function buildDigest(input: DigestInput): BuiltDigest {
   // ---- Text body ----
   const t: string[] = [];
   t.push("Hi,\n");
+  if (camp_note) t.push(`${camp_note}\n`);
   if (allBaseline) {
     t.push(
       `Setup complete. SignDay is now monitoring ${schoolsTracked} program${schoolsTracked === 1 ? "" : "s"} for ${athlete_name} every week:\n`
@@ -83,6 +87,7 @@ export function buildDigest(input: DigestInput): BuiltDigest {
         t.push(`  Subject: ${d.subject}`);
         const bodyLines = d.body.split("\n");
         for (const line of bodyLines) t.push(`    ${line}`);
+        t.push(`    Open in Gmail: ${gmailComposeUrl({ subject: d.subject, body: d.body })}`);
       });
       t.push("");
     }
@@ -118,6 +123,11 @@ export function buildDigest(input: DigestInput): BuiltDigest {
   h.push(
     `<div style="color:#6B7280; font-size: 14px; margin-bottom: 24px;">${escapeHtml(athlete_name)} &middot; ${schoolsTracked} school${schoolsTracked === 1 ? "" : "s"} watched</div>`
   );
+  if (camp_note) {
+    h.push(
+      `<div style="background:#FEF3C7; border:1px solid #FDE68A; color:#92400E; font-size:14px; padding:10px 14px; border-radius:10px; margin-bottom:20px;">${escapeHtml(camp_note)}</div>`
+    );
+  }
 
   if (allBaseline) {
     h.push(
@@ -157,6 +167,9 @@ export function buildDigest(input: DigestInput): BuiltDigest {
         );
         h.push(
           `<pre style="font-family: ui-monospace, Menlo, monospace; font-size: 13px; white-space: pre-wrap; margin-top: 12px; padding: 12px; background:#fff; border:1px solid #E5E7EB; border-radius: 6px;">${escapeHtml(d.body)}</pre>`
+        );
+        h.push(
+          `<a href="${gmailComposeUrl({ subject: d.subject, body: d.body }).replace(/&/g, "&amp;")}" style="display:inline-block; margin-top:10px; background:#1A56DB; color:#fff; text-decoration:none; font-weight:600; font-size:13px; padding:8px 14px; border-radius:8px;">Open in Gmail to edit &amp; send</a>`
         );
         h.push(`</div>`);
       }
