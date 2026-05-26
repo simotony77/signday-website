@@ -132,7 +132,7 @@ export default function Home() {
                   <div className="font-semibold text-gray-900 mb-2">3 drafts waiting for your approval</div>
                   <ul className="space-y-1.5 text-gray-700 leading-relaxed">
                     <li>• Williams: congrats-on-win follow-up</li>
-                    <li>• Tufts: position-transition interest</li>
+                    <li>• Amherst: new head coach introduction</li>
                     <li>• Carleton: 21-day re-engagement</li>
                   </ul>
                 </div>
@@ -161,19 +161,13 @@ export default function Home() {
               <div className="p-6 text-sm text-gray-700 leading-relaxed space-y-3">
                 <p>Hi Coach,</p>
                 <p>Congrats on Saturday&apos;s 4-1 win against Wesleyan. Saw the second-half stretch where your midfield locked it down at 3-1. Composed under pressure.</p>
-                <p>I&apos;m Maya Chen, a 2027 central midfielder with a 3.8 GPA and 1380 SAT, playing club in the ECNL. I emailed in March about Williams and your reply mentioned the midfield transition coming with your senior graduating spring 2027. That stayed with me. I&apos;ve been working specifically on tempo control and switching the field, areas your team&apos;s style leans into.</p>
+                <p>I&apos;m Maya Chen, a 2027 central midfielder with a 3.8 GPA and 1380 SAT, playing club in the ECNL. I reached out back in March, and I know your senior central-mid is graduating, so the midfield is one to watch for next cycle. I&apos;ve been working specifically on tempo control and switching the field.</p>
                 <p>Updated reel and academic transcript here: [link]. I&apos;ll be at the New England ID Camp June 14–16 and could come up to campus if your schedule allows. Otherwise happy to Zoom whenever works.</p>
                 <p>Best,<br />Maya</p>
               </div>
-              <div className="bg-gray-50 border-t border-gray-100 px-6 py-3 flex flex-wrap gap-2">
+              <div className="bg-gray-50 border-t border-gray-100 px-6 py-3">
                 <button className="bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2 rounded-lg">
-                  Edit &amp; send via Gmail
-                </button>
-                <button className="bg-white border border-gray-200 hover:border-gray-300 text-sm text-gray-700 px-4 py-2 rounded-lg">
-                  Re-draft
-                </button>
-                <button className="bg-white border border-gray-200 hover:border-gray-300 text-sm text-gray-700 px-4 py-2 rounded-lg">
-                  Skip this week
+                  Open in Gmail to edit &amp; send
                 </button>
               </div>
             </div>
@@ -207,7 +201,7 @@ export default function Home() {
                     <div className="text-xs text-gray-500">Awaiting response</div>
                   </div>
                   <span className="text-xs font-semibold px-2 py-1 rounded-full bg-blue-100 text-blue-700 whitespace-nowrap">Waiting 4d</span>
-                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Hold until Friday</div>
+                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Awaiting reply</div>
                 </div>
                 <div className="px-6 py-3 flex items-center gap-4">
                   <div className="flex-1 min-w-0">
@@ -231,7 +225,7 @@ export default function Home() {
                     <div className="text-xs text-gray-500">Awaiting response</div>
                   </div>
                   <span className="text-xs font-semibold px-2 py-1 rounded-full bg-blue-100 text-blue-700 whitespace-nowrap">Waiting 8d</span>
-                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Auto follow-up Tuesday</div>
+                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Re-engagement draft ready</div>
                 </div>
                 <div className="px-6 py-3 flex items-center gap-4">
                   <div className="flex-1 min-w-0">
@@ -255,14 +249,14 @@ export default function Home() {
                     <div className="text-xs text-gray-500">First contact pending</div>
                   </div>
                   <span className="text-xs font-semibold px-2 py-1 rounded-full bg-gray-100 text-gray-700 whitespace-nowrap">Not yet contacted</span>
-                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">First-touch draft ready</div>
+                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Not contacted yet</div>
                 </div>
               </div>
             </div>
           </div>
 
           <p className="text-center text-xs text-gray-400 mt-10 max-w-xl mx-auto">
-            Previews of the experience. Available now. Onboarding takes 3 minutes; your first digest arrives this Sunday.
+            Previews of the actual weekly email and your tracker. You approve every draft and send it yourself, and the tracker is yours to keep current. Onboarding takes 3 minutes; your first digest arrives this Sunday.
           </p>
         </div>
       </section>
