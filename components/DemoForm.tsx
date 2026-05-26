@@ -73,6 +73,7 @@ interface DraftResult {
   body: string;
   coach: string;
   school_name: string;
+  draft_sig?: string | null;
 }
 
 interface ApiResponse {
@@ -226,6 +227,7 @@ export function DemoForm() {
           school_name: result.draft.school_name,
           subject: result.draft.subject,
           body: result.draft.body,
+          draft_sig: result.draft.draft_sig,
           trigger: result.trigger,
           source: getSource(),
         }),

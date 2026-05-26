@@ -5,6 +5,7 @@ import { scrapeSchool, scrapeSchedule } from "@/lib/agent/scrape";
 import { generateDraft } from "@/lib/agent/draft";
 import { rateLimit } from "@/lib/rateLimit";
 import { logDemoRun } from "@/lib/demoLog";
+import { signDemoDraft } from "@/lib/demoSign";
 import type {
   AthleteProfile,
   SchoolData,
@@ -233,6 +234,7 @@ export async function POST(req: Request) {
       body: draft.body,
       coach: coachLabel,
       school_name: school.team,
+      draft_sig: signDemoDraft(draft.subject, draft.body, school.team),
     },
     resolved: { school_name: schoolName, roster_url: found.url },
   });

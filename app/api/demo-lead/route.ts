@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { rateLimit } from "@/lib/rateLimit";
 import { saveDemoLead } from "@/lib/demoLog";
+import { demoSigningEnabled, verifyDemoDraft } from "@/lib/demoSign";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -12,6 +13,7 @@ interface LeadRequest {
   school_name?: string;
   subject: string;
   body: string;
+  draft_sig?: string;
   trigger?: string;
   source?: string;
 }
@@ -78,7 +80,7 @@ function buildLeadEmail(
 
 export async function POST(req: Request) {
   // Tighter than the demo run itself: this sends an email, so blunt abuse hard.
-  const rl = await rateLimit(req, "demo-lead", 8, 3600);
+  const rl = await rateLimit(req, "demo-lead", 5, 3600);
   if (!rl.allowed) {
     return NextResponse.json(
       { error: "Too many requests. Give it a few minutes." },
@@ -103,6 +105,19 @@ export async function POST(req: Request) {
   // Cap sizes so a crafted payload can't turn this into a spam relay.
   if (body.subject.length > 300 || body.body.length > 6000) {
     return NextResponse.json({ error: "Draft too long." }, { status: 400 });
+  }
+
+  // Anti-relay: only email content SignDay actually generated. Each demo draft
+  // is HMAC-signed server-side; without a valid signature we refuse to send, so
+  // this endpoint can't be used to push arbitrary content from our domain.
+  if (
+    demoSigningEnabled() &&
+    !verifyDemoDraft(body.subject, body.body, body.school_name || "", body.draft_sig || "")
+  ) {
+    return NextResponse.json(
+      { error: "This draft couldn't be verified. Re-run the demo and try again." },
+      { status: 400 }
+    );
   }
 
   // Save the warm lead first (best-effort), then send the email.

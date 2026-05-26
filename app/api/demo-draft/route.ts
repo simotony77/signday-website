@@ -4,6 +4,7 @@ import { SCHOOL_SCRAPES, type SchoolData } from "@/lib/schoolScrapes";
 import { SCHOOL_SCHEDULES } from "@/lib/schoolSchedules";
 import { rateLimit } from "@/lib/rateLimit";
 import { logDemoRun } from "@/lib/demoLog";
+import { signDemoDraft } from "@/lib/demoSign";
 import type { ScheduleData, GameResult } from "@/lib/agent/types";
 
 export const runtime = "nodejs";
@@ -295,6 +296,7 @@ export async function POST(req: Request) {
         body: draft.body,
         coach: coachLabel,
         school_name: school.team,
+        draft_sig: signDemoDraft(draft.subject, draft.body, school.team),
       },
     });
   } catch (err) {
