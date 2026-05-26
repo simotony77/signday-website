@@ -179,7 +179,7 @@ These Terms and any dispute arising out of or related to them or the Service are
 ## 14. Dispute Resolution — Arbitration and Class Action Waiver
 
 ### 14.1 Informal resolution
-Before filing any arbitration demand, you agree to first contact us at legal@signdayapp.com and attempt to resolve the dispute informally for at least 60 days.
+Before filing any arbitration demand, you agree to first contact us at admin@signdayapp.com and attempt to resolve the dispute informally for at least 60 days.
 
 ### 14.2 Binding arbitration
 Any dispute not resolved informally will be resolved by **binding individual arbitration** administered by the American Arbitration Association (AAA) under its Consumer Arbitration Rules, in Bronx County, New York, or another mutually agreeable location. Judgment on the award may be entered in any court of competent jurisdiction.
@@ -229,7 +229,7 @@ We may add, modify, or remove features at any time, and we may update these Term
 
 **Future Think LLC**
 788 North Oak Drive, Bronx, NY 10467
-Email: legal@signdayapp.com
+Email: admin@signdayapp.com
 
 ---
 
