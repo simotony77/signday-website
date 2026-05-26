@@ -6,6 +6,7 @@ import { diffSchools, diffSchedule } from "./diff";
 import { generateDraft } from "./draft";
 import { researchSchool } from "./research";
 import { MIN_ROSTER } from "./scrape";
+import { mintAccessToken } from "../accessToken";
 import { buildDigest, type SchoolResult } from "./digest";
 import type {
   AthleteProfile,
@@ -405,6 +406,13 @@ export async function runForCustomer(
     ? `${origin}/?ref=${encodeURIComponent(customer.referral_code)}`
     : undefined;
 
+  // Tokened link to the school tracker (30-day token). Omitted if no secret
+  // is configured in this environment.
+  const trackerToken = mintAccessToken(customer.email, 30 * 24 * 3600);
+  const trackerLink = trackerToken
+    ? `${origin}/tracker?email=${encodeURIComponent(customer.email)}&token=${encodeURIComponent(trackerToken)}`
+    : undefined;
+
   // Schools the parent marked 'sent' that have gone quiet (no reply logged).
   const quietSchools: { school: string; days: number }[] = [];
   for (const school of schools) {
@@ -418,6 +426,7 @@ export async function runForCustomer(
     referral_link: referralLink,
     camp_note: campCountdownNote(athlete),
     quiet_schools: quietSchools,
+    tracker_link: trackerLink,
   });
 
   // Circuit breaker: an abnormal number of drafts in one digest signals a

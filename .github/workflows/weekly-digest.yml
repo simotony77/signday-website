@@ -41,6 +41,11 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           DIGEST_FROM_EMAIL: ${{ secrets.DIGEST_FROM_EMAIL }}
           CLAUDE_MODEL: ${{ secrets.CLAUDE_MODEL }}
+          # Lets the digest mint a tokened link to the school tracker. If unset,
+          # the digest simply omits the tracker link (degrades gracefully).
+          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+          # Base URL used to build tracker/referral links in the digest.
+          NEXT_PUBLIC_SITE_ORIGIN: ${{ secrets.NEXT_PUBLIC_SITE_ORIGIN }}
           # Optional: enables JS-rendering fallback for bot-protected
           # athletics sites (Sidearm/PrestoSports). Unset = plain fetch only.
           FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}

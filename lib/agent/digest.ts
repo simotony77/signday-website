@@ -21,6 +21,8 @@ export interface DigestInput {
   camp_note?: string;
   // Schools the parent marked 'sent' that have gone quiet (no reply logged).
   quiet_schools?: { school: string; days: number }[];
+  // Tokened link to the school tracker, so they can update statuses.
+  tracker_link?: string;
 }
 
 export interface BuiltDigest {
@@ -42,7 +44,8 @@ function escapeHtml(s: string): string {
 }
 
 export function buildDigest(input: DigestInput): BuiltDigest {
-  const { athlete_name, results, referral_link, camp_note, quiet_schools } = input;
+  const { athlete_name, results, referral_link, camp_note, quiet_schools, tracker_link } =
+    input;
 
   const ok = results.filter((r) => !r.error);
   const failed = results.filter((r) => r.error);
@@ -114,6 +117,11 @@ export function buildDigest(input: DigestInput): BuiltDigest {
   if (failed.length > 0) {
     t.push(`\nHeads up, I couldn't read these pages this week (I'll retry next run):`);
     for (const r of failed) t.push(`  - ${r.school_name}: ${r.error}`);
+  }
+  if (tracker_link) {
+    t.push(
+      `\nUpdate your school tracker (mark replies, visits, and who's gone quiet so next week's digest is sharper): ${tracker_link}`
+    );
   }
   if (referral_link) {
     t.push(
@@ -219,6 +227,11 @@ export function buildDigest(input: DigestInput): BuiltDigest {
     h.push(`</ul>`);
   }
 
+  if (tracker_link) {
+    h.push(
+      `<p style="color:#374151; font-size: 13px; margin-top: 24px;"><a href="${escapeHtml(tracker_link)}" style="color:#1A56DB;">Update your school tracker</a> — mark replies, visits, and who's gone quiet so next week's digest is sharper.</p>`
+    );
+  }
   if (referral_link) {
     h.push(
       `<p style="color:#374151; font-size: 13px; margin-top: 24px; padding-top:16px; border-top:1px solid #E5E7EB;">Know another family drowning in this? <a href="${escapeHtml(referral_link)}" style="color:#1A56DB;">Forward them your link</a>. When they subscribe, you both get your next month free.</p>`

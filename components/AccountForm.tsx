@@ -10,7 +10,7 @@ export function AccountForm({
   token?: string;
 }) {
   const [email, setEmail] = useState(initialEmail);
-  const [loading, setLoading] = useState<"billing" | "setup" | "link" | null>(null);
+  const [loading, setLoading] = useState<"billing" | "setup" | "tracker" | "link" | null>(null);
   const [error, setError] = useState("");
   const [linkSent, setLinkSent] = useState(false);
 
@@ -79,6 +79,14 @@ export function AccountForm({
     window.location.href = url;
   }
 
+  function openTracker() {
+    setLoading("tracker");
+    const url = `/tracker?email=${encodeURIComponent(
+      email.trim().toLowerCase()
+    )}&token=${encodeURIComponent(token)}`;
+    window.location.href = url;
+  }
+
   // ---- Token present: show the actions ----
   if (hasToken) {
     return (
@@ -103,6 +111,14 @@ export function AccountForm({
           >
             {loading === "setup" ? "Opening..." : "Update athlete + schools"}
           </button>
+          <button
+            type="button"
+            onClick={openTracker}
+            disabled={loading !== null}
+            className="bg-white border-2 border-brand-600 text-brand-600 hover:bg-brand-50 disabled:opacity-60 font-semibold px-4 py-3 rounded-xl transition-colors text-sm sm:col-span-2"
+          >
+            {loading === "tracker" ? "Opening..." : "Open school tracker"}
+          </button>
         </div>
         {error && <p className="text-sm text-red-600">{error}</p>}
         <div className="text-xs text-gray-500 space-y-2 pt-2">
@@ -111,6 +127,9 @@ export function AccountForm({
           </p>
           <p>
             <span className="font-semibold text-gray-700">Update athlete + schools</span> opens your setup prefilled. Changes apply with the next Sunday digest.
+          </p>
+          <p>
+            <span className="font-semibold text-gray-700">School tracker</span> is where you mark each coach conversation (sent, replied, visit) so the digest can flag schools that have gone quiet.
           </p>
         </div>
       </div>
