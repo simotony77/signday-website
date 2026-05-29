@@ -38,6 +38,13 @@ function upcomingSundayLabel(): string {
   });
 }
 
+const DIVISIONS = [
+  { value: "D1", label: "D1" },
+  { value: "D2", label: "D2" },
+  { value: "D3", label: "D3" },
+  { value: "NAIA", label: "NAIA" },
+];
+
 const POSITIONS = [
   { value: "GK", label: "Goalkeeper" },
   { value: "D", label: "Defender" },
@@ -90,6 +97,7 @@ export function DemoForm() {
   const [school, setSchool] = useState("williams");
   const [customSchool, setCustomSchool] = useState("");
   const [gender, setGender] = useState<"girls" | "boys">("girls");
+  const [division, setDivision] = useState("D3");
 
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
@@ -159,6 +167,7 @@ export function DemoForm() {
           position,
           club: club.trim(),
           gender,
+          division,
         })
       );
     } catch {
@@ -177,6 +186,7 @@ export function DemoForm() {
               club: club.trim(),
               school_name: customSchool.trim(),
               gender,
+              division,
               source: getSource(),
             }),
           })
@@ -189,6 +199,7 @@ export function DemoForm() {
               position,
               club: club.trim(),
               school_slug: school,
+              division,
               source: getSource(),
             }),
           });
@@ -349,6 +360,26 @@ export function DemoForm() {
               className="w-full rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
             />
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Target division
+          </label>
+          <select
+            value={division}
+            onChange={(e) => setDivision(e.target.value)}
+            className="w-full rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
+          >
+            {DIVISIONS.map((d) => (
+              <option key={d.value} value={d.value}>
+                {d.label}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-gray-500 mt-2">
+            The draft tunes to the division: academic-fit framing for D3, more athletic-profile-forward for D1 and D2.
+          </p>
         </div>
 
         <div>

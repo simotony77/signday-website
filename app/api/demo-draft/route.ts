@@ -5,6 +5,7 @@ import { SCHOOL_SCHEDULES } from "@/lib/schoolSchedules";
 import { rateLimit } from "@/lib/rateLimit";
 import { logDemoRun } from "@/lib/demoLog";
 import { signDemoDraft } from "@/lib/demoSign";
+import { divisionFraming } from "@/lib/agent/draft";
 import type { ScheduleData, GameResult } from "@/lib/agent/types";
 
 export const runtime = "nodejs";
@@ -57,6 +58,7 @@ interface DemoRequest {
   position: string;
   club: string;
   school_slug: string;
+  division?: string;
   source?: string;
 }
 
@@ -165,7 +167,7 @@ ${JSON.stringify(school, null, 2)}
 ATHLETE PROFILE:
 \`\`\`json
 ${JSON.stringify(athleteProfile, null, 2)}
-\`\`\`${scheduleBlock}
+\`\`\`${scheduleBlock}${divisionFraming(athlete.division)}
 
 TRIGGER (the specific reason this email is being sent now):
 ${trigger}

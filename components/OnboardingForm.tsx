@@ -125,6 +125,7 @@ export function OnboardingForm({
         // left selected for a boys athlete (mirrors the gender onChange).
         setCurrentLeague(d.gender === "boys" ? "MLS_NEXT" : "ECNL");
       }
+      if (typeof d.division === "string" && d.division) setDivision(d.division);
     } catch {
       /* ignore */
     }

@@ -55,7 +55,7 @@ export type DraftKind = "standard" | "followup" | "first_touch";
 // Tune the draft to the division(s) the athlete is targeting. D1/D2 coaches
 // see high mail volume and want concrete athletic facts; D3 has no athletic
 // scholarships, so the pitch is academic fit + character + position need.
-function divisionFraming(division?: string): string {
+export function divisionFraming(division?: string): string {
   if (!division) return "";
   const d = division.toUpperCase();
   const hasD1 = d.includes("D1");

@@ -24,6 +24,7 @@ interface LiveRequest {
   club?: string;
   school_name?: string;
   gender?: "boys" | "girls";
+  division?: string;
   source?: string;
 }
 
@@ -181,6 +182,7 @@ export async function POST(req: Request) {
     club,
     gpa: null,
     email: "",
+    division: body.division ? String(body.division) : undefined,
   };
 
   let draft;
