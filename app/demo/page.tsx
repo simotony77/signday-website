@@ -5,7 +5,7 @@ import { DemoForm } from "@/components/DemoForm";
 export const metadata = {
   title: "Try the SignDay agent",
   description:
-    "See what the SignDay AI agent would draft for your athlete. Real D3 women's soccer programs, real rosters, real personalized coach emails.",
+    "See what the SignDay AI agent would draft for your athlete. Real college soccer programs, real rosters, real personalized coach emails.",
 };
 
 export default function DemoPage() {

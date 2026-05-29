@@ -22,8 +22,8 @@ const BULLETS = [
 
 const FAQ = [
   {
-    q: "What sports does it cover?",
-    a: "D3 men's and women's soccer, boys and girls. Started with my daughter's world (D3 women's) and expanded to boys. We'll add D2 and D1 once we've nailed it for D3 families.",
+    q: "What sports and divisions does it cover?",
+    a: "Boys' and girls' college soccer, any division: D1, D2, D3, or NAIA. Drafts tune to the division(s) you're targeting (academic-fit framing for D3, more athletic-profile-forward for D1/D2). Started with my daughter's recruiting (D3 women's) and broadened from there.",
   },
   {
     q: "Who actually sends the emails?",
@@ -36,10 +36,6 @@ const FAQ = [
   {
     q: "What happens when my kid commits?",
     a: "Cancel anytime from your Account page (link in the top nav). Enter the email you used at checkout, you'll be sent to Stripe's secure billing portal where one click cancels. No hoops, no retention emails.",
-  },
-  {
-    q: "Why only D3 right now?",
-    a: "That's the world I'm in with my daughter. Class of 2027 keeper, ACT 30, navigating D3 fits right now. We'll add D2 and D1 once we've nailed it for D3 families.",
   },
   {
     q: "Why $99/month?",
@@ -56,14 +52,14 @@ export default function Home() {
       <section className="relative overflow-hidden bg-gradient-to-b from-brand-50 via-white to-white">
         <div className="max-w-4xl mx-auto px-6 pt-16 pb-20 md:pt-24 md:pb-28 text-center">
           <div className="inline-block bg-brand-100 text-brand-700 text-xs font-semibold px-3 py-1 rounded-full mb-6 uppercase tracking-wider">
-            For parents of D3 soccer recruits
+            For parents of college soccer recruits
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight tracking-tight">
             The recruiting work<br />you don&apos;t have time to do.<br />
             <span className="text-brand-600">done for you.</span>
           </h1>
           <p className="text-lg md:text-xl text-gray-600 mt-6 max-w-2xl mx-auto leading-relaxed">
-            An AI assistant for parents of D3 soccer recruits, boys and girls. We monitor your target schools,
+            An AI assistant for parents of college soccer recruits, boys and girls, any division. We monitor your target schools,
             draft outreach to coaches, and chase follow-ups, so you can stop spending Sundays in your athlete&apos;s recruiting spreadsheet.
           </p>
 
@@ -323,10 +319,10 @@ export default function Home() {
         <div className="max-w-3xl mx-auto px-6 text-center">
           <div className="text-4xl mb-4">⚽</div>
           <h2 className="text-2xl md:text-3xl font-bold mb-6">
-            Built by a dad in the middle of his own daughter&apos;s D3 recruiting.
+            Built by a dad in the middle of his own daughter&apos;s college soccer recruiting.
           </h2>
           <blockquote className="text-lg md:text-xl leading-relaxed text-blue-100 italic">
-            &quot;I&apos;m a soccer dad. My daughter is Class of 2027, deep in D3 recruiting right now, and I was drowning in the work. By day I trade at an investment bank, and I&apos;ve been doing a computer science master&apos;s at Georgia Tech, so I built the tool I needed myself. This is it.&quot;
+            &quot;I&apos;m a soccer dad. My daughter is Class of 2027, deep in college soccer recruiting right now, and I was drowning in the work. By day I trade at an investment bank, and I&apos;ve been doing a computer science master&apos;s at Georgia Tech, so I built the tool I needed myself. This is it.&quot;
           </blockquote>
           <p className="text-sm text-blue-200 mt-4">Tony, founder &middot; Future Think LLC</p>
         </div>

@@ -37,11 +37,14 @@ const BOYS_LEAGUES = [
 ];
 
 const DIVISIONS = [
-  { value: "D3", label: "D3 only (best fit for SignDay right now)" },
+  { value: "D1", label: "D1 only" },
+  { value: "D2", label: "D2 only" },
+  { value: "D3", label: "D3 only" },
+  { value: "NAIA", label: "NAIA only" },
+  { value: "D1+D2", label: "D1 and D2" },
   { value: "D3+D2", label: "D3 and D2" },
-  { value: "D3+NAIA", label: "D3 and NAIA" },
   { value: "D3+D1", label: "D3 and D1 (low-major / Ivy)" },
-  { value: "D2+D1", label: "Mostly D2 / D1 (let me know in notes)" },
+  { value: "D3+NAIA", label: "D3 and NAIA" },
   { value: "Other", label: "Other / mixed (explain in notes)" },
 ];
 
@@ -478,7 +481,7 @@ export function OnboardingForm({
         </div>
 
         <p className="text-xs text-gray-500 mt-2">
-          SignDay is built for D3 right now. The agent can still draft for D2 / D1 / NAIA targets, but the prompt tuning (academic-fit framing, no athletic-scholarship language) is most dialed in for D3.
+          Drafts tune to the division(s) you pick: academic-fit framing for D3, more athletic-profile-forward (club, league, position strengths) for D1 and D2, balanced if you&apos;re targeting a mix.
         </p>
 
         <input

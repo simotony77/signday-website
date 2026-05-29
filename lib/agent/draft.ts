@@ -52,6 +52,39 @@ The body should be the full email body INCLUDING the greeting and sign-off, but 
 
 export type DraftKind = "standard" | "followup" | "first_touch";
 
+// Tune the draft to the division(s) the athlete is targeting. D1/D2 coaches
+// see high mail volume and want concrete athletic facts; D3 has no athletic
+// scholarships, so the pitch is academic fit + character + position need.
+function divisionFraming(division?: string): string {
+  if (!division) return "";
+  const d = division.toUpperCase();
+  const hasD1 = d.includes("D1");
+  const hasD2 = d.includes("D2");
+  const hasD3 = d.includes("D3");
+
+  if (hasD1 && (hasD2 || hasD3)) {
+    return `
+DIVISION CONTEXT: Athlete is targeting multiple divisions including D1. Balance the draft: open on one specific recent program fact, lead the middle with the athlete's strongest concrete fact (athletic OR academic), close with a clear ask. Keep tone confident but not boastful. Do NOT speculate about scholarship money or financial aid.
+`;
+  }
+  if (hasD1) {
+    return `
+DIVISION CONTEXT: Athlete is targeting D1 programs. D1 coaches see very high outreach volume and prioritize concrete athletic facts: club level (ECNL, MLS Next, etc.), starting position if known, position-specific strengths, and video. Lead the middle of the email with the athlete's athletic profile; keep the self-introduction tight. Do NOT speculate about athletic scholarship dollars or financial aid — that's the coach's domain.
+`;
+  }
+  if (hasD2) {
+    return `
+DIVISION CONTEXT: Athlete is targeting D2 programs. D2 coaches value both athletic level and academic fit. Lead the middle with concrete athletic facts (club, league, position strengths) and follow with academic profile. Do NOT speculate about athletic scholarship dollars.
+`;
+  }
+  if (hasD3) {
+    return `
+DIVISION CONTEXT: Athlete is targeting D3 programs. D3 offers no athletic scholarships, so recruiting at this level is about academic fit, character, and position need. Emphasize the academic profile (GPA, test score) and the specific program-aware reason for reaching out. Do NOT mention athletic money or athletic scholarships.
+`;
+  }
+  return "";
+}
+
 // Extra framing so a re-engagement reads like a real follow-up (not a cold
 // intro), and a first-touch reads like a confident opener.
 function outreachFraming(kind: DraftKind): string {
@@ -120,7 +153,7 @@ ${schoolJson}
 ATHLETE PROFILE:
 \`\`\`json
 ${athleteJson}
-\`\`\`${genderNote}${scheduleBlock}${researchBlock}${outreachFraming(kind)}
+\`\`\`${genderNote}${scheduleBlock}${researchBlock}${divisionFraming(athlete.division)}${outreachFraming(kind)}
 
 TRIGGER (the specific reason this email is being sent now):
 ${triggerText}
