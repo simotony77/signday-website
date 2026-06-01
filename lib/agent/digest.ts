@@ -131,6 +131,19 @@ export function buildDigest(input: DigestInput): BuiltDigest {
       });
       t.push("");
     }
+    // Show the agent's work on every other tracked school so a quiet week
+    // still reads like "I watched all your schools for you," not silence.
+    const quietWatched = ok.filter((r) => r.triggers.length === 0 && !r.is_baseline);
+    if (quietWatched.length > 0) {
+      t.push("ALSO WATCHED THIS WEEK (no changes detected):");
+      for (const r of quietWatched) {
+        const parts: string[] = [];
+        if (r.roster_size) parts.push(`${r.roster_size} on roster`);
+        if (r.head_coach) parts.push(`HC ${r.head_coach}`);
+        t.push(`  - ${r.school_name}${parts.length ? ` (${parts.join(", ")})` : ""}`);
+      }
+      t.push("");
+    }
     t.push(
       `Reply to this email to approve, tweak, or skip any draft. Once you're happy, send it from ${athlete_name}'s Gmail so it lands as a real personal email.`
     );
@@ -229,6 +242,24 @@ export function buildDigest(input: DigestInput): BuiltDigest {
         );
         h.push(`</div>`);
       }
+    }
+    // Show the agent's work on every other tracked school so a quiet week
+    // still reads like "I watched all your schools for you," not silence.
+    const quietWatched = ok.filter((r) => r.triggers.length === 0 && !r.is_baseline);
+    if (quietWatched.length > 0) {
+      h.push(
+        `<h3 style="margin-top:28px; font-size:15px; border-bottom:1px solid #E5E7EB; padding-bottom:6px; color:#6B7280;">Also watched this week (no changes detected)</h3>`
+      );
+      h.push(`<ul style="line-height:1.7; padding-left:20px; color:#6B7280;">`);
+      for (const r of quietWatched) {
+        const parts: string[] = [];
+        if (r.roster_size) parts.push(`${r.roster_size} on roster`);
+        if (r.head_coach) parts.push(`HC ${escapeHtml(r.head_coach)}`);
+        h.push(
+          `<li>${escapeHtml(r.school_name)}${parts.length ? ` <span style="color:#9CA3AF;">(${parts.join(", ")})</span>` : ""}</li>`
+        );
+      }
+      h.push(`</ul>`);
     }
     h.push(
       `<p style="color:#374151; font-size: 14px; margin-top: 24px;">Reply to approve, tweak, or skip any draft. When you're happy, send it from ${escapeHtml(athlete_name)}'s Gmail so it reads as a real personal email.</p>`

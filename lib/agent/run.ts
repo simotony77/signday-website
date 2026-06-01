@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { Resend } from "resend";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { scrapeSchool, scrapeSchedule } from "./scrape";
-import { diffSchools, diffSchedule } from "./diff";
+import { diffSchools, diffSchedule, canonicalRole } from "./diff";
 import { generateDraft, type DraftKind } from "./draft";
 import { researchSchool } from "./research";
 import { MIN_ROSTER } from "./scrape";
@@ -54,7 +54,8 @@ export interface CustomerRunResult {
 
 function headCoachOf(school: SchoolData): string | null {
   return (
-    school.coaching_staff.find((c) => /head coach/i.test(c.title))?.name ?? null
+    school.coaching_staff.find((c) => canonicalRole(c.title) === "head")
+      ?.name ?? null
   );
 }
 
@@ -66,7 +67,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // lookup; a missing/invalid value safely leaves the "To" blank.
 function headCoachEmailOf(school: SchoolData): string | null {
   const email = school.coaching_staff
-    .find((c) => /head coach/i.test(c.title))
+    .find((c) => canonicalRole(c.title) === "head")
     ?.email?.trim();
   return email && EMAIL_RE.test(email) ? email : null;
 }
@@ -189,11 +190,14 @@ export function isDegradedRoster(
   return false;
 }
 
+// Recipient label for the draft. Uses the title verbatim from the scrape (so
+// we never invent or double-stamp "Women's Soccer Coach" onto a team name that
+// already contains it). Falls back to the program when no head coach was read.
 function coachLabel(school: SchoolData): string {
-  const head = school.coaching_staff.find((c) => /head coach/i.test(c.title));
-  return head
-    ? `${head.name} (${school.team} Head Coach)`
-    : `${school.team} Women's Soccer Coach`;
+  const head = school.coaching_staff.find(
+    (c) => canonicalRole(c.title) === "head"
+  );
+  return head ? `${head.name} (${head.title})` : `${school.team} coaching staff`;
 }
 
 // Normalize a stored snapshot into the combined shape. Older rows stored a

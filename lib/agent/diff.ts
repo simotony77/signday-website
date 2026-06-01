@@ -38,6 +38,25 @@ function normTitle(s: string): string {
   return s.toLowerCase().replace(/[^a-z ]/g, "").replace(/\s+/g, " ").trim();
 }
 
+// Collapse a coach title to its canonical ROLE. Athletics pages render the
+// same person's title many ways across weeks ("Head Coach", "Head Women's
+// Soccer Coach", "Head Coach, Women's Soccer") and a literal-string diff
+// treats them as different people, producing a storm of fake adds/removes.
+// We map all "head" variants to "head", all "assistant" to "assistant", etc.
+export function canonicalRole(title: string): string {
+  const t = title.toLowerCase();
+  if (/\bhead\b/.test(t)) return "head";
+  if (/\bassistant\b|\basst\b/.test(t)) return "assistant";
+  if (/\bassociate\b/.test(t)) return "associate";
+  if (/\bvolunteer\b/.test(t)) return "volunteer";
+  if (/\bgraduate\b|\bgrad assistant\b/.test(t)) return "graduate";
+  if (/\bgoalkeeper\b|\bgk\b/.test(t)) return "goalkeeper";
+  if (/\boperations\b|\bdoo\b/.test(t)) return "operations";
+  if (/\brecruiting\b/.test(t)) return "recruiting";
+  if (/\bdirector\b/.test(t)) return "director";
+  return normTitle(t);
+}
+
 export function diffSchools(before: SchoolData, after: SchoolData): DiffOutput {
   const beforePlayers = indexBy(before.roster, (p) => normName(p.name));
   const afterPlayers = indexBy(after.roster, (p) => normName(p.name));
@@ -66,14 +85,11 @@ export function diffSchools(before: SchoolData, after: SchoolData): DiffOutput {
     }
   }
 
-  const beforeCoaches = indexBy(
-    before.coaching_staff,
-    (c) => `${normName(c.name)}|${normTitle(c.title)}`
-  );
-  const afterCoaches = indexBy(
-    after.coaching_staff,
-    (c) => `${normName(c.name)}|${normTitle(c.title)}`
-  );
+  // Match coaches by NAME only across weeks. Title formatting drifts week to
+  // week ("Head Coach" vs "Head Women's Soccer Coach"); the person doesn't.
+  // Matching on name+title was the cause of the May 28 false add/remove storm.
+  const beforeCoaches = indexBy(before.coaching_staff, (c) => normName(c.name));
+  const afterCoaches = indexBy(after.coaching_staff, (c) => normName(c.name));
 
   const coachesAdded: CoachChange[] = [];
   for (const [key, coach] of afterCoaches) {
@@ -89,11 +105,14 @@ export function diffSchools(before: SchoolData, after: SchoolData): DiffOutput {
     }
   }
 
-  const beforeHead = before.coaching_staff.find((c) =>
-    /head coach/i.test(c.title)
+  // Head coach change = the person occupying the head role this week is a
+  // different name than last week. Identified by canonical role, not by a
+  // literal "head coach" string match (which misses "Head Women's Soccer Coach").
+  const beforeHead = before.coaching_staff.find(
+    (c) => canonicalRole(c.title) === "head"
   );
-  const afterHead = after.coaching_staff.find((c) =>
-    /head coach/i.test(c.title)
+  const afterHead = after.coaching_staff.find(
+    (c) => canonicalRole(c.title) === "head"
   );
   let headCoachChanged: { from: string; to: string } | null = null;
   if (
