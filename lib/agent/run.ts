@@ -495,26 +495,21 @@ export async function runForCustomer(
 
   // Schools the parent marked 'sent' that have gone quiet (no reply logged).
   const quietSchools: { school: string; days: number }[] = [];
-  // Compact per-school board for the digest. Only shown if the parent has
-  // actually engaged the tracker (some non-default signal somewhere).
+  // Per-school board for the digest — always shown, so a parent sees where
+  // every school stands at a glance, even on quiet weeks.
   const trackerSummary: {
     school: string;
     status: string;
     days_silent: number | null;
     agent_note?: string | null;
   }[] = [];
-  let trackerEngaged = false;
   for (const school of schools) {
     const st = statusMap.get(normSchoolKey(school.name));
     const d = silentDays(st);
     if (d !== null && d >= 14) quietSchools.push({ school: school.name, days: d });
-    const status = st?.status || "not_contacted";
-    if (status !== "not_contacted" || st?.last_contacted_at || st?.agent_note) {
-      trackerEngaged = true;
-    }
     trackerSummary.push({
       school: school.name,
-      status,
+      status: st?.status || "not_contacted",
       days_silent: d,
       agent_note: st?.agent_note ?? null,
     });
@@ -527,7 +522,7 @@ export async function runForCustomer(
     camp_note: campCountdownNote(athlete),
     quiet_schools: quietSchools,
     tracker_link: trackerLink,
-    tracker_summary: trackerEngaged ? trackerSummary : undefined,
+    tracker_summary: trackerSummary,
   });
 
   // Circuit breaker: an abnormal number of drafts in one digest signals a

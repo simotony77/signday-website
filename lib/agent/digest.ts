@@ -23,7 +23,7 @@ export interface DigestInput {
   quiet_schools?: { school: string; days: number }[];
   // Tokened link to the school tracker, so they can update statuses.
   tracker_link?: string;
-  // Compact per-school status board (only when the parent has used the tracker).
+  // Per-school status board — one entry per tracked school, always rendered.
   tracker_summary?: {
     school: string;
     status: string;
@@ -32,25 +32,59 @@ export interface DigestInput {
   }[];
 }
 
-const STATUS_LABEL: Record<string, string> = {
-  not_contacted: "Not contacted",
-  sent: "Awaiting reply",
-  replied: "Replied",
-  visit: "Visit invite",
-  not_pursuing: "Not pursuing",
-};
-
-function statusLine(s: {
+interface TrackerEntry {
+  school: string;
   status: string;
   days_silent: number | null;
   agent_note?: string | null;
-}): string {
-  let label = STATUS_LABEL[s.status] || s.status;
-  if (s.status === "sent" && s.days_silent !== null) {
-    label = `Awaiting reply (${s.days_silent}d)`;
+}
+
+function normSchool(s: string): string {
+  return s.trim().toLowerCase();
+}
+
+// Map this week's draft (if any) for a school to a short action label.
+function classifyDraft(trigger: string): string {
+  const t = trigger.toLowerCase();
+  if (/\bwon\b/.test(t)) return "Win follow-up draft ready";
+  if (/head coach changed/.test(t)) return "Coach intro draft ready";
+  if (/new coach on staff/.test(t)) return "New coach draft ready";
+  if (/days since the last logged email/.test(t)) return "Re-engagement draft ready";
+  if (/first contact:/.test(t)) return "First-touch draft ready";
+  return "Draft ready";
+}
+
+// Status badge: short label + email-safe pastel colors.
+function deriveBadge(s: TrackerEntry): { text: string; bg: string; fg: string } {
+  if (s.status === "replied") return { text: "Replied", bg: "#D1FAE5", fg: "#065F46" };
+  if (s.status === "visit") return { text: "Visit invite", bg: "#D1FAE5", fg: "#065F46" };
+  if (s.status === "not_pursuing")
+    return { text: "Not pursuing", bg: "#F3F4F6", fg: "#4B5563" };
+  if (s.status === "sent") {
+    const d = s.days_silent ?? 0;
+    if (d >= 21) return { text: `Silent ${d}d`, bg: "#FEE2E2", fg: "#991B1B" };
+    if (d >= 14) return { text: `Quiet ${d}d`, bg: "#FEF3C7", fg: "#92400E" };
+    return { text: d > 0 ? `Awaiting ${d}d` : "Sent", bg: "#DBEAFE", fg: "#1E40AF" };
   }
-  if (s.agent_note) label += ` — ${s.agent_note}`;
-  return label;
+  // not_contacted (default)
+  if (s.agent_note) return { text: "Coach changed", bg: "#FEF3C7", fg: "#92400E" };
+  return { text: "Not contacted", bg: "#F3F4F6", fg: "#4B5563" };
+}
+
+// Next action: prefer the draft-this-week label; otherwise derive from status.
+function deriveAction(s: TrackerEntry, draftAction?: string | null): string {
+  if (draftAction) return draftAction;
+  if (s.status === "replied") return "Coach is responding";
+  if (s.status === "visit") return "Confirm visit";
+  if (s.status === "not_pursuing") return "Dropped";
+  if (s.status === "sent") {
+    const d = s.days_silent ?? 0;
+    if (d >= 21) return "Worth a re-engagement";
+    if (d >= 14) return "Going quiet";
+    return "Awaiting reply";
+  }
+  if (s.agent_note) return s.agent_note;
+  return "Not contacted yet";
 }
 
 export interface BuiltDigest {
@@ -131,19 +165,6 @@ export function buildDigest(input: DigestInput): BuiltDigest {
       });
       t.push("");
     }
-    // Show the agent's work on every other tracked school so a quiet week
-    // still reads like "I watched all your schools for you," not silence.
-    const quietWatched = ok.filter((r) => r.triggers.length === 0 && !r.is_baseline);
-    if (quietWatched.length > 0) {
-      t.push("ALSO WATCHED THIS WEEK (no changes detected):");
-      for (const r of quietWatched) {
-        const parts: string[] = [];
-        if (r.roster_size) parts.push(`${r.roster_size} on roster`);
-        if (r.head_coach) parts.push(`HC ${r.head_coach}`);
-        t.push(`  - ${r.school_name}${parts.length ? ` (${parts.join(", ")})` : ""}`);
-      }
-      t.push("");
-    }
     t.push(
       `Reply to this email to approve, tweak, or skip any draft. Once you're happy, send it from ${athlete_name}'s Gmail so it lands as a real personal email.`
     );
@@ -157,8 +178,18 @@ export function buildDigest(input: DigestInput): BuiltDigest {
   }
 
   if (tracker_summary && tracker_summary.length > 0) {
-    t.push(`\nYour tracker:`);
-    for (const s of tracker_summary) t.push(`  - ${s.school}: ${statusLine(s)}`);
+    const resultByName = new Map<string, SchoolResult>();
+    for (const r of results) resultByName.set(normSchool(r.school_name), r);
+    t.push(`\nYOUR SCHOOL TRACKER:`);
+    for (const s of tracker_summary) {
+      const r = resultByName.get(normSchool(s.school));
+      const draftAction = r?.drafts?.[0]?.trigger
+        ? classifyDraft(r.drafts[0].trigger)
+        : null;
+      const badge = deriveBadge(s);
+      const action = deriveAction(s, draftAction);
+      t.push(`  - ${s.school} [${badge.text}] — ${action}`);
+    }
   }
 
   if (quiet_schools && quiet_schools.length > 0) {
@@ -243,24 +274,6 @@ export function buildDigest(input: DigestInput): BuiltDigest {
         h.push(`</div>`);
       }
     }
-    // Show the agent's work on every other tracked school so a quiet week
-    // still reads like "I watched all your schools for you," not silence.
-    const quietWatched = ok.filter((r) => r.triggers.length === 0 && !r.is_baseline);
-    if (quietWatched.length > 0) {
-      h.push(
-        `<h3 style="margin-top:28px; font-size:15px; border-bottom:1px solid #E5E7EB; padding-bottom:6px; color:#6B7280;">Also watched this week (no changes detected)</h3>`
-      );
-      h.push(`<ul style="line-height:1.7; padding-left:20px; color:#6B7280;">`);
-      for (const r of quietWatched) {
-        const parts: string[] = [];
-        if (r.roster_size) parts.push(`${r.roster_size} on roster`);
-        if (r.head_coach) parts.push(`HC ${escapeHtml(r.head_coach)}`);
-        h.push(
-          `<li>${escapeHtml(r.school_name)}${parts.length ? ` <span style="color:#9CA3AF;">(${parts.join(", ")})</span>` : ""}</li>`
-        );
-      }
-      h.push(`</ul>`);
-    }
     h.push(
       `<p style="color:#374151; font-size: 14px; margin-top: 24px;">Reply to approve, tweak, or skip any draft. When you're happy, send it from ${escapeHtml(athlete_name)}'s Gmail so it reads as a real personal email.</p>`
     );
@@ -277,13 +290,43 @@ export function buildDigest(input: DigestInput): BuiltDigest {
   }
 
   if (tracker_summary && tracker_summary.length > 0) {
+    const resultByName = new Map<string, SchoolResult>();
+    for (const r of results) resultByName.set(normSchool(r.school_name), r);
     h.push(
-      `<h3 style="margin-top:28px; font-size:15px; border-bottom:1px solid #E5E7EB; padding-bottom:6px;">Your tracker</h3>`
+      `<h3 style="margin-top:32px; font-size:15px; border-bottom:1px solid #E5E7EB; padding-bottom:6px;">Your school tracker</h3>`
     );
-    h.push(`<ul style="line-height:1.6; padding-left:20px; color:#374151;">`);
-    for (const s of tracker_summary)
-      h.push(`<li><b>${escapeHtml(s.school)}</b>: ${escapeHtml(statusLine(s))}</li>`);
-    h.push(`</ul>`);
+    h.push(
+      `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%; border-collapse:collapse; margin-top:8px;">`
+    );
+    for (const s of tracker_summary) {
+      const r = resultByName.get(normSchool(s.school));
+      const draftAction = r?.drafts?.[0]?.trigger
+        ? classifyDraft(r.drafts[0].trigger)
+        : null;
+      const badge = deriveBadge(s);
+      const action = deriveAction(s, draftAction);
+      const subline: string[] = [];
+      if (r?.roster_size) subline.push(`${r.roster_size} on roster`);
+      if (r?.head_coach) subline.push(`HC ${escapeHtml(r.head_coach)}`);
+
+      h.push(`<tr>`);
+      h.push(
+        `<td style="padding:12px 0; border-bottom:1px solid #F3F4F6; vertical-align:top;">` +
+          `<div style="font-weight:600; color:#111827; font-size:14px;">${escapeHtml(s.school)}</div>` +
+          `<div style="font-size:12px; color:#6B7280; margin-top:2px;">${escapeHtml(action)}</div>` +
+          (subline.length
+            ? `<div style="font-size:11px; color:#9CA3AF; margin-top:2px;">${subline.join(" &middot; ")}</div>`
+            : "") +
+          `</td>`
+      );
+      h.push(
+        `<td style="padding:12px 0; border-bottom:1px solid #F3F4F6; text-align:right; vertical-align:top; white-space:nowrap;">` +
+          `<span style="display:inline-block; background:${badge.bg}; color:${badge.fg}; font-size:12px; font-weight:600; padding:4px 10px; border-radius:9999px;">${escapeHtml(badge.text)}</span>` +
+          `</td>`
+      );
+      h.push(`</tr>`);
+    }
+    h.push(`</table>`);
   }
 
   if (quiet_schools && quiet_schools.length > 0) {
