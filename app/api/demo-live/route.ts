@@ -5,7 +5,7 @@ import { scrapeSchool, scrapeSchedule } from "@/lib/agent/scrape";
 import { generateDraft } from "@/lib/agent/draft";
 import { rateLimit } from "@/lib/rateLimit";
 import { logDemoRun } from "@/lib/demoLog";
-import { signDemoDraft } from "@/lib/demoSign";
+import { signDemoDraft, signDemoLead, type DemoLeadPayload } from "@/lib/demoSign";
 import type {
   AthleteProfile,
   SchoolData,
@@ -215,6 +215,23 @@ export async function POST(req: Request) {
 
   await logDemoRun(req, "live", schoolName, body.source);
 
+  const recentResultsForLead = (schedule?.recent_results ?? []).slice(0, 5);
+  const leadPayload: DemoLeadPayload = {
+    school_name: school.team,
+    subject: draft.subject,
+    body: draft.body,
+    trigger,
+    head_coach: headCoach?.name || null,
+    graduating_seniors: graduatingSeniors,
+    recent_results: recentResultsForLead.map((g) => ({
+      result: g.result ?? null,
+      opponent: g.opponent,
+      date: g.date ?? null,
+      is_win: !!g.is_win,
+    })),
+    record: schedule?.record ?? null,
+  };
+
   return NextResponse.json({
     monitoring: {
       team: school.team,
@@ -227,7 +244,7 @@ export async function POST(req: Request) {
       position_counts: positionCounts,
       graduating_seniors: graduatingSeniors,
       record: schedule?.record ?? null,
-      recent_results: (schedule?.recent_results ?? []).slice(0, 5),
+      recent_results: recentResultsForLead,
       next_game: schedule?.upcoming?.[0] ?? null,
     },
     trigger,
@@ -238,6 +255,8 @@ export async function POST(req: Request) {
       school_name: school.team,
       draft_sig: signDemoDraft(draft.subject, draft.body, school.team),
     },
+    lead_payload: leadPayload,
+    lead_sig: signDemoLead(leadPayload),
     resolved: { school_name: schoolName, roster_url: found.url },
   });
 }
