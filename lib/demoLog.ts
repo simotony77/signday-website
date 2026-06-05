@@ -43,6 +43,41 @@ export async function logDemoRun(
   }
 }
 
+// Persist an anonymous "what would make this a yes?" answer from a prospect
+// who saw the demo result but isn't ready to leave an email. Best-effort.
+export async function saveDemoFeedback(
+  req: Request,
+  fields: {
+    feedback: string;
+    school_name?: string | null;
+    source?: string | null;
+  }
+): Promise<void> {
+  try {
+    const supabase = getSupabase();
+    if (!supabase) return;
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      req.headers.get("x-real-ip") ||
+      "";
+    const ipHash = ip
+      ? createHash("sha256").update(ip).digest("hex").slice(0, 16)
+      : null;
+    const cleanSource =
+      typeof fields.source === "string" && fields.source.trim()
+        ? fields.source.trim().slice(0, 40)
+        : "direct";
+    await supabase.from("demo_feedback").insert({
+      feedback: fields.feedback.trim().slice(0, 1000),
+      school_name: fields.school_name?.trim().slice(0, 120) || null,
+      source: cleanSource,
+      ip_hash: ipHash,
+    });
+  } catch {
+    /* feedback capture is opt-in best-effort; never blocks anything */
+  }
+}
+
 // Persist a warm demo lead (prospect opted in to be emailed their draft).
 // Best-effort: never throws so a storage hiccup can't block the email send.
 export async function saveDemoLead(fields: {

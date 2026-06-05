@@ -75,30 +75,36 @@ export async function GET(req: Request) {
   }
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-  const [customersRes, subsRes, digestsRes, demoRes, leadsRes] = await Promise.all([
-    supabase
-      .from("customers")
-      .select("email, subscription_status, onboarded_at, created_at, referred_by")
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("onboarding_submissions")
-      .select("email, athlete, schools, created_at")
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("digests")
-      .select("drafts_count, triggers_count, schools_tracked, is_baseline, sent_at, detail")
-      .order("sent_at", { ascending: false }),
-    supabase
-      .from("demo_runs")
-      .select("kind, school, ip_hash, source, created_at")
-      .order("created_at", { ascending: false })
-      .limit(5000),
-    supabase
-      .from("demo_leads")
-      .select("email, first_name, school_name, source, created_at")
-      .order("created_at", { ascending: false })
-      .limit(2000),
-  ]);
+  const [customersRes, subsRes, digestsRes, demoRes, leadsRes, feedbackRes] =
+    await Promise.all([
+      supabase
+        .from("customers")
+        .select("email, subscription_status, onboarded_at, created_at, referred_by")
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("onboarding_submissions")
+        .select("email, athlete, schools, created_at")
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("digests")
+        .select("drafts_count, triggers_count, schools_tracked, is_baseline, sent_at, detail")
+        .order("sent_at", { ascending: false }),
+      supabase
+        .from("demo_runs")
+        .select("kind, school, ip_hash, source, created_at")
+        .order("created_at", { ascending: false })
+        .limit(5000),
+      supabase
+        .from("demo_leads")
+        .select("email, first_name, school_name, source, created_at")
+        .order("created_at", { ascending: false })
+        .limit(2000),
+      supabase
+        .from("demo_feedback")
+        .select("feedback, school_name, source, created_at")
+        .order("created_at", { ascending: false })
+        .limit(200),
+    ]);
 
   const customers = (customersRes.data || []) as CustomerRow[];
   const subs = (subsRes.data || []) as SubmissionRow[];
@@ -113,6 +119,12 @@ export async function GET(req: Request) {
   const leads = (leadsRes.data || []) as {
     email: string;
     first_name: string | null;
+    school_name: string | null;
+    source: string | null;
+    created_at: string;
+  }[];
+  const feedback = (feedbackRes.data || []) as {
+    feedback: string;
     school_name: string | null;
     source: string | null;
     created_at: string;
@@ -290,6 +302,18 @@ export async function GET(req: Request) {
       total: leads.length,
       last_7d: leads7d,
       recent: recentLeads,
+    },
+    feedback: {
+      total: feedback.length,
+      last_7d: feedback.filter(
+        (f) => new Date(f.created_at).getTime() >= weekAgo
+      ).length,
+      recent: feedback.slice(0, 30).map((f) => ({
+        feedback: f.feedback,
+        school_name: f.school_name,
+        source: f.source,
+        created_at: f.created_at,
+      })),
     },
     recent_customers: customers.slice(0, 15).map((c) => ({
       email: c.email,

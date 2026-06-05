@@ -130,6 +130,14 @@ export function DemoForm() {
   >("idle");
   const [leadError, setLeadError] = useState("");
 
+  // Anonymous "what would make this a yes?" feedback — diagnostic catch for
+  // prospects who run the demo but don't subscribe or leave an email.
+  const [feedback, setFeedback] = useState("");
+  const [feedbackStatus, setFeedbackStatus] = useState<
+    "idle" | "sending" | "sent" | "error"
+  >("idle");
+  const [feedbackError, setFeedbackError] = useState("");
+
   // Capture utm_source (e.g. from a Google ad) so demo runs are attributable
   // to ad vs organic in the admin dashboard.
   useEffect(() => {
@@ -176,6 +184,9 @@ export function DemoForm() {
     setResult(null);
     setLeadStatus("idle");
     setLeadError("");
+    setFeedback("");
+    setFeedbackStatus("idle");
+    setFeedbackError("");
 
     // Remember the athlete so onboarding can pre-fill it after they buy.
     try {
@@ -270,6 +281,38 @@ export function DemoForm() {
     } catch {
       setLeadError("Network error. Try again in a minute.");
       setLeadStatus("error");
+    }
+  }
+
+  async function sendFeedback() {
+    const text = feedback.trim();
+    if (!text) {
+      setFeedbackError("Please write a quick note first.");
+      setFeedbackStatus("error");
+      return;
+    }
+    setFeedbackStatus("sending");
+    setFeedbackError("");
+    try {
+      const res = await fetch("/api/demo-feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          feedback: text,
+          school_name: result?.draft.school_name,
+          source: getSource(),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setFeedbackError(data.error || "Couldn't send. Try again in a minute.");
+        setFeedbackStatus("error");
+        return;
+      }
+      setFeedbackStatus("sent");
+    } catch {
+      setFeedbackError("Network error. Try again in a minute.");
+      setFeedbackStatus("error");
     }
   }
 
@@ -745,6 +788,48 @@ export function DemoForm() {
                 </div>
                 {leadStatus === "error" && (
                   <p className="text-sm text-red-600 mt-2">{leadError}</p>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Anonymous feedback — quiet diagnostic catch */}
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 md:p-6">
+            {feedbackStatus === "sent" ? (
+              <div className="text-center py-1">
+                <div className="text-2xl mb-1">🙏</div>
+                <p className="text-sm text-gray-700">
+                  Thank you. Tony reads every one of these.
+                </p>
+              </div>
+            ) : (
+              <>
+                <h4 className="text-base font-semibold text-gray-900 mb-1">
+                  Not subscribing? Tell me why, in one line.
+                </h4>
+                <p className="text-xs text-gray-500 mb-3">
+                  Anonymous, no email needed. I read every reply — it&apos;s the most useful thing you can give me.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="text"
+                    value={feedback}
+                    onChange={(e) => setFeedback(e.target.value)}
+                    placeholder="e.g. too expensive · don't trust it yet · my kid isn't ready · ..."
+                    maxLength={1000}
+                    className="flex-1 rounded-lg border border-gray-300 focus:border-gray-500 focus:outline-none px-3 py-2 text-sm text-gray-900 placeholder-gray-400 bg-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={sendFeedback}
+                    disabled={feedbackStatus === "sending"}
+                    className="bg-gray-800 hover:bg-gray-900 disabled:opacity-60 text-white font-medium px-4 py-2 rounded-lg transition-colors whitespace-nowrap text-sm"
+                  >
+                    {feedbackStatus === "sending" ? "Sending..." : "Send"}
+                  </button>
+                </div>
+                {feedbackStatus === "error" && (
+                  <p className="text-xs text-red-600 mt-2">{feedbackError}</p>
                 )}
               </>
             )}

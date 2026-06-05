@@ -64,6 +64,16 @@ interface Stats {
       created_at: string;
     }[];
   };
+  feedback: {
+    total: number;
+    last_7d: number;
+    recent: {
+      feedback: string;
+      school_name: string | null;
+      source: string | null;
+      created_at: string;
+    }[];
+  };
   recent_customers: {
     email: string;
     status: string | null;
@@ -193,7 +203,18 @@ export function AdminDashboard() {
     );
   }
 
-  const { revenue, funnel, agent, scrape_health, athletes, schools, demo, leads, recent_customers } = stats;
+  const {
+    revenue,
+    funnel,
+    agent,
+    scrape_health,
+    athletes,
+    schools,
+    demo,
+    leads,
+    feedback,
+    recent_customers,
+  } = stats;
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
@@ -340,6 +361,33 @@ export function AdminDashboard() {
               ))}
             </tbody>
           </table>
+        )}
+      </div>
+
+      {/* Anonymous demo feedback ("what would make this a yes?") */}
+      <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+        Demo feedback (anonymous &mdash; what prospects say)
+      </h2>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <Stat label="Feedback (total)" value={feedback.total} />
+        <Stat label="New (7 days)" value={feedback.last_7d} sub="read every one" />
+      </div>
+      <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-8">
+        {feedback.recent.length === 0 ? (
+          <div className="text-xs text-gray-400">
+            No feedback yet. They appear when a prospect drops a one-line answer to &ldquo;what would make this a yes?&rdquo; on the demo page.
+          </div>
+        ) : (
+          <ul className="space-y-3">
+            {feedback.recent.map((f, i) => (
+              <li key={i} className="border-l-2 border-gray-300 pl-3">
+                <p className="text-sm text-gray-900 leading-relaxed whitespace-pre-wrap">{f.feedback}</p>
+                <div className="text-xs text-gray-500 mt-1">
+                  {f.school_name || "—"} &middot; {f.source || "direct"} &middot; {fmtDate(f.created_at)}
+                </div>
+              </li>
+            ))}
+          </ul>
         )}
       </div>
 
