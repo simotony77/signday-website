@@ -194,8 +194,18 @@ export function DemoForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!firstName.trim() || !club.trim()) {
-      setError("Please fill in first name and club.");
+    if (!firstName.trim()) {
+      setError("Please fill in first name.");
+      setStatus("error");
+      return;
+    }
+    if (recruitType === "high_school" && !club.trim()) {
+      setError("Please fill in your club (with league).");
+      setStatus("error");
+      return;
+    }
+    if (recruitType === "transfer" && !currentCollege.trim()) {
+      setError("Please fill in your current college.");
       setStatus("error");
       return;
     }
