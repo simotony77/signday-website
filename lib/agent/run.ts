@@ -620,6 +620,7 @@ export function toAthleteProfile(raw: Record<string, unknown>): AthleteProfile {
     email: String(raw.email ?? ""),
     next_camp_name: raw.next_camp_name ? String(raw.next_camp_name) : undefined,
     next_camp_date: raw.next_camp_date ? String(raw.next_camp_date) : undefined,
+    recruit_type: raw.recruit_type === "transfer" ? "transfer" : "high_school",
   };
 }
 

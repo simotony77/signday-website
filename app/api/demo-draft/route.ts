@@ -5,7 +5,7 @@ import { SCHOOL_SCHEDULES } from "@/lib/schoolSchedules";
 import { rateLimit } from "@/lib/rateLimit";
 import { logDemoRun } from "@/lib/demoLog";
 import { signDemoDraft, signDemoLead, type DemoLeadPayload } from "@/lib/demoSign";
-import { divisionFraming } from "@/lib/agent/draft";
+import { divisionFraming, transferFraming } from "@/lib/agent/draft";
 import type { ScheduleData, GameResult } from "@/lib/agent/types";
 
 export const runtime = "nodejs";
@@ -59,6 +59,7 @@ interface DemoRequest {
   club: string;
   school_slug: string;
   division?: string;
+  recruit_type?: "high_school" | "transfer";
   source?: string;
 }
 
@@ -139,6 +140,8 @@ function buildUserPrompt(
     grad_year: athlete.grad_year,
     position: athlete.position,
     club: athlete.club,
+    recruit_type:
+      athlete.recruit_type === "transfer" ? "transfer" : "high_school",
   };
 
   let scheduleBlock = "";
@@ -167,7 +170,7 @@ ${JSON.stringify(school, null, 2)}
 ATHLETE PROFILE:
 \`\`\`json
 ${JSON.stringify(athleteProfile, null, 2)}
-\`\`\`${scheduleBlock}${divisionFraming(athlete.division)}
+\`\`\`${scheduleBlock}${transferFraming(athlete.recruit_type)}${divisionFraming(athlete.division)}
 
 TRIGGER (the specific reason this email is being sent now):
 ${trigger}

@@ -25,6 +25,7 @@ interface LiveRequest {
   school_name?: string;
   gender?: "boys" | "girls";
   division?: string;
+  recruit_type?: "high_school" | "transfer";
   source?: string;
 }
 
@@ -183,6 +184,7 @@ export async function POST(req: Request) {
     gpa: null,
     email: "",
     division: body.division ? String(body.division) : undefined,
+    recruit_type: body.recruit_type === "transfer" ? "transfer" : "high_school",
   };
 
   let draft;

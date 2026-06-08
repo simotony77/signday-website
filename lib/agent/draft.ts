@@ -85,6 +85,25 @@ DIVISION CONTEXT: Athlete is targeting D3 programs. D3 offers no athletic schola
   return "";
 }
 
+// When the athlete is a current college player looking to transfer (rather
+// than a high schooler), the email reads completely differently: the sender
+// is already a college soccer player, not a recruit. No academic-fit pitch,
+// no "I'm a 2027 graduating" intro — instead, year in college + current
+// program + minutes/role + reason for looking. Mirrors how transfer-portal
+// outreach actually reads.
+export function transferFraming(recruitType?: string): string {
+  if (recruitType !== "transfer") return "";
+  return `
+TRANSFER CONTEXT: This athlete is a CURRENT COLLEGE PLAYER looking to transfer to a new program — NOT a high school recruit. Frame the entire email accordingly:
+- Open as a college soccer player, not a recruit. The athlete is already in college, already playing at this level.
+- Briefly name their current school and year in college (e.g. "I'm a redshirt sophomore at X").
+- The middle of the email should focus on what they bring on the field NOW: their role at their current program, minutes played, what kind of player they are, what they want next. Do NOT pitch academic fit or GPA-driven framing; this athlete is past that stage.
+- A short, candid line about why they're looking to move is appropriate (more playing time, better fit, change of system) — but keep it brief and professional, not bitter or critical of the current coach.
+- Close with a clear ask: would the coach be willing to take a look, what film should they send, are they open to transfer prospects this cycle.
+- The closing should not say "I'm just starting my recruiting process" or anything that signals high school. This person is in the portal lane, talking peer-to-peer.
+`;
+}
+
 // Extra framing so a re-engagement reads like a real follow-up (not a cold
 // intro), and a first-touch reads like a confident opener.
 function outreachFraming(kind: DraftKind): string {
@@ -153,7 +172,7 @@ ${schoolJson}
 ATHLETE PROFILE:
 \`\`\`json
 ${athleteJson}
-\`\`\`${genderNote}${scheduleBlock}${researchBlock}${divisionFraming(athlete.division)}${outreachFraming(kind)}
+\`\`\`${genderNote}${scheduleBlock}${researchBlock}${transferFraming(athlete.recruit_type)}${divisionFraming(athlete.division)}${outreachFraming(kind)}
 
 TRIGGER (the specific reason this email is being sent now):
 ${triggerText}

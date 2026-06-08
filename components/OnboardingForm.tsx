@@ -79,6 +79,9 @@ export function OnboardingForm({
   const [gradYear, setGradYear] = useState(2027);
   const [position, setPosition] = useState("M");
   const [gender, setGender] = useState<"girls" | "boys">("girls");
+  const [recruitType, setRecruitType] = useState<"high_school" | "transfer">(
+    "high_school"
+  );
   const [currentLeague, setCurrentLeague] = useState("ECNL");
   const [division, setDivision] = useState("D3");
   const [club, setClub] = useState("");
@@ -126,6 +129,8 @@ export function OnboardingForm({
         setCurrentLeague(d.gender === "boys" ? "MLS_NEXT" : "ECNL");
       }
       if (typeof d.division === "string" && d.division) setDivision(d.division);
+      if (d.recruit_type === "transfer" || d.recruit_type === "high_school")
+        setRecruitType(d.recruit_type);
     } catch {
       /* ignore */
     }
@@ -156,6 +161,8 @@ export function OnboardingForm({
         if (typeof a.grad_year === "number") setGradYear(a.grad_year);
         if (typeof a.position === "string") setPosition(a.position);
         if (a.gender === "boys" || a.gender === "girls") setGender(a.gender);
+        if (a.recruit_type === "transfer" || a.recruit_type === "high_school")
+          setRecruitType(a.recruit_type);
         if (typeof a.current_league === "string") setCurrentLeague(a.current_league);
         if (typeof a.division === "string") setDivision(a.division);
         if (typeof a.club === "string") setClub(a.club);
@@ -314,6 +321,7 @@ export function OnboardingForm({
             email: athleteEmail.trim().toLowerCase(),
             next_camp_name: campName.trim() || null,
             next_camp_date: campDate.trim() || null,
+            recruit_type: recruitType,
           },
           schools: filledSchools,
           notes: notes.trim() || null,
@@ -427,6 +435,16 @@ export function OnboardingForm({
           >
             <option value="girls">Plays: Girls / Women&apos;s soccer</option>
             <option value="boys">Plays: Boys / Men&apos;s soccer</option>
+          </select>
+          <select
+            value={recruitType}
+            onChange={(e) =>
+              setRecruitType(e.target.value as "high_school" | "transfer")
+            }
+            className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
+          >
+            <option value="high_school">High school recruit</option>
+            <option value="transfer">College transfer</option>
           </select>
           <select
             value={currentLeague}

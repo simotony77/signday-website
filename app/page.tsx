@@ -26,6 +26,10 @@ const FAQ = [
     a: "Boys' and girls' college soccer, any division: D1, D2, D3, or NAIA. Drafts tune to the division(s) you're targeting (academic-fit framing for D3, more athletic-profile-forward for D1/D2). Started with my daughter's recruiting (D3 women's) and broadened from there.",
   },
   {
+    q: "I'm a college player looking to transfer — does it work for me?",
+    a: "Yes. The agent monitors the same things either way: roster changes, coaching moves, graduating seniors, recent results. For transfers, the drafts read as a current college player reaching out, not a high school intro: your year in college, your role at your current program, what you bring on the field now. Toggle 'College transfer' on the demo or in onboarding.",
+  },
+  {
     q: "What about NCAA D1 contact rules?",
     a: "Your athlete can email D1 coaches anytime, that part isn't restricted. What NCAA rules limit is when D1 coaches can directly reply (for soccer, generally June 15 after sophomore year). So if you're targeting D1 with a freshman or early sophomore, expect responses to be limited or generic until then. The agent still sends the drafts, but the timing of when coaches can engage isn't up to us. D3 and NAIA don't have the same restrictions. See ncaa.org for the current calendar.",
   },

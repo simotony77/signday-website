@@ -118,6 +118,9 @@ export function DemoForm() {
   const [customSchool, setCustomSchool] = useState("");
   const [gender, setGender] = useState<"girls" | "boys">("girls");
   const [division, setDivision] = useState("D3");
+  const [recruitType, setRecruitType] = useState<"high_school" | "transfer">(
+    "high_school"
+  );
 
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
@@ -199,6 +202,7 @@ export function DemoForm() {
           club: club.trim(),
           gender,
           division,
+          recruit_type: recruitType,
         })
       );
     } catch {
@@ -218,6 +222,7 @@ export function DemoForm() {
               school_name: customSchool.trim(),
               gender,
               division,
+              recruit_type: recruitType,
               source: getSource(),
             }),
           })
@@ -231,6 +236,7 @@ export function DemoForm() {
               club: club.trim(),
               school_slug: school,
               division,
+              recruit_type: recruitType,
               source: getSource(),
             }),
           });
@@ -323,6 +329,39 @@ export function DemoForm() {
         onSubmit={handleSubmit}
         className="bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-sm space-y-5"
       >
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Athlete
+          </label>
+          <div className="inline-flex rounded-xl border-2 border-gray-200 p-1">
+            <button
+              type="button"
+              onClick={() => setRecruitType("high_school")}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                recruitType === "high_school"
+                  ? "bg-brand-600 text-white"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              High school recruit
+            </button>
+            <button
+              type="button"
+              onClick={() => setRecruitType("transfer")}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                recruitType === "transfer"
+                  ? "bg-brand-600 text-white"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              College transfer
+            </button>
+          </div>
+          <p className="text-xs text-gray-500 mt-2">
+            Same monitoring, different draft: transfer drafts read as a current college player, not a high school intro.
+          </p>
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Soccer program

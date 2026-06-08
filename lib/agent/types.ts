@@ -53,6 +53,10 @@ export interface AthleteProfile {
   // countdown nudge in the weekly digest.
   next_camp_name?: string;
   next_camp_date?: string; // ISO date string (yyyy-mm-dd)
+  // "high_school" = a HS recruit reaching out to college coaches (default).
+  // "transfer" = a current college player looking to move to another program.
+  // Same monitoring mechanic; the drafter switches framing accordingly.
+  recruit_type?: "high_school" | "transfer";
 }
 
 export interface PlayerChange {
