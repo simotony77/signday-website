@@ -133,9 +133,12 @@ export function DemoForm() {
   >("idle");
   const [leadError, setLeadError] = useState("");
 
-  // Anonymous "what would make this a yes?" feedback — diagnostic catch for
-  // prospects who run the demo but don't subscribe or leave an email.
+  // Anonymous feedback. Mode = which UI the user is in (tag pills or freetext
+  // input). Status = the request lifecycle. Splitting them lets the freetext
+  // input stay visible while a Send is in flight (status "sending" + mode
+  // "freetext"), instead of flipping back to tags mid-request.
   const [feedback, setFeedback] = useState("");
+  const [feedbackMode, setFeedbackMode] = useState<"tags" | "freetext">("tags");
   const [feedbackStatus, setFeedbackStatus] = useState<
     "idle" | "sending" | "sent" | "error"
   >("idle");
@@ -188,6 +191,7 @@ export function DemoForm() {
     setLeadStatus("idle");
     setLeadError("");
     setFeedback("");
+    setFeedbackMode("tags");
     setFeedbackStatus("idle");
     setFeedbackError("");
 
@@ -290,8 +294,8 @@ export function DemoForm() {
     }
   }
 
-  async function sendFeedback() {
-    const text = feedback.trim();
+  async function sendFeedback(rawText: string) {
+    const text = rawText.trim();
     if (!text) {
       setFeedbackError("Please write a quick note first.");
       setFeedbackStatus("error");
@@ -321,6 +325,17 @@ export function DemoForm() {
       setFeedbackStatus("error");
     }
   }
+
+  // Six pre-defined reasons for "not subscribing." Plus "Something else" which
+  // flips to a freetext input. The label string is what gets stored, so /admin
+  // is human-readable as-is and tags aggregate cleanly with a simple GROUP BY.
+  const FEEDBACK_TAGS = [
+    "Too expensive",
+    "Don't trust it yet",
+    "Want to wait and see",
+    "My kid isn't recruiting age yet",
+    "Already use something similar",
+  ];
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -832,7 +847,7 @@ export function DemoForm() {
             )}
           </div>
 
-          {/* Anonymous feedback — quiet diagnostic catch */}
+          {/* Anonymous feedback — one-click tags with freetext fallback */}
           <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 md:p-6">
             {feedbackStatus === "sent" ? (
               <div className="text-center py-1">
@@ -841,30 +856,67 @@ export function DemoForm() {
                   Thank you. Tony reads every one of these.
                 </p>
               </div>
-            ) : (
+            ) : feedbackMode === "freetext" ? (
               <>
-                <h4 className="text-base font-semibold text-gray-900 mb-1">
-                  Not subscribing? Tell me why, in one line.
+                <h4 className="text-base font-semibold text-gray-900 mb-2">
+                  Tell me what&apos;s stopping you, in one line.
                 </h4>
-                <p className="text-xs text-gray-500 mb-3">
-                  Anonymous, no email needed. I read every reply — it&apos;s the most useful thing you can give me.
-                </p>
+                <p className="text-xs text-gray-500 mb-3">Still anonymous.</p>
                 <div className="flex flex-col sm:flex-row gap-2">
                   <input
                     type="text"
+                    autoFocus
                     value={feedback}
                     onChange={(e) => setFeedback(e.target.value)}
-                    placeholder="e.g. too expensive · don't trust it yet · my kid isn't ready · ..."
+                    placeholder="In a sentence..."
                     maxLength={1000}
                     className="flex-1 rounded-lg border border-gray-300 focus:border-gray-500 focus:outline-none px-3 py-2 text-sm text-gray-900 placeholder-gray-400 bg-white"
                   />
                   <button
                     type="button"
-                    onClick={sendFeedback}
-                    disabled={feedbackStatus === "sending"}
+                    onClick={() => sendFeedback(feedback)}
+                    disabled={!feedback.trim() || feedbackStatus === "sending"}
                     className="bg-gray-800 hover:bg-gray-900 disabled:opacity-60 text-white font-medium px-4 py-2 rounded-lg transition-colors whitespace-nowrap text-sm"
                   >
                     {feedbackStatus === "sending" ? "Sending..." : "Send"}
+                  </button>
+                </div>
+                {feedbackStatus === "error" && (
+                  <p className="text-xs text-red-600 mt-2">{feedbackError}</p>
+                )}
+              </>
+            ) : (
+              <>
+                <h4 className="text-base font-semibold text-gray-900 mb-1">
+                  Not subscribing? Tell me why.
+                </h4>
+                <p className="text-xs text-gray-500 mb-3">
+                  One click, anonymous. I read every one — it&apos;s the most useful thing you can give me.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {FEEDBACK_TAGS.map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      disabled={feedbackStatus === "sending"}
+                      onClick={() => sendFeedback(tag)}
+                      className="bg-white border border-gray-300 hover:border-gray-500 hover:bg-gray-100 text-sm text-gray-800 px-3 py-2 rounded-full transition-colors disabled:opacity-50"
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    disabled={feedbackStatus === "sending"}
+                    onClick={() => {
+                      setFeedback("");
+                      setFeedbackError("");
+                      setFeedbackStatus("idle");
+                      setFeedbackMode("freetext");
+                    }}
+                    className="bg-white border border-gray-300 hover:border-gray-500 hover:bg-gray-100 text-sm text-gray-700 px-3 py-2 rounded-full transition-colors disabled:opacity-50"
+                  >
+                    Something else…
                   </button>
                 </div>
                 {feedbackStatus === "error" && (
