@@ -21,6 +21,24 @@ const SCHOOLS = [
 
 const GRAD_YEARS = [2027, 2028, 2029, 2030];
 
+const YEARS_IN_COLLEGE = [
+  { value: "Fr", label: "Freshman" },
+  { value: "So", label: "Sophomore" },
+  { value: "Jr", label: "Junior" },
+  { value: "Sr", label: "Senior" },
+  { value: "RS-Fr", label: "Redshirt Freshman" },
+  { value: "RS-So", label: "Redshirt Sophomore" },
+  { value: "RS-Jr", label: "Redshirt Junior" },
+  { value: "RS-Sr", label: "Redshirt Senior" },
+  { value: "Grad", label: "Graduate / 5th year" },
+];
+
+const PORTAL_OPTIONS = [
+  { value: "yes", label: "Yes, in the transfer portal" },
+  { value: "considering", label: "Considering / exploring" },
+  { value: "no", label: "Not in the portal yet" },
+];
+
 // Stash demo athlete info so onboarding can pre-fill it after checkout
 // (survives the Stripe redirect via localStorage on the same domain).
 const DEMO_ATHLETE_KEY = "signday_demo_athlete";
@@ -121,6 +139,12 @@ export function DemoForm() {
   const [recruitType, setRecruitType] = useState<"high_school" | "transfer">(
     "high_school"
   );
+  // Transfer-specific fields (only relevant when recruitType === "transfer")
+  const [currentCollege, setCurrentCollege] = useState("");
+  const [yearInCollege, setYearInCollege] = useState("So");
+  const [inTransferPortal, setInTransferPortal] = useState<
+    "yes" | "considering" | "no"
+  >("considering");
 
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
@@ -207,11 +231,25 @@ export function DemoForm() {
           gender,
           division,
           recruit_type: recruitType,
+          current_college: currentCollege.trim(),
+          year_in_college: yearInCollege,
+          in_transfer_portal: inTransferPortal,
         })
       );
     } catch {
       /* ignore */
     }
+
+    // Transfer payload fields — only meaningful when recruitType === "transfer",
+    // but harmless to include either way (the server ignores them otherwise).
+    const transferFields =
+      recruitType === "transfer"
+        ? {
+            current_college: currentCollege.trim(),
+            year_in_college: yearInCollege,
+            in_transfer_portal: inTransferPortal,
+          }
+        : {};
 
     try {
       const res = isLive
@@ -227,6 +265,7 @@ export function DemoForm() {
               gender,
               division,
               recruit_type: recruitType,
+              ...transferFields,
               source: getSource(),
             }),
           })
@@ -241,6 +280,7 @@ export function DemoForm() {
               school_slug: school,
               division,
               recruit_type: recruitType,
+              ...transferFields,
               source: getSource(),
             }),
           });
@@ -426,22 +466,41 @@ export function DemoForm() {
               className="w-full rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Graduation year
-            </label>
-            <select
-              value={gradYear}
-              onChange={(e) => setGradYear(Number(e.target.value))}
-              className="w-full rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
-            >
-              {GRAD_YEARS.map((y) => (
-                <option key={y} value={y}>
-                  Class of {y}
-                </option>
-              ))}
-            </select>
-          </div>
+          {recruitType === "transfer" ? (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Year in college
+              </label>
+              <select
+                value={yearInCollege}
+                onChange={(e) => setYearInCollege(e.target.value)}
+                className="w-full rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
+              >
+                {YEARS_IN_COLLEGE.map((y) => (
+                  <option key={y.value} value={y.value}>
+                    {y.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Graduation year
+              </label>
+              <select
+                value={gradYear}
+                onChange={(e) => setGradYear(Number(e.target.value))}
+                className="w-full rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
+              >
+                {GRAD_YEARS.map((y) => (
+                  <option key={y} value={y}>
+                    Class of {y}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
         <div className="grid sm:grid-cols-2 gap-5">
@@ -461,20 +520,62 @@ export function DemoForm() {
               ))}
             </select>
           </div>
+          {recruitType === "transfer" ? (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Current college
+              </label>
+              <input
+                type="text"
+                value={currentCollege}
+                onChange={(e) => setCurrentCollege(e.target.value)}
+                placeholder="Lehigh University"
+                required
+                className="w-full rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
+              />
+            </div>
+          ) : (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Club (with league)
+              </label>
+              <input
+                type="text"
+                value={club}
+                onChange={(e) => setClub(e.target.value)}
+                placeholder="Connecticut FC (ECNL)"
+                required
+                className="w-full rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
+              />
+            </div>
+          )}
+        </div>
+
+        {recruitType === "transfer" && (
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Club (with league)
+              Transfer portal status
             </label>
-            <input
-              type="text"
-              value={club}
-              onChange={(e) => setClub(e.target.value)}
-              placeholder="Connecticut FC (ECNL)"
-              required
-              className="w-full rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
-            />
+            <select
+              value={inTransferPortal}
+              onChange={(e) =>
+                setInTransferPortal(
+                  e.target.value as "yes" | "considering" | "no"
+                )
+              }
+              className="w-full rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
+            >
+              {PORTAL_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-gray-500 mt-2">
+              Coaches read &ldquo;in the portal&rdquo; very differently from &ldquo;considering&rdquo;. The draft adapts.
+            </p>
           </div>
-        </div>
+        )}
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">

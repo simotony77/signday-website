@@ -67,7 +67,7 @@ export default function Home() {
             <span className="text-brand-600">done for you.</span>
           </h1>
           <p className="text-lg md:text-xl text-gray-600 mt-6 max-w-2xl mx-auto leading-relaxed">
-            An AI assistant for parents of college soccer recruits, boys and girls, any division. We monitor your target schools,
+            An AI assistant for high school recruits and college transfers, boys and girls, any division. We monitor your target schools,
             draft outreach to coaches, and chase follow-ups, so you can stop spending Sundays in your athlete&apos;s recruiting spreadsheet.
           </p>
 

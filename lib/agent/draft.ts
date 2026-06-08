@@ -85,22 +85,74 @@ DIVISION CONTEXT: Athlete is targeting D3 programs. D3 offers no athletic schola
   return "";
 }
 
+// Map a year-in-college code to a phrase the drafter can use verbatim.
+const YEAR_IN_COLLEGE_PHRASE: Record<string, string> = {
+  Fr: "freshman",
+  So: "sophomore",
+  Jr: "junior",
+  Sr: "senior",
+  "RS-Fr": "redshirt freshman",
+  "RS-So": "redshirt sophomore",
+  "RS-Jr": "redshirt junior",
+  "RS-Sr": "redshirt senior",
+  Grad: "graduate student / 5th year",
+};
+
 // When the athlete is a current college player looking to transfer (rather
 // than a high schooler), the email reads completely differently: the sender
 // is already a college soccer player, not a recruit. No academic-fit pitch,
 // no "I'm a 2027 graduating" intro — instead, year in college + current
-// program + minutes/role + reason for looking. Mirrors how transfer-portal
-// outreach actually reads.
-export function transferFraming(recruitType?: string): string {
+// program + minutes/role + portal status + eligibility + reason for looking.
+// Uses the concrete fields the onboarding/demo form collected, so transfer
+// drafts are SPECIFIC, not vague generic "I'm a college player" prose.
+export function transferFraming(
+  recruitType?: string,
+  athlete?: AthleteProfile
+): string {
   if (recruitType !== "transfer") return "";
+
+  const a = athlete || ({} as AthleteProfile);
+  const yearPhrase =
+    (a.year_in_college && YEAR_IN_COLLEGE_PHRASE[a.year_in_college]) ||
+    a.year_in_college ||
+    "current college player";
+  const currentCollege = a.current_college?.trim() || "their current program";
+
+  const portalLine =
+    a.in_transfer_portal === "yes"
+      ? `The athlete IS currently in the NCAA transfer portal. State this plainly somewhere in the email so the coach knows the athlete is officially available. NCAA rules permit direct coach contact once a player is in the portal.`
+      : a.in_transfer_portal === "considering"
+        ? `The athlete is CONSIDERING the transfer portal and exploring options. Frame the outreach as an early, professional conversation — they are not yet officially available, but they are looking. Make this clear without pressure.`
+        : `The athlete is NOT in the portal yet. Keep the outreach quiet and professional. Do not state "I am in the portal" anywhere.`;
+
+  const eligibilityLine =
+    typeof a.years_eligibility_remaining === "number" && a.years_eligibility_remaining > 0
+      ? `The athlete has ${a.years_eligibility_remaining} year${a.years_eligibility_remaining === 1 ? "" : "s"} of eligibility remaining. Mention this naturally — coaches need it to evaluate the fit.`
+      : `The athlete's remaining eligibility is unspecified — do not invent a number; if needed, say "I can share my remaining eligibility on a quick call."`;
+
+  const reasonLine = a.reason_for_transfer?.trim()
+    ? `The athlete's candid reason for looking to move: "${a.reason_for_transfer.trim()}". Translate this into ONE short, tactful, forward-looking sentence in the email (e.g. "I'm looking for a stronger fit / more minutes / a system that suits how I play"). NEVER quote the reason verbatim, and NEVER criticize the current program or coach.`
+    : `The athlete did not provide a reason for transferring. Do not invent one. Keep the email forward-looking ("I'm exploring my next step" is fine) without naming a grievance.`;
+
   return `
-TRANSFER CONTEXT: This athlete is a CURRENT COLLEGE PLAYER looking to transfer to a new program — NOT a high school recruit. Frame the entire email accordingly:
-- Open as a college soccer player, not a recruit. The athlete is already in college, already playing at this level.
-- Briefly name their current school and year in college (e.g. "I'm a redshirt sophomore at X").
-- The middle of the email should focus on what they bring on the field NOW: their role at their current program, minutes played, what kind of player they are, what they want next. Do NOT pitch academic fit or GPA-driven framing; this athlete is past that stage.
-- A short, candid line about why they're looking to move is appropriate (more playing time, better fit, change of system) — but keep it brief and professional, not bitter or critical of the current coach.
-- Close with a clear ask: would the coach be willing to take a look, what film should they send, are they open to transfer prospects this cycle.
-- The closing should not say "I'm just starting my recruiting process" or anything that signals high school. This person is in the portal lane, talking peer-to-peer.
+TRANSFER CONTEXT: This athlete is a CURRENT COLLEGE PLAYER looking to transfer to a new program — NOT a high school recruit. Frame the entire email accordingly.
+
+ATHLETE PROFILE:
+- Currently a ${yearPhrase} at ${currentCollege}.
+- ${portalLine}
+- ${eligibilityLine}
+- ${reasonLine}
+
+STRUCTURE:
+- Greeting: "Hi Coach [LastName]," as usual.
+- Opening (1 sentence): state who they are — a ${yearPhrase} at ${currentCollege} — and that they're reaching out about the coach's program.
+- Portal/availability line (1 short sentence): tell the coach where they are in the transfer process (per the portal context above).
+- Middle (2 sentences): focus on what they bring on the field NOW — their role at ${currentCollege}, position-specific strengths from the athlete profile, the kind of player they are. Do NOT pitch academic fit or GPA. Do NOT mention class-year language ("Class of 2027" etc.) — that's high-school framing.
+- Forward look (1 sentence): the eligibility + the tactful "why I'm looking" line.
+- Close (1 sentence): clear ask — would the coach take a look at film, are they open to transfer prospects this cycle, what's the best next step.
+- Sign-off: athlete's first name only.
+
+Do NOT say "I'm starting my recruiting process" or anything that signals high school. This is peer-to-peer adult outreach.
 `;
 }
 
@@ -172,7 +224,7 @@ ${schoolJson}
 ATHLETE PROFILE:
 \`\`\`json
 ${athleteJson}
-\`\`\`${genderNote}${scheduleBlock}${researchBlock}${transferFraming(athlete.recruit_type)}${divisionFraming(athlete.division)}${outreachFraming(kind)}
+\`\`\`${genderNote}${scheduleBlock}${researchBlock}${transferFraming(athlete.recruit_type, athlete)}${divisionFraming(athlete.division)}${outreachFraming(kind)}
 
 TRIGGER (the specific reason this email is being sent now):
 ${triggerText}

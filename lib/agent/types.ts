@@ -57,6 +57,25 @@ export interface AthleteProfile {
   // "transfer" = a current college player looking to move to another program.
   // Same monitoring mechanic; the drafter switches framing accordingly.
   recruit_type?: "high_school" | "transfer";
+
+  // ---- Transfer-specific fields (used when recruit_type === "transfer") ----
+  // The program they currently play at, e.g. "Lehigh University".
+  current_college?: string;
+  // Year in college as a short code: "Fr" | "So" | "Jr" | "Sr" | "RS-Fr" |
+  // "RS-So" | "RS-Jr" | "RS-Sr" | "Grad". Stored as a free string so we don't
+  // have to backfill enums when terminology shifts.
+  year_in_college?: string;
+  // Where they are in the transfer process. "yes" = in the NCAA transfer
+  // portal; "considering" = exploring but not yet entered; "no" = not in
+  // portal (some private discussions only). Coaches read this very differently.
+  in_transfer_portal?: "yes" | "considering" | "no";
+  // Years of eligibility remaining (1, 2, 3, sometimes 4). Coaches need this
+  // to know how long the athlete could be with their program.
+  years_eligibility_remaining?: number;
+  // Short candid reason for transferring (e.g. "looking for more playing time",
+  // "system fit", "coaching change", "academic move"). Used to shape one tactful
+  // line in the draft — never quoted verbatim.
+  reason_for_transfer?: string;
 }
 
 export interface PlayerChange {

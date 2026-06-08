@@ -6,7 +6,7 @@ import { rateLimit } from "@/lib/rateLimit";
 import { logDemoRun } from "@/lib/demoLog";
 import { signDemoDraft, signDemoLead, type DemoLeadPayload } from "@/lib/demoSign";
 import { divisionFraming, transferFraming } from "@/lib/agent/draft";
-import type { ScheduleData, GameResult } from "@/lib/agent/types";
+import type { ScheduleData, GameResult, AthleteProfile } from "@/lib/agent/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -60,6 +60,12 @@ interface DemoRequest {
   school_slug: string;
   division?: string;
   recruit_type?: "high_school" | "transfer";
+  // Transfer-specific (used when recruit_type === "transfer")
+  current_college?: string;
+  year_in_college?: string;
+  in_transfer_portal?: "yes" | "considering" | "no";
+  years_eligibility_remaining?: number;
+  reason_for_transfer?: string;
   source?: string;
 }
 
@@ -134,15 +140,30 @@ function buildUserPrompt(
   trigger: string,
   schedule?: ScheduleData
 ): string {
-  // Build a minimal athlete profile for the prompt
-  const athleteProfile = {
-    first_name: athlete.first_name,
-    grad_year: athlete.grad_year,
-    position: athlete.position,
-    club: athlete.club,
-    recruit_type:
-      athlete.recruit_type === "transfer" ? "transfer" : "high_school",
-  };
+  // Build a minimal athlete profile for the prompt. For transfers we drop the
+  // HS-only fields (grad_year, club) and surface current college + year +
+  // portal status instead so the JSON the model sees actually matches who
+  // they are.
+  const isTransfer = athlete.recruit_type === "transfer";
+  const athleteProfile = isTransfer
+    ? {
+        first_name: athlete.first_name,
+        position: athlete.position,
+        recruit_type: "transfer",
+        current_college: athlete.current_college || "",
+        year_in_college: athlete.year_in_college || "",
+        in_transfer_portal: athlete.in_transfer_portal || "considering",
+        years_eligibility_remaining:
+          athlete.years_eligibility_remaining ?? null,
+        reason_for_transfer: athlete.reason_for_transfer || "",
+      }
+    : {
+        first_name: athlete.first_name,
+        grad_year: athlete.grad_year,
+        position: athlete.position,
+        club: athlete.club,
+        recruit_type: "high_school",
+      };
 
   let scheduleBlock = "";
   if (schedule && (schedule.recent_results?.length || schedule.record)) {
@@ -170,7 +191,7 @@ ${JSON.stringify(school, null, 2)}
 ATHLETE PROFILE:
 \`\`\`json
 ${JSON.stringify(athleteProfile, null, 2)}
-\`\`\`${scheduleBlock}${transferFraming(athlete.recruit_type)}${divisionFraming(athlete.division)}
+\`\`\`${scheduleBlock}${transferFraming(athlete.recruit_type, athlete as unknown as AthleteProfile)}${divisionFraming(athlete.division)}
 
 TRIGGER (the specific reason this email is being sent now):
 ${trigger}
@@ -211,12 +232,16 @@ export async function POST(req: Request) {
   }
 
   // Basic validation
+  // Validation branches by recruit_type — transfers don't have a club; they
+  // have a current_college and year_in_college. High schoolers don't have those.
+  const isTransfer = body.recruit_type === "transfer";
   if (
     !body.first_name?.trim() ||
-    !body.club?.trim() ||
     !body.school_slug ||
     !body.position ||
-    typeof body.grad_year !== "number"
+    (isTransfer
+      ? !body.current_college?.trim() || !body.year_in_college?.trim()
+      : !body.club?.trim() || typeof body.grad_year !== "number")
   ) {
     return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
   }

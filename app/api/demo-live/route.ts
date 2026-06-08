@@ -26,6 +26,12 @@ interface LiveRequest {
   gender?: "boys" | "girls";
   division?: string;
   recruit_type?: "high_school" | "transfer";
+  // Transfer-specific (used when recruit_type === "transfer")
+  current_college?: string;
+  year_in_college?: string;
+  in_transfer_portal?: "yes" | "considering" | "no";
+  years_eligibility_remaining?: number;
+  reason_for_transfer?: string;
   source?: string;
 }
 
@@ -113,16 +119,27 @@ export async function POST(req: Request) {
   const schoolName = (body.school_name || "").trim();
   const gradYear = body.grad_year;
 
+  // Validation branches by recruit_type. Transfers need current_college +
+  // year_in_college instead of club + grad_year.
+  const isTransfer = body.recruit_type === "transfer";
+  const currentCollege = (body.current_college || "").trim();
+  const yearInCollege = (body.year_in_college || "").trim();
   if (
     !firstName ||
-    !club ||
     !position ||
     !schoolName ||
-    typeof gradYear !== "number"
+    (isTransfer
+      ? !currentCollege || !yearInCollege
+      : !club || typeof gradYear !== "number")
   ) {
     return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
   }
-  if (firstName.length > 50 || club.length > 100 || schoolName.length > 100) {
+  if (
+    firstName.length > 50 ||
+    club.length > 100 ||
+    currentCollege.length > 120 ||
+    schoolName.length > 100
+  ) {
     return NextResponse.json({ error: "Input too long." }, { status: 400 });
   }
 
@@ -177,7 +194,10 @@ export async function POST(req: Request) {
   const athlete: AthleteProfile = {
     first_name: firstName,
     last_name: "",
-    grad_year: gradYear,
+    // Transfers don't have a graduation year; AthleteProfile requires a number
+    // so default to 0 — the drafter's transferFraming uses year_in_college
+    // instead and ignores grad_year for transfer drafts.
+    grad_year: typeof gradYear === "number" ? gradYear : 0,
     position,
     gender,
     club,
@@ -185,6 +205,25 @@ export async function POST(req: Request) {
     email: "",
     division: body.division ? String(body.division) : undefined,
     recruit_type: body.recruit_type === "transfer" ? "transfer" : "high_school",
+    current_college: body.current_college
+      ? String(body.current_college)
+      : undefined,
+    year_in_college: body.year_in_college
+      ? String(body.year_in_college)
+      : undefined,
+    in_transfer_portal:
+      body.in_transfer_portal === "yes" ||
+      body.in_transfer_portal === "considering" ||
+      body.in_transfer_portal === "no"
+        ? body.in_transfer_portal
+        : undefined,
+    years_eligibility_remaining:
+      typeof body.years_eligibility_remaining === "number"
+        ? body.years_eligibility_remaining
+        : undefined,
+    reason_for_transfer: body.reason_for_transfer
+      ? String(body.reason_for_transfer)
+      : undefined,
   };
 
   let draft;

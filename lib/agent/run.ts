@@ -621,6 +621,22 @@ export function toAthleteProfile(raw: Record<string, unknown>): AthleteProfile {
     next_camp_name: raw.next_camp_name ? String(raw.next_camp_name) : undefined,
     next_camp_date: raw.next_camp_date ? String(raw.next_camp_date) : undefined,
     recruit_type: raw.recruit_type === "transfer" ? "transfer" : "high_school",
+    current_college: raw.current_college
+      ? String(raw.current_college)
+      : undefined,
+    year_in_college: raw.year_in_college
+      ? String(raw.year_in_college)
+      : undefined,
+    in_transfer_portal:
+      raw.in_transfer_portal === "yes" ||
+      raw.in_transfer_portal === "considering" ||
+      raw.in_transfer_portal === "no"
+        ? raw.in_transfer_portal
+        : undefined,
+    years_eligibility_remaining: num(raw.years_eligibility_remaining) ?? undefined,
+    reason_for_transfer: raw.reason_for_transfer
+      ? String(raw.reason_for_transfer)
+      : undefined,
   };
 }
 

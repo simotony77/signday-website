@@ -36,6 +36,24 @@ const BOYS_LEAGUES = [
   { value: "OTHER", label: "Other (explain in notes)" },
 ];
 
+const YEARS_IN_COLLEGE = [
+  { value: "Fr", label: "Freshman" },
+  { value: "So", label: "Sophomore" },
+  { value: "Jr", label: "Junior" },
+  { value: "Sr", label: "Senior" },
+  { value: "RS-Fr", label: "Redshirt Freshman" },
+  { value: "RS-So", label: "Redshirt Sophomore" },
+  { value: "RS-Jr", label: "Redshirt Junior" },
+  { value: "RS-Sr", label: "Redshirt Senior" },
+  { value: "Grad", label: "Graduate / 5th year" },
+];
+
+const PORTAL_OPTIONS = [
+  { value: "yes", label: "Yes, in the NCAA transfer portal" },
+  { value: "considering", label: "Considering / exploring options" },
+  { value: "no", label: "Not in the portal yet" },
+];
+
 const DIVISIONS = [
   { value: "D1", label: "D1 only" },
   { value: "D2", label: "D2 only" },
@@ -82,6 +100,14 @@ export function OnboardingForm({
   const [recruitType, setRecruitType] = useState<"high_school" | "transfer">(
     "high_school"
   );
+  // Transfer-specific (used when recruitType === "transfer")
+  const [currentCollege, setCurrentCollege] = useState("");
+  const [yearInCollege, setYearInCollege] = useState("So");
+  const [inTransferPortal, setInTransferPortal] = useState<
+    "yes" | "considering" | "no"
+  >("considering");
+  const [yearsEligibility, setYearsEligibility] = useState("");
+  const [reasonForTransfer, setReasonForTransfer] = useState("");
   const [currentLeague, setCurrentLeague] = useState("ECNL");
   const [division, setDivision] = useState("D3");
   const [club, setClub] = useState("");
@@ -131,6 +157,14 @@ export function OnboardingForm({
       if (typeof d.division === "string" && d.division) setDivision(d.division);
       if (d.recruit_type === "transfer" || d.recruit_type === "high_school")
         setRecruitType(d.recruit_type);
+      if (typeof d.current_college === "string") setCurrentCollege(d.current_college);
+      if (typeof d.year_in_college === "string") setYearInCollege(d.year_in_college);
+      if (
+        d.in_transfer_portal === "yes" ||
+        d.in_transfer_portal === "considering" ||
+        d.in_transfer_portal === "no"
+      )
+        setInTransferPortal(d.in_transfer_portal);
     } catch {
       /* ignore */
     }
@@ -163,6 +197,20 @@ export function OnboardingForm({
         if (a.gender === "boys" || a.gender === "girls") setGender(a.gender);
         if (a.recruit_type === "transfer" || a.recruit_type === "high_school")
           setRecruitType(a.recruit_type);
+        if (typeof a.current_college === "string")
+          setCurrentCollege(a.current_college);
+        if (typeof a.year_in_college === "string")
+          setYearInCollege(a.year_in_college);
+        if (
+          a.in_transfer_portal === "yes" ||
+          a.in_transfer_portal === "considering" ||
+          a.in_transfer_portal === "no"
+        )
+          setInTransferPortal(a.in_transfer_portal);
+        if (typeof a.years_eligibility_remaining === "number")
+          setYearsEligibility(String(a.years_eligibility_remaining));
+        if (typeof a.reason_for_transfer === "string")
+          setReasonForTransfer(a.reason_for_transfer);
         if (typeof a.current_league === "string") setCurrentLeague(a.current_league);
         if (typeof a.division === "string") setDivision(a.division);
         if (typeof a.club === "string") setClub(a.club);
@@ -322,6 +370,15 @@ export function OnboardingForm({
             next_camp_name: campName.trim() || null,
             next_camp_date: campDate.trim() || null,
             recruit_type: recruitType,
+            // Transfer-specific (sent for both kinds; the agent only uses them
+            // when recruit_type === "transfer").
+            current_college: currentCollege.trim() || null,
+            year_in_college: yearInCollege || null,
+            in_transfer_portal: inTransferPortal,
+            years_eligibility_remaining: yearsEligibility.trim()
+              ? parseInt(yearsEligibility, 10) || null
+              : null,
+            reason_for_transfer: reasonForTransfer.trim() || null,
           },
           schools: filledSchools,
           notes: notes.trim() || null,
@@ -401,16 +458,18 @@ export function OnboardingForm({
             placeholder="Last name"
             className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
           />
-          <select
-            value={gradYear}
-            onChange={(e) => setGradYear(Number(e.target.value))}
-            className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
-          >
-            <option value={2027}>Class of 2027</option>
-            <option value={2028}>Class of 2028</option>
-            <option value={2029}>Class of 2029</option>
-            <option value={2030}>Class of 2030</option>
-          </select>
+          {recruitType === "high_school" && (
+            <select
+              value={gradYear}
+              onChange={(e) => setGradYear(Number(e.target.value))}
+              className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
+            >
+              <option value={2027}>Class of 2027</option>
+              <option value={2028}>Class of 2028</option>
+              <option value={2029}>Class of 2029</option>
+              <option value={2030}>Class of 2030</option>
+            </select>
+          )}
           <select
             value={position}
             onChange={(e) => setPosition(e.target.value)}
@@ -446,17 +505,19 @@ export function OnboardingForm({
             <option value="high_school">High school recruit</option>
             <option value="transfer">College transfer</option>
           </select>
-          <select
-            value={currentLeague}
-            onChange={(e) => setCurrentLeague(e.target.value)}
-            className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
-          >
-            {(gender === "boys" ? BOYS_LEAGUES : GIRLS_LEAGUES).map((l) => (
-              <option key={l.value} value={l.value}>
-                Current league: {l.label}
-              </option>
-            ))}
-          </select>
+          {recruitType === "high_school" && (
+            <select
+              value={currentLeague}
+              onChange={(e) => setCurrentLeague(e.target.value)}
+              className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
+            >
+              {(gender === "boys" ? BOYS_LEAGUES : GIRLS_LEAGUES).map((l) => (
+                <option key={l.value} value={l.value}>
+                  Current league: {l.label}
+                </option>
+              ))}
+            </select>
+          )}
           <select
             value={division}
             onChange={(e) => setDivision(e.target.value)}
@@ -468,28 +529,87 @@ export function OnboardingForm({
               </option>
             ))}
           </select>
-          <input
-            type="text"
-            value={club}
-            onChange={(e) => setClub(e.target.value)}
-            placeholder="Club name (e.g. Connecticut FC)"
-            required
-            className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
-          />
-          <input
-            type="text"
-            value={gpa}
-            onChange={(e) => setGpa(e.target.value)}
-            placeholder="GPA (e.g. 3.8)"
-            className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
-          />
-          <input
-            type="text"
-            value={testScore}
-            onChange={(e) => setTestScore(e.target.value)}
-            placeholder="ACT or SAT (optional)"
-            className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
-          />
+          {recruitType === "high_school" && (
+            <>
+              <input
+                type="text"
+                value={club}
+                onChange={(e) => setClub(e.target.value)}
+                placeholder="Club name (e.g. Connecticut FC)"
+                required={recruitType === "high_school"}
+                className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
+              />
+              <input
+                type="text"
+                value={gpa}
+                onChange={(e) => setGpa(e.target.value)}
+                placeholder="GPA (e.g. 3.8)"
+                className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
+              />
+              <input
+                type="text"
+                value={testScore}
+                onChange={(e) => setTestScore(e.target.value)}
+                placeholder="ACT or SAT (optional)"
+                className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
+              />
+            </>
+          )}
+          {recruitType === "transfer" && (
+            <>
+              <input
+                type="text"
+                value={currentCollege}
+                onChange={(e) => setCurrentCollege(e.target.value)}
+                placeholder="Current college (e.g. Lehigh University)"
+                required={recruitType === "transfer"}
+                className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400 sm:col-span-2"
+              />
+              <select
+                value={yearInCollege}
+                onChange={(e) => setYearInCollege(e.target.value)}
+                className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
+              >
+                {YEARS_IN_COLLEGE.map((y) => (
+                  <option key={y.value} value={y.value}>
+                    Year in college: {y.label}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={inTransferPortal}
+                onChange={(e) =>
+                  setInTransferPortal(
+                    e.target.value as "yes" | "considering" | "no"
+                  )
+                }
+                className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
+              >
+                {PORTAL_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    Portal status: {o.label}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="number"
+                min="1"
+                max="4"
+                value={yearsEligibility}
+                onChange={(e) => setYearsEligibility(e.target.value)}
+                placeholder="Years of eligibility remaining (1-4)"
+                className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
+              />
+              <input
+                type="text"
+                value={reasonForTransfer}
+                onChange={(e) => setReasonForTransfer(e.target.value)}
+                placeholder="Why looking to transfer (optional, e.g. more playing time)"
+                maxLength={200}
+                className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
+              />
+            </>
+          )}
           <input
             type="url"
             value={reelUrl}
