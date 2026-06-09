@@ -7,7 +7,15 @@ function getSupabase(): SupabaseClient | null {
   if (cached) return cached;
   const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return null;
+  if (!url || !key) {
+    console.error(
+      "[demoLog] Supabase env missing: SUPABASE_URL=" +
+        (!!url) +
+        " SUPABASE_SERVICE_ROLE_KEY=" +
+        (!!key)
+    );
+    return null;
+  }
   cached = createClient(url, key);
   return cached;
 }
@@ -35,10 +43,14 @@ export async function logDemoRun(
       typeof source === "string" && source.trim()
         ? source.trim().slice(0, 40)
         : "direct";
-    await supabase
+    const { error } = await supabase
       .from("demo_runs")
       .insert({ kind, school: school || null, ip_hash: ipHash, source: cleanSource });
-  } catch {
+    if (error) {
+      console.error("[demoLog] demo_runs insert failed:", error.message, error.details, error.hint);
+    }
+  } catch (e) {
+    console.error("[demoLog] demo_runs threw:", e instanceof Error ? e.message : e);
     /* analytics must never break the demo */
   }
 }
@@ -67,13 +79,17 @@ export async function saveDemoFeedback(
       typeof fields.source === "string" && fields.source.trim()
         ? fields.source.trim().slice(0, 40)
         : "direct";
-    await supabase.from("demo_feedback").insert({
+    const { error } = await supabase.from("demo_feedback").insert({
       feedback: fields.feedback.trim().slice(0, 1000),
       school_name: fields.school_name?.trim().slice(0, 120) || null,
       source: cleanSource,
       ip_hash: ipHash,
     });
-  } catch {
+    if (error) {
+      console.error("[demoLog] demo_feedback insert failed:", error.message, error.details, error.hint);
+    }
+  } catch (e) {
+    console.error("[demoLog] demo_feedback threw:", e instanceof Error ? e.message : e);
     /* feedback capture is opt-in best-effort; never blocks anything */
   }
 }
@@ -93,13 +109,17 @@ export async function saveDemoLead(fields: {
       typeof fields.source === "string" && fields.source.trim()
         ? fields.source.trim().slice(0, 40)
         : "direct";
-    await supabase.from("demo_leads").insert({
+    const { error } = await supabase.from("demo_leads").insert({
       email: fields.email.trim().toLowerCase().slice(0, 200),
       first_name: fields.first_name?.trim().slice(0, 50) || null,
       school_name: fields.school_name?.trim().slice(0, 120) || null,
       source: cleanSource,
     });
-  } catch {
+    if (error) {
+      console.error("[demoLog] demo_leads insert failed:", error.message, error.details, error.hint);
+    }
+  } catch (e) {
+    console.error("[demoLog] demo_leads threw:", e instanceof Error ? e.message : e);
     /* lead capture must never break the email send */
   }
 }
