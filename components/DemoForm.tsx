@@ -167,6 +167,11 @@ export function DemoForm() {
     "idle" | "sending" | "sent" | "error"
   >("idle");
   const [feedbackError, setFeedbackError] = useState("");
+  // Exit-intent modal: pops the same feedback pills when the cursor heads off
+  // the top of the viewport (closing the tab / going for the URL bar). Fires
+  // once per demo run, skipped if feedback already submitted.
+  const [showExitPrompt, setShowExitPrompt] = useState(false);
+  const [exitPromptShown, setExitPromptShown] = useState(false);
 
   // Capture utm_source (e.g. from a Google ad) so demo runs are attributable
   // to ad vs organic in the admin dashboard.
@@ -178,6 +183,32 @@ export function DemoForm() {
       /* ignore */
     }
   }, []);
+
+  // Exit-intent listener: cursor crossing the top edge of the viewport is the
+  // canonical "about to close the tab" signal on desktop. Only attach the
+  // listener while we have a result on screen and haven't already shown the
+  // prompt (or received feedback) for this demo run.
+  useEffect(() => {
+    if (!result) return;
+    if (exitPromptShown) return;
+    if (feedbackStatus === "sent") return;
+
+    function handleMouseLeave(e: MouseEvent) {
+      // clientY <= 0 means the cursor exited through the top of the viewport.
+      // Filters out side/bottom exits which aren't "I'm leaving" signals.
+      if (e.clientY <= 0) {
+        setShowExitPrompt(true);
+        setExitPromptShown(true);
+      }
+    }
+    document.documentElement.addEventListener("mouseleave", handleMouseLeave);
+    return () => {
+      document.documentElement.removeEventListener(
+        "mouseleave",
+        handleMouseLeave
+      );
+    };
+  }, [result, exitPromptShown, feedbackStatus]);
 
   function getSource(): string {
     try {
@@ -228,6 +259,8 @@ export function DemoForm() {
     setFeedbackMode("tags");
     setFeedbackStatus("idle");
     setFeedbackError("");
+    setShowExitPrompt(false);
+    setExitPromptShown(false);
 
     // Remember the athlete so onboarding can pre-fill it after they buy.
     try {
@@ -1059,6 +1092,127 @@ export function DemoForm() {
             <p className="text-xs text-gray-500 mt-3">
               Secure checkout via Stripe. Your details from this demo carry over, so onboarding takes a minute.
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* Exit-intent feedback modal — fires when the cursor leaves the top of
+          the viewport, catching the moment of churn with the lowest-friction
+          possible "tell me why" ask. */}
+      {showExitPrompt && feedbackStatus !== "sent" && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+          onClick={() => setShowExitPrompt(false)}
+        >
+          <div
+            className="relative bg-white border border-gray-200 rounded-2xl p-6 md:p-7 shadow-2xl max-w-lg w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setShowExitPrompt(false)}
+              aria-label="Close"
+              className="absolute top-3 right-3 w-8 h-8 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 flex items-center justify-center text-xl leading-none"
+            >
+              ×
+            </button>
+
+            {feedbackMode === "freetext" ? (
+              <>
+                <h3 className="text-lg font-bold text-gray-900 mb-1">
+                  Tell me what&apos;s stopping you.
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">
+                  Still anonymous. In one line.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="text"
+                    autoFocus
+                    value={feedback}
+                    onChange={(e) => setFeedback(e.target.value)}
+                    placeholder="In a sentence..."
+                    maxLength={1000}
+                    className="flex-1 rounded-lg border border-gray-300 focus:border-gray-500 focus:outline-none px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 bg-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => sendFeedback(feedback)}
+                    disabled={!feedback.trim() || feedbackStatus === "sending"}
+                    className="bg-gray-900 hover:bg-black disabled:opacity-60 text-white font-medium px-5 py-2.5 rounded-lg transition-colors whitespace-nowrap text-sm"
+                  >
+                    {feedbackStatus === "sending" ? "Sending..." : "Send"}
+                  </button>
+                </div>
+                {feedbackStatus === "error" && (
+                  <p className="text-xs text-red-600 mt-2">{feedbackError}</p>
+                )}
+              </>
+            ) : (
+              <>
+                <h3 className="text-lg font-bold text-gray-900 mb-1">
+                  Before you go — what&apos;s stopping you?
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">
+                  One click, anonymous. I read every one — it&apos;s the most useful thing you can give me.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {FEEDBACK_TAGS.map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      disabled={feedbackStatus === "sending"}
+                      onClick={() => sendFeedback(tag)}
+                      className="bg-white border border-gray-300 hover:border-gray-900 hover:bg-gray-50 text-sm text-gray-800 px-3 py-2 rounded-full transition-colors disabled:opacity-50"
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    disabled={feedbackStatus === "sending"}
+                    onClick={() => {
+                      setFeedback("");
+                      setFeedbackError("");
+                      setFeedbackStatus("idle");
+                      setFeedbackMode("freetext");
+                    }}
+                    className="bg-white border border-gray-300 hover:border-gray-900 hover:bg-gray-50 text-sm text-gray-700 px-3 py-2 rounded-full transition-colors disabled:opacity-50"
+                  >
+                    Something else…
+                  </button>
+                </div>
+                {feedbackStatus === "error" && (
+                  <p className="text-xs text-red-600 mt-2">{feedbackError}</p>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation toast after the exit-intent modal submits successfully */}
+      {showExitPrompt && feedbackStatus === "sent" && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+          onClick={() => setShowExitPrompt(false)}
+        >
+          <div
+            className="relative bg-white border border-gray-200 rounded-2xl p-7 shadow-2xl max-w-md w-full text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-3xl mb-2">🙏</div>
+            <h3 className="text-lg font-bold text-gray-900 mb-1">Thank you.</h3>
+            <p className="text-sm text-gray-600 mb-5">
+              Tony reads every one of these.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowExitPrompt(false)}
+              className="bg-gray-900 hover:bg-black text-white font-medium px-5 py-2.5 rounded-lg text-sm"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
