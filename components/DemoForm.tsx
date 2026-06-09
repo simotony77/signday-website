@@ -913,52 +913,9 @@ export function DemoForm() {
             </div>
           </div>
 
-          {/* Email me the full breakdown (lead capture) — prominent */}
-          <div className="relative bg-gradient-to-br from-amber-50 via-white to-amber-50 border-2 border-amber-300 rounded-2xl p-6 md:p-8 shadow-md">
-            <div className="absolute -top-3 left-6 bg-amber-500 text-white text-[11px] font-bold tracking-wider uppercase px-3 py-1 rounded-full shadow-sm">
-              Take it with you
-            </div>
-            {leadStatus === "sent" ? (
-              <div className="text-center py-2">
-                <div className="text-3xl mb-2">📬</div>
-                <h3 className="text-xl font-bold text-gray-900 mb-1">Sent. Check your inbox.</h3>
-                <p className="text-sm text-gray-600">
-                  The full {result.draft.school_name} breakdown for {firstName || "your athlete"} is on its way (give it a minute, and check spam if it&apos;s shy).
-                </p>
-              </div>
-            ) : (
-              <>
-                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
-                  Email me the full {result.draft.school_name} breakdown
-                </h3>
-                <p className="text-sm md:text-base text-gray-700 mb-5 leading-relaxed">
-                  Get the whole 4-step report for {firstName || "your athlete"} in your inbox: what the agent watches, what it flagged this week, the draft, and the Sunday digest preview. No spam, just the one email.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 max-w-xl">
-                  <input
-                    type="email"
-                    value={leadEmail}
-                    onChange={(e) => setLeadEmail(e.target.value)}
-                    placeholder="you@email.com"
-                    className="flex-1 rounded-xl border-2 border-amber-200 focus:border-amber-500 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400 bg-white"
-                  />
-                  <button
-                    type="button"
-                    onClick={sendLead}
-                    disabled={leadStatus === "sending"}
-                    className="bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-white font-semibold px-6 py-3 rounded-xl transition-colors whitespace-nowrap shadow-sm"
-                  >
-                    {leadStatus === "sending" ? "Sending..." : `Email me the ${result.draft.school_name} breakdown`}
-                  </button>
-                </div>
-                {leadStatus === "error" && (
-                  <p className="text-sm text-red-600 mt-2">{leadError}</p>
-                )}
-              </>
-            )}
-          </div>
-
-          {/* Anonymous feedback — one-click tags with freetext fallback */}
+          {/* Anonymous feedback — moved above the amber lead-capture so
+              prospects who are about to bounce see it BEFORE the "give us
+              your email" ask, while attention is still on the draft. */}
           <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 md:p-6">
             {feedbackStatus === "sent" ? (
               <div className="text-center py-1">
@@ -1032,6 +989,51 @@ export function DemoForm() {
                 </div>
                 {feedbackStatus === "error" && (
                   <p className="text-xs text-red-600 mt-2">{feedbackError}</p>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Email me the full breakdown (lead capture) — prominent */}
+          <div className="relative bg-gradient-to-br from-amber-50 via-white to-amber-50 border-2 border-amber-300 rounded-2xl p-6 md:p-8 shadow-md">
+            <div className="absolute -top-3 left-6 bg-amber-500 text-white text-[11px] font-bold tracking-wider uppercase px-3 py-1 rounded-full shadow-sm">
+              Take it with you
+            </div>
+            {leadStatus === "sent" ? (
+              <div className="text-center py-2">
+                <div className="text-3xl mb-2">📬</div>
+                <h3 className="text-xl font-bold text-gray-900 mb-1">Sent. Check your inbox.</h3>
+                <p className="text-sm text-gray-600">
+                  The full {result.draft.school_name} breakdown for {firstName || "your athlete"} is on its way (give it a minute, and check spam if it&apos;s shy).
+                </p>
+              </div>
+            ) : (
+              <>
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
+                  Email me the full {result.draft.school_name} breakdown
+                </h3>
+                <p className="text-sm md:text-base text-gray-700 mb-5 leading-relaxed">
+                  Get the whole 4-step report for {firstName || "your athlete"} in your inbox: what the agent watches, what it flagged this week, the draft, and the Sunday digest preview. No spam, just the one email.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 max-w-xl">
+                  <input
+                    type="email"
+                    value={leadEmail}
+                    onChange={(e) => setLeadEmail(e.target.value)}
+                    placeholder="you@email.com"
+                    className="flex-1 rounded-xl border-2 border-amber-200 focus:border-amber-500 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400 bg-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={sendLead}
+                    disabled={leadStatus === "sending"}
+                    className="bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-white font-semibold px-6 py-3 rounded-xl transition-colors whitespace-nowrap shadow-sm"
+                  >
+                    {leadStatus === "sending" ? "Sending..." : `Email me the ${result.draft.school_name} breakdown`}
+                  </button>
+                </div>
+                {leadStatus === "error" && (
+                  <p className="text-sm text-red-600 mt-2">{leadError}</p>
                 )}
               </>
             )}
