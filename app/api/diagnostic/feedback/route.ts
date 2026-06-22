@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 // passing, and inserts are landing. Saves greping Vercel logs.
 //
 // Usage:
-//   curl "https://www.signdayapp.com/api/_diagnostic/feedback?key=<ADMIN_SECRET>"
+//   curl "https://www.signdayapp.com/api/diagnostic/feedback?key=<ADMIN_SECRET>"
 // or paste that URL in a browser. Same admin key as /admin.
 
 function checkKey(provided: string): boolean {
