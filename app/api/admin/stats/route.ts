@@ -5,7 +5,7 @@ import { timingSafeEqual } from "node:crypto";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const PRICE_MONTHLY = 99;
+const PRICE_MONTHLY = 39;
 
 function checkKey(provided: string): boolean {
   const secret = process.env.ADMIN_SECRET || "";

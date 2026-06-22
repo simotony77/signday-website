@@ -1081,7 +1081,7 @@ export function DemoForm() {
               Your athlete keeps playing, you keep being present at games, and the agent does the spreadsheet + email work in the background. Drafts land in your inbox. You approve and send via Gmail.
             </p>
             <div className="flex flex-wrap justify-center gap-2 mb-6 text-sm">
-              <span className="bg-white border border-brand-100 text-gray-700 px-3 py-1.5 rounded-full">$99/month</span>
+              <span className="bg-white border border-brand-100 text-gray-700 px-3 py-1.5 rounded-full">$39/month</span>
               <span className="bg-white border border-brand-100 text-gray-700 px-3 py-1.5 rounded-full">Cancel anytime, one click</span>
               <span className="bg-white border border-brand-100 text-gray-700 px-3 py-1.5 rounded-full">No contract</span>
               <span className="bg-white border border-brand-100 text-gray-700 px-3 py-1.5 rounded-full">First digest {upcomingSundayLabel()}</span>

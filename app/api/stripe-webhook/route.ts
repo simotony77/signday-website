@@ -115,7 +115,7 @@ export async function POST(req: Request) {
               subject: "Welcome to SignDay. One more step.",
               text: `Hi,
 
-Welcome to SignDay. Your $99/month subscription is active.
+Welcome to SignDay. Your $39/month subscription is active.
 
 To get your first weekly digest this Sunday, I need to know about your athlete and the schools you're tracking. Takes about 3 minutes.
 

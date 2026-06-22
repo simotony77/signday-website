@@ -46,8 +46,8 @@ const FAQ = [
     a: "Cancel anytime from your Account page (link in the top nav). Enter the email you used at checkout, you'll be sent to Stripe's secure billing portal where one click cancels. No hoops, no retention emails.",
   },
   {
-    q: "Why $99/month?",
-    a: "Recruiting is already costing your family $10K+/year in club fees, ID camps, and travel. SignDay turns 5 hours of weekly admin work into 15 minutes of approving drafts. If it's not saving you time after the first month, cancel in one click.",
+    q: "Why $39/month?",
+    a: "Recruiting is already costing your family $10K+/year in club fees, ID camps, and travel. SignDay turns 5 hours of weekly admin work into 15 minutes of approving drafts on Sunday morning. Quiet weeks (where nothing changed at any of your schools) are honest, by design. If it's not saving you time after the first month, cancel in one click.",
   },
 ];
 
@@ -74,7 +74,7 @@ export default function Home() {
           <div className="mt-10 flex flex-col items-center">
             <BuyButton />
             <p className="text-xs text-gray-500 mt-4">
-              $99/month. Secure checkout via Stripe. Cancel anytime, one click. Your first weekly digest arrives this Sunday at 7 AM Eastern.
+              $39/month. Secure checkout via Stripe. Cancel anytime, one click. Your first weekly digest arrives this Sunday at 7 AM Eastern.
             </p>
           </div>
         </div>
@@ -276,7 +276,7 @@ export default function Home() {
             <div className="bg-white border-2 border-gray-200 rounded-2xl p-6">
               <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">Monthly</div>
               <div className="mt-2 flex items-baseline justify-center">
-                <span className="text-4xl font-extrabold text-gray-900">$99</span>
+                <span className="text-4xl font-extrabold text-gray-900">$39</span>
                 <span className="text-base text-gray-500 ml-1">/mo</span>
               </div>
               <p className="text-sm text-gray-600 mt-2">Cancel anytime, one click.</p>
@@ -360,7 +360,7 @@ export default function Home() {
             Stop spending Sundays in your athlete&apos;s recruiting spreadsheet.
           </h2>
           <p className="text-lg text-gray-600 mb-8">
-            Start today. $99/month, cancel anytime. Your first weekly digest arrives this Sunday at 7 AM Eastern.
+            Start today. $39/month, cancel anytime. Your first weekly digest arrives this Sunday at 7 AM Eastern.
           </p>
           <div className="flex justify-center">
             <BuyButton />

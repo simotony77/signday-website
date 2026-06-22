@@ -77,7 +77,7 @@ function buildLeadEmail(
   t.push(`---- ONE EMAIL, EVERY SUNDAY ----`);
   t.push(`Multiply this by every school on your athlete's list. SignDay watches them all, every week, and your Sunday digest pulls together the drafts that are ready. You approve and send from your athlete's Gmail.`);
   t.push(``);
-  t.push(`$99/month, cancel anytime. Start here: ${origin}/?utm_source=demo_email`);
+  t.push(`$39/month, cancel anytime. Start here: ${origin}/?utm_source=demo_email`);
   t.push(``);
   t.push(`Tony @ SignDay`);
 
@@ -147,7 +147,7 @@ function buildLeadEmail(
   h.push(`<p style="line-height:1.65; color:#374151; margin-top:8px;">Multiply this by every school on your athlete's list. SignDay watches them all, every week, and your Sunday digest pulls together the drafts that are ready. You approve and send from your athlete's Gmail.</p>`);
   h.push(`<div style="margin-top:18px; padding:18px; background:#F9FAFB; border:1px solid #E5E7EB; border-radius:10px; text-align:center;">`);
   h.push(`<div style="font-weight:700; font-size:16px; color:#111827;">Want this for ${escapeHtml(who)}'s whole list?</div>`);
-  h.push(`<div style="color:#6B7280; font-size:13px; margin-top:4px;">$99/month · cancel anytime, one click · no contract</div>`);
+  h.push(`<div style="color:#6B7280; font-size:13px; margin-top:4px;">$39/month · cancel anytime, one click · no contract</div>`);
   h.push(`<a href="${escapeHtml(origin)}/?utm_source=demo_email" style="display:inline-block; margin-top:14px; background:#1A56DB; color:#fff; text-decoration:none; font-weight:600; font-size:14px; padding:11px 22px; border-radius:8px;">Get SignDay</a>`);
   h.push(`</div>`);
 
