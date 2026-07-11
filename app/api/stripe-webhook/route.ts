@@ -62,6 +62,19 @@ export async function POST(req: Request) {
           break;
         }
 
+        // This Stripe account is shared with other apps. Only act on SignDay's
+        // own subscriptions, which we tag at checkout with source=signdayapp.com.
+        // Without this, a payment in a sibling app would create a phantom
+        // SignDay customer here.
+        if (!stripeSubscriptionId) {
+          break;
+        }
+        const guardSub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+        if (guardSub.metadata?.source !== "signdayapp.com") {
+          console.log("stripe-webhook: ignoring non-SignDay checkout", session.id);
+          break;
+        }
+
         const referredBy =
           (session.metadata?.referred_by || "").trim() || null;
 
@@ -168,6 +181,9 @@ Once they submit the onboarding form, you'll get another notification with their
 
       case "customer.subscription.updated":
       case "customer.subscription.deleted": {
+        // Safe for the shared account as-is: this updates a row by
+        // stripe_customer_id, so a sibling app's customer simply matches
+        // nothing here (0 rows) instead of creating anything.
         const sub = event.data.object as Stripe.Subscription;
         const status =
           event.type === "customer.subscription.deleted" ? "cancelled" : sub.status;
