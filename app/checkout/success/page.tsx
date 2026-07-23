@@ -21,7 +21,7 @@ export default function CheckoutSuccessPage() {
             Welcome to SignDay.
           </h1>
           <p className="text-lg text-gray-600 mt-5 leading-relaxed">
-            Your $39/month subscription is active. Check your inbox in a minute. I&apos;ve sent you a quick onboarding form so I can set up the agent for your athlete and your specific school list. Your first weekly digest arrives this Sunday.
+            Your $19.99/month subscription is active. Check your inbox in a minute. I&apos;ve sent you a quick onboarding form so I can set up the agent for your athlete and your specific school list. Your first weekly digest arrives this Sunday.
           </p>
 
           <div className="mt-10 bg-white border border-gray-200 rounded-2xl p-6 md:p-8 text-left shadow-sm">

@@ -2,52 +2,58 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { BuyButton } from "@/components/BuyButton";
 
+const SPORTS_COVERED = ["Soccer", "Volleyball", "Baseball", "Softball", "Lacrosse"];
+
 const BULLETS = [
   {
     icon: "🔍",
-    title: "We watch your target schools",
-    body: "Every week we re-read each program's roster, coaching staff, and game results. Graduating seniors at the position. New or departing coaches. A win worth congratulating. You stop refreshing athletics sites at midnight.",
+    title: "Every roster, re-read weekly",
+    body: "We watch the official roster of every school on your list — players, class years, coaching staff. When something changes, you know that Sunday. You stop refreshing athletics sites at midnight.",
   },
   {
-    icon: "✉️",
-    title: "We draft personalized outreach",
-    body: "When something opens a door (a senior at the position graduates, a coach change, a recent win), we draft a coach email grounded in that program's real roster and recent results. Ready for your approval, sent from your athlete's own Gmail so coaches actually read it.",
+    icon: "🎯",
+    title: "Position openings, flagged",
+    body: "The flag that matters: “2 of 3 setters on the roster graduate by spring 2027 — the class your athlete would join.” We read every class year at your kid's position and tell you where a spot is opening, school by school.",
   },
   {
-    icon: "🔁",
-    title: "We chase the follow-ups",
-    body: "Every stalled thread, every Sunday digest. We track what coaches say, when they go silent, and queue the right follow-up at the right time. Until your athlete commits.",
+    icon: "📬",
+    title: "One email, every Sunday",
+    body: "No dashboard to remember, no app to check. A weekly digest with your position watch, roster and coach changes, and — when something genuinely opens a door — a ready-to-edit coach email as a bonus.",
   },
 ];
 
 const FAQ = [
   {
-    q: "What sports and divisions does it cover?",
-    a: "Boys' and girls' college soccer, any division: D1, D2, D3, or NAIA. Drafts tune to the division(s) you're targeting (academic-fit framing for D3, more athletic-profile-forward for D1/D2). Started with my daughter's recruiting (D3 women's) and broadened from there.",
+    q: "What sports does it cover?",
+    a: "Soccer (men's and women's), women's volleyball, baseball, softball, and lacrosse (men's and women's). Any division: D1, D2, D3, or NAIA. It started with my daughter's soccer recruiting and expanded to the sports with the same problem: published rosters, positional scarcity, and families doing the tracking by hand.",
+  },
+  {
+    q: "How do the position flags work?",
+    a: "Every week we read each school's official roster and every player's class year at your athlete's position. Then we answer the only question that matters: how many of them are gone by the year your athlete would arrive? Two graduating setters in 2027 means a 2027 setter has a real door. Four freshman keepers means a tough room. You see it school by school, every Sunday.",
+  },
+  {
+    q: "Where does the data come from?",
+    a: "The schools' own athletics websites — the same roster pages coaches maintain. We re-read them weekly, compare against last week, and filter out the noise (page glitches, formatting changes) so you only see real moves.",
+  },
+  {
+    q: "Do you email coaches for us?",
+    a: "You send, we draft. When a genuine opening appears — a coach change, a big win, a position gap — the digest includes a ready-to-edit email grounded in that program's real data. Your athlete edits it and sends it from their own Gmail, so it lands as a real personal email, not platform spam.",
   },
   {
     q: "I'm a college player looking to transfer — does it work for me?",
-    a: "Yes. The agent monitors the same things either way: roster changes, coaching moves, graduating seniors, recent results. For transfers, the drafts read as a current college player reaching out, not a high school intro: your year in college, your role at your current program, what you bring on the field now. Toggle 'College transfer' on the demo or in onboarding.",
+    a: "Yes. The monitoring is identical: roster changes, coaching moves, graduating players at your position. Toggle 'College transfer' in onboarding and any drafts read as a current college player reaching out, not a high school intro.",
   },
   {
     q: "What about NCAA D1 contact rules?",
-    a: "Your athlete can email D1 coaches anytime, that part isn't restricted. What NCAA rules limit is when D1 coaches can directly reply (for soccer, generally June 15 after sophomore year). So if you're targeting D1 with a freshman or early sophomore, expect responses to be limited or generic until then. The agent still sends the drafts, but the timing of when coaches can engage isn't up to us. D3 and NAIA don't have the same restrictions. See ncaa.org for the current calendar.",
-  },
-  {
-    q: "Who actually sends the emails?",
-    a: "You do. Drafts arrive in your inbox; you click \"Send via Gmail\" from your athlete's account. That's why coaches actually read them. Mail from a real Gmail address gets through. Mail from broadcast platforms gets buried.",
-  },
-  {
-    q: "Won't coaches notice it's templated?",
-    a: "Each draft is grounded in that program's real data: graduating seniors at the position, the head coach's name, recent game results, and recent program news we research. No invented claims about playing style, no unfilled brackets. You always edit before sending. The point isn't to fake personal. It's to make personal fast.",
+    a: "Watching rosters is always allowed — that's public information. Your athlete can also email D1 coaches anytime; what NCAA rules limit is when D1 coaches can reply directly (generally June 15 after sophomore year for most sports). D3 and NAIA don't have the same restrictions. See ncaa.org for the current calendar.",
   },
   {
     q: "What happens when my kid commits?",
     a: "Cancel anytime from your Account page (link in the top nav). Enter the email you used at checkout, you'll be sent to Stripe's secure billing portal where one click cancels. No hoops, no retention emails.",
   },
   {
-    q: "Why $39/month?",
-    a: "Recruiting is already costing your family $10K+/year in club fees, ID camps, and travel. SignDay turns 5 hours of weekly admin work into 15 minutes of approving drafts on Sunday morning. Quiet weeks (where nothing changed at any of your schools) are honest, by design. If it's not saving you time after the first month, cancel in one click.",
+    q: "Why $19.99/month?",
+    a: "It's less than one tank of gas to a showcase. Recruiting is already costing your family thousands a year in club fees, camps, and travel — this is the cheap part that makes the rest of it land at the right schools at the right time. If it's not earning its keep, cancel in one click.",
   },
 ];
 
@@ -60,21 +66,33 @@ export default function Home() {
       <section className="relative overflow-hidden bg-gradient-to-b from-brand-50 via-white to-white">
         <div className="max-w-4xl mx-auto px-6 pt-16 pb-20 md:pt-24 md:pb-28 text-center">
           <div className="inline-block bg-brand-100 text-brand-700 text-xs font-semibold px-3 py-1 rounded-full mb-6 uppercase tracking-wider">
-            For parents of college soccer recruits
+            For parents of college recruits
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight tracking-tight">
-            The recruiting work<br />you don&apos;t have time to do.<br />
-            <span className="text-brand-600">done for you.</span>
+            We watch every roster<br />on your kid&apos;s list.<br />
+            <span className="text-brand-600">You&apos;ll know when a spot opens.</span>
           </h1>
           <p className="text-lg md:text-xl text-gray-600 mt-6 max-w-2xl mx-auto leading-relaxed">
-            An AI assistant for high school recruits and college transfers, boys and girls, any division. We monitor your target schools,
-            draft outreach to coaches, and chase follow-ups, so you can stop spending Sundays in your athlete&apos;s recruiting spreadsheet.
+            A weekly roster tracker for recruiting families. We re-read every target school&apos;s
+            roster, flag when players at your athlete&apos;s position are graduating, and catch
+            coach changes — in one Sunday email.
           </p>
+
+          <div className="mt-6 flex flex-wrap justify-center gap-2">
+            {SPORTS_COVERED.map((s) => (
+              <span
+                key={s}
+                className="bg-white border border-gray-200 text-gray-700 text-xs font-semibold px-3 py-1.5 rounded-full"
+              >
+                {s}
+              </span>
+            ))}
+          </div>
 
           <div className="mt-10 flex flex-col items-center">
             <BuyButton />
             <p className="text-xs text-gray-500 mt-4">
-              $39/month. Secure checkout via Stripe. Cancel anytime, one click. Your first weekly digest arrives this Sunday at 7 AM Eastern.
+              $19.99/month. Secure checkout via Stripe. Cancel anytime, one click. Your first weekly digest arrives this Sunday at 7 AM Eastern.
             </p>
           </div>
         </div>
@@ -100,17 +118,17 @@ export default function Home() {
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-              Here&apos;s what your inbox will look like.
+              Here&apos;s what lands in your inbox every Sunday.
             </h2>
             <p className="text-base text-gray-600 mt-3 max-w-2xl mx-auto">
-              Three things, every week. No notifications between. No dashboard you have to remember to check.
+              One email a week. No notifications between. No dashboard you have to remember to check.
             </p>
           </div>
 
-          {/* Mockup 1 — Sunday digest */}
+          {/* Mockup 1 — Position watch */}
           <div className="mb-12">
             <h3 className="text-xs font-bold text-brand-600 uppercase tracking-wider mb-3 ml-1">
-              1. Sunday morning digest
+              1. Your position watch
             </h3>
             <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
               <div className="border-b border-gray-100 px-6 py-4">
@@ -118,149 +136,104 @@ export default function Home() {
                   <div className="w-9 h-9 rounded-full bg-brand-600 flex items-center justify-center text-white text-xs font-bold">SD</div>
                   <div className="flex-1">
                     <div className="text-sm font-semibold text-gray-900">SignDay</div>
-                    <div className="text-xs text-gray-500">to me · Sun May 17, 7:00 AM</div>
+                    <div className="text-xs text-gray-500">to me · Sun, 7:00 AM</div>
                   </div>
                 </div>
-                <div className="mt-3 text-base font-semibold text-gray-900">Your weekly digest: Maya, 4 weeks to summer ID camps</div>
+                <div className="mt-3 text-base font-semibold text-gray-900">Weekly digest: Maya (2027, GK) — 8 schools watched</div>
               </div>
               <div className="p-6 space-y-5 text-sm">
                 <div>
-                  <div className="font-semibold text-gray-900 mb-2">3 things changed this week</div>
+                  <div className="font-semibold text-gray-900 mb-2">Position watch — goalkeeper, school by school</div>
                   <ul className="space-y-1.5 text-gray-700 leading-relaxed">
-                    <li>• Williams head coach posted Saturday&apos;s 4-1 win. Good moment to reach out.</li>
-                    <li>• Tufts senior center-mid graduating spring 2027. They&apos;ll be looking at the position.</li>
-                    <li>• Bowdoin announced 2 new midfielder commits for Class of 2026. May slow our timeline there.</li>
+                    <li>• <span className="font-medium">Williams:</span> 1 of 3 goalkeepers graduates by spring 2027 — the class Maya would join. A spot should be opening.</li>
+                    <li>• <span className="font-medium">Tufts:</span> 2 of 3 goalkeepers graduate by spring 2027. A spot should be opening.</li>
+                    <li>• <span className="font-medium">Bowdoin:</span> All 3 goalkeepers are underclassmen through 2027 — expect tighter competition.</li>
+                    <li>• <span className="font-medium">Amherst:</span> No goalkeepers listed on the current roster — often a recruiting priority.</li>
                   </ul>
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900 mb-2">3 drafts waiting for your approval</div>
+                  <div className="font-semibold text-gray-900 mb-2">What changed this week</div>
                   <ul className="space-y-1.5 text-gray-700 leading-relaxed">
-                    <li>• Williams: congrats-on-win follow-up</li>
-                    <li>• Amherst: new head coach introduction</li>
-                    <li>• Carleton: 21-day re-engagement</li>
+                    <li>• Amherst hired a new goalkeeper coach.</li>
+                    <li>• Wesleyan removed a senior keeper from the roster. Possible early departure.</li>
+                    <li>• Williams posted Saturday&apos;s 4-1 win.</li>
                   </ul>
                 </div>
-                <div>
-                  <div className="font-semibold text-gray-900 mb-2">2 schools quiet (21+ days)</div>
-                  <ul className="space-y-1.5 text-gray-700 leading-relaxed">
-                    <li>• Pomona: no reply since April 14. Suggest dropping or one more attempt.</li>
-                    <li>• Amherst: coach changed last month. Restart sequence?</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Mockup 2 — Coach draft */}
-          <div className="mb-12">
-            <h3 className="text-xs font-bold text-brand-600 uppercase tracking-wider mb-3 ml-1">
-              2. Drafts your athlete approves and sends
-            </h3>
-            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-              <div className="bg-gray-50 border-b border-gray-100 px-6 py-3 text-sm space-y-1">
-                <div><span className="text-gray-500 w-16 inline-block">From:</span><span className="text-gray-900">maya.chen.27@gmail.com</span></div>
-                <div><span className="text-gray-500 w-16 inline-block">To:</span><span className="text-gray-900">wsoccer@williams.edu</span></div>
-                <div><span className="text-gray-500 w-16 inline-block">Subject:</span><span className="text-gray-900 font-semibold">Saturday&apos;s win + Class of 2027 midfielder follow-up</span></div>
-              </div>
-              <div className="p-6 text-sm text-gray-700 leading-relaxed space-y-3">
-                <p>Hi Coach,</p>
-                <p>Congrats on Saturday&apos;s 4-1 win against Wesleyan. Saw the second-half stretch where your midfield locked it down at 3-1. Composed under pressure.</p>
-                <p>I&apos;m Maya Chen, a 2027 central midfielder with a 3.8 GPA and 1380 SAT, playing club in the ECNL. I reached out back in March, and I know your senior central-mid is graduating, so the midfield is one to watch for next cycle. I&apos;ve been working specifically on tempo control and switching the field.</p>
-                <p>Updated reel and academic transcript here: [link]. I&apos;ll be at the New England ID Camp June 14–16 and could come up to campus if your schedule allows. Otherwise happy to Zoom whenever works.</p>
-                <p>Best,<br />Maya</p>
-              </div>
-              <div className="bg-gray-50 border-t border-gray-100 px-6 py-3">
-                <button className="bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2 rounded-lg">
-                  Open in Gmail to edit &amp; send
-                </button>
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-3 ml-1 leading-relaxed">
-              Every draft pulls real data: graduating seniors at the position, the program&apos;s recent results, and recent program news we research. Then your athlete edits in her voice and sends from her own Gmail. No SignDay tracking URL. No generic boilerplate. No unfilled brackets.
+              The same flags work for every sport we cover: graduating setters for a volleyball family, senior pitchers for a baseball family, keepers for soccer.
             </p>
           </div>
 
-          {/* Mockup 3 — School tracker */}
-          <div>
+          {/* Mockup 2 — School tracker */}
+          <div className="mb-12">
             <h3 className="text-xs font-bold text-brand-600 uppercase tracking-wider mb-3 ml-1">
-              3. Your school tracker
+              2. Your school tracker
             </h3>
             <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
               <div className="bg-gray-50 border-b border-gray-100 px-6 py-3 flex items-center justify-between">
                 <div className="text-sm font-semibold text-gray-900">Maya&apos;s schools (8 active)</div>
-                <div className="text-xs text-gray-500">Updated Sun May 17, 7:00 AM</div>
+                <div className="text-xs text-gray-500">Updated Sun, 7:00 AM</div>
               </div>
               <div className="divide-y divide-gray-100">
                 <div className="px-6 py-3 flex items-center gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900">Williams</div>
-                    <div className="text-xs text-gray-500">Last reply: 4 days ago</div>
+                    <div className="text-xs text-gray-500">Spot opening at GK · 2027</div>
                   </div>
                   <span className="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-700 whitespace-nowrap">Replied</span>
-                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Send win follow-up</div>
                 </div>
                 <div className="px-6 py-3 flex items-center gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900">Tufts</div>
-                    <div className="text-xs text-gray-500">Awaiting response</div>
+                    <div className="text-xs text-gray-500">2 keepers graduating by 2027</div>
                   </div>
                   <span className="text-xs font-semibold px-2 py-1 rounded-full bg-blue-100 text-blue-700 whitespace-nowrap">Waiting 4d</span>
-                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Awaiting reply</div>
                 </div>
                 <div className="px-6 py-3 flex items-center gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900">Bowdoin</div>
-                    <div className="text-xs text-gray-500">Visit invite received</div>
-                  </div>
-                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-700 whitespace-nowrap">Replied</span>
-                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Confirm June visit</div>
-                </div>
-                <div className="px-6 py-3 flex items-center gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-gray-900">Carleton</div>
-                    <div className="text-xs text-gray-500">Sent April 23</div>
+                    <div className="text-xs text-gray-500">Tight room at GK through 2027</div>
                   </div>
                   <span className="text-xs font-semibold px-2 py-1 rounded-full bg-orange-100 text-orange-700 whitespace-nowrap">Silent 21d</span>
-                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Re-engagement draft ready</div>
-                </div>
-                <div className="px-6 py-3 flex items-center gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-gray-900">Middlebury</div>
-                    <div className="text-xs text-gray-500">Awaiting response</div>
-                  </div>
-                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-blue-100 text-blue-700 whitespace-nowrap">Waiting 8d</span>
-                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Re-engagement draft ready</div>
-                </div>
-                <div className="px-6 py-3 flex items-center gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-gray-900">Pomona</div>
-                    <div className="text-xs text-gray-500">Sent April 14</div>
-                  </div>
-                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-red-100 text-red-700 whitespace-nowrap">Silent 33d</span>
-                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Suggest dropping</div>
                 </div>
                 <div className="px-6 py-3 flex items-center gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-gray-900">Amherst</div>
-                    <div className="text-xs text-gray-500">New coach hired</div>
+                    <div className="text-xs text-gray-500">New coach hired last month</div>
                   </div>
                   <span className="text-xs font-semibold px-2 py-1 rounded-full bg-purple-100 text-purple-700 whitespace-nowrap">Coach changed</span>
-                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Restart sequence</div>
-                </div>
-                <div className="px-6 py-3 flex items-center gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-gray-900">Macalester</div>
-                    <div className="text-xs text-gray-500">First contact pending</div>
-                  </div>
-                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-gray-100 text-gray-700 whitespace-nowrap">Not yet contacted</span>
-                  <div className="hidden sm:block text-xs text-gray-600 w-44 text-right">Not contacted yet</div>
                 </div>
               </div>
             </div>
           </div>
 
+          {/* Mockup 3 — Bonus draft */}
+          <div>
+            <h3 className="text-xs font-bold text-brand-600 uppercase tracking-wider mb-3 ml-1">
+              3. Bonus: when a door opens, a draft is ready
+            </h3>
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+              <div className="bg-gray-50 border-b border-gray-100 px-6 py-3 text-sm space-y-1">
+                <div><span className="text-gray-500 w-16 inline-block">From:</span><span className="text-gray-900">maya.chen.27@gmail.com</span></div>
+                <div><span className="text-gray-500 w-16 inline-block">To:</span><span className="text-gray-900">wsoccer@williams.edu</span></div>
+                <div><span className="text-gray-500 w-16 inline-block">Subject:</span><span className="text-gray-900 font-semibold">2027 goalkeeper + Saturday&apos;s win</span></div>
+              </div>
+              <div className="p-6 text-sm text-gray-700 leading-relaxed space-y-3">
+                <p>Hi Coach,</p>
+                <p>Congrats on Saturday&apos;s 4-1 win against Wesleyan. I&apos;m Maya Chen, a 2027 goalkeeper with a 3.8 GPA, playing club in the ECNL. I know your senior keeper graduates in the spring, so I wanted to introduce myself ahead of next cycle.</p>
+                <p>Updated reel here: [link]. I&apos;ll be at the New England ID Camp June 14-16 and could come to campus if your schedule allows.</p>
+                <p>Best,<br />Maya</p>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 mt-3 ml-1 leading-relaxed">
+              Grounded in that program&apos;s real roster and results — no invented claims, no unfilled brackets. Your athlete edits it in their own voice and sends from their own Gmail. Included with every subscription.
+            </p>
+          </div>
+
           <p className="text-center text-xs text-gray-400 mt-10 max-w-xl mx-auto">
-            Previews of the actual weekly email and your tracker. You approve every draft and send it yourself, and the tracker is yours to keep current. Onboarding takes 3 minutes; your first digest arrives this Sunday.
+            Previews of the actual weekly email and tracker. Onboarding takes 3 minutes; your first digest arrives this Sunday.
           </p>
         </div>
       </section>
@@ -269,14 +242,14 @@ export default function Home() {
       <section className="py-20 md:py-24 bg-white">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Simple pricing.</h2>
-          <p className="text-lg text-gray-600 mb-10">One agent. One athlete. One subscription.</p>
+          <p className="text-lg text-gray-600 mb-10">One athlete. Up to 12 schools. One subscription.</p>
 
           <div className="grid sm:grid-cols-2 gap-4">
             {/* Monthly */}
             <div className="bg-white border-2 border-gray-200 rounded-2xl p-6">
               <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">Monthly</div>
               <div className="mt-2 flex items-baseline justify-center">
-                <span className="text-4xl font-extrabold text-gray-900">$39</span>
+                <span className="text-4xl font-extrabold text-gray-900">$19.99</span>
                 <span className="text-base text-gray-500 ml-1">/mo</span>
               </div>
               <p className="text-sm text-gray-600 mt-2">Cancel anytime, one click.</p>
@@ -285,14 +258,14 @@ export default function Home() {
             {/* Annual */}
             <div className="bg-brand-600 rounded-2xl p-6 text-white relative">
               <div className="absolute -top-3 right-4 bg-white text-brand-700 rounded-full px-3 py-1 text-xs font-semibold">
-                SAVE 33%
+                SAVE 38%
               </div>
               <div className="text-sm font-medium opacity-90 uppercase tracking-wider">Annual</div>
               <div className="mt-2 flex items-baseline justify-center">
-                <span className="text-4xl font-extrabold">$799</span>
+                <span className="text-4xl font-extrabold">$149</span>
                 <span className="text-base opacity-80 ml-1">/yr</span>
               </div>
-              <p className="text-sm text-blue-100 mt-2">~$66/month. Save $389/year.</p>
+              <p className="text-sm text-blue-100 mt-2">~$12.40/month. Save $91/year.</p>
             </div>
           </div>
 
@@ -314,7 +287,7 @@ export default function Home() {
                   <a href="/account" className="text-brand-600 hover:text-brand-700 underline">
                     your account page
                   </a>{" "}
-                  opens Stripe&apos;s billing portal. Monthly billing means you only pay for what you use. If the agent isn&apos;t saving you time, you stop.
+                  opens Stripe&apos;s billing portal. If the tracker isn&apos;t earning its keep, you stop.
                 </p>
               </div>
             </div>
@@ -327,10 +300,10 @@ export default function Home() {
         <div className="max-w-3xl mx-auto px-6 text-center">
           <div className="text-4xl mb-4">⚽</div>
           <h2 className="text-2xl md:text-3xl font-bold mb-6">
-            Built by a dad in the middle of his own daughter&apos;s college soccer recruiting.
+            Built by a dad in the middle of his own daughter&apos;s recruiting.
           </h2>
           <blockquote className="text-lg md:text-xl leading-relaxed text-blue-100 italic">
-            &quot;I&apos;m a soccer dad. My daughter is Class of 2027, deep in college soccer recruiting right now, and I was drowning in the work. By day I trade at an investment bank, and I&apos;ve been doing a computer science master&apos;s at Georgia Tech, so I built the tool I needed myself. This is it.&quot;
+            &quot;I&apos;m a soccer dad. My daughter is Class of 2027, deep in college recruiting right now, and I was the one refreshing eight athletics sites every week, counting graduating keepers by hand. By day I trade at an investment bank, and I&apos;ve been doing a computer science master&apos;s at Georgia Tech, so I built the tracker I needed. Then families in other sports asked for it too.&quot;
           </blockquote>
           <p className="text-sm text-blue-200 mt-4">Tony, founder &middot; Future Think LLC</p>
         </div>
@@ -357,10 +330,10 @@ export default function Home() {
       <section className="py-20 md:py-24 bg-gradient-to-br from-brand-50 to-white">
         <div className="max-w-2xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Stop spending Sundays in your athlete&apos;s recruiting spreadsheet.
+            Stop counting graduating seniors by hand.
           </h2>
           <p className="text-lg text-gray-600 mb-8">
-            Start today. $39/month, cancel anytime. Your first weekly digest arrives this Sunday at 7 AM Eastern.
+            $19.99/month, cancel anytime. Your first roster report arrives this Sunday at 7 AM Eastern.
           </p>
           <div className="flex justify-center">
             <BuyButton />

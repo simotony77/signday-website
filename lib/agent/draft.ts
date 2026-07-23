@@ -6,8 +6,9 @@ import type {
   ScheduleData,
   ResearchData,
 } from "./types";
+import { getSport } from "./sports";
 
-export const DRAFT_PROMPT_SYSTEM = `You are drafting a college coach outreach email on behalf of a high school athlete pursuing US college soccer recruiting.
+export const DRAFT_PROMPT_SYSTEM = `You are drafting a college coach outreach email on behalf of a high school athlete pursuing US college athletic recruiting.
 
 Your output is a draft the athlete will edit and send from their own Gmail. Coaches receive hundreds of emails. Generic templates and AI-sounding prose get trashed within seconds. Your job is to produce a draft that reads like a real, slightly-nervous, well-prepared high school junior or senior wrote it themselves.
 
@@ -183,10 +184,11 @@ function buildUserPrompt(
   const schoolJson = JSON.stringify(school, null, 2);
   const athleteJson = JSON.stringify(athlete, null, 2);
 
+  const sportWord = getSport(athlete.sport).label.toLowerCase();
   const genderNote =
     athlete.gender === "boys"
-      ? `\nThis is a MALE athlete reaching out to a MEN'S college soccer program. The school context is the men's program. If a pronoun is ever needed, use he/him.\n`
-      : `\nThis is a FEMALE athlete reaching out to a WOMEN'S college soccer program. The school context is the women's program. If a pronoun is ever needed, use she/her.\n`;
+      ? `\nThis is a MALE athlete reaching out to a MEN'S college ${sportWord} program. The school context is the men's program. If a pronoun is ever needed, use he/him.\n`
+      : `\nThis is a FEMALE athlete reaching out to a WOMEN'S college ${sportWord} program. The school context is the women's program. If a pronoun is ever needed, use she/her.\n`;
 
   let scheduleBlock = "";
   if (schedule && (schedule.recent_results?.length || schedule.record)) {

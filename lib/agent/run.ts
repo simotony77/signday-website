@@ -6,6 +6,8 @@ import { diffSchools, diffSchedule, canonicalRole } from "./diff";
 import { generateDraft, type DraftKind } from "./draft";
 import { researchSchool } from "./research";
 import { MIN_ROSTER } from "./scrape";
+import { getSport, isSportId, programName } from "./sports";
+import { positionOutlook } from "./positionGap";
 import { mintAccessToken } from "../accessToken";
 import { buildDigest, type SchoolResult } from "./digest";
 import type {
@@ -178,13 +180,14 @@ export function chooseOutreachTrigger(
 // A real roster doesn't lose a big chunk of players in a single week. When it
 // looks like it did, this week's scrape was almost certainly partial/degraded,
 // so we don't trust it. Only applies once we have a real baseline to compare
-// against (>= MIN_ROSTER players last week); tiny rosters are left alone.
+// against (>= the sport's min-roster last week); tiny rosters are left alone.
 export function isDegradedRoster(
   beforeSize: number,
   removedCount: number,
-  afterSize: number
+  afterSize: number,
+  minRoster: number = MIN_ROSTER
 ): boolean {
-  if (beforeSize < MIN_ROSTER) return false;
+  if (beforeSize < minRoster) return false;
   if (removedCount > 5 && removedCount / beforeSize > 0.3) return true;
   if (afterSize < beforeSize * 0.6) return true;
   return false;
@@ -280,6 +283,7 @@ export async function runForCustomer(
   // we never flood the digest or trip the circuit breaker.
   let firstTouchRemaining = 1;
 
+  const sport = getSport(athlete.sport);
   const results: SchoolResult[] = [];
 
   for (const school of schools) {
@@ -288,6 +292,7 @@ export async function runForCustomer(
         url: school.roster_url,
         anthropic,
         model,
+        sport,
       });
 
       // Schedule is best-effort. A failure here must not break roster monitoring.
@@ -297,6 +302,7 @@ export async function runForCustomer(
           url: school.roster_url,
           anthropic,
           model,
+          sport,
         });
       } catch (e) {
         console.error(
@@ -309,6 +315,16 @@ export async function runForCustomer(
         supabase,
         customer.email,
         school.roster_url
+      );
+
+      // The standing position-gap picture for this school: how many players at
+      // the athlete's position leave by the year they'd arrive. Snapshot-based,
+      // so it renders every week — the headline value of the digest.
+      const outlook = positionOutlook(
+        after,
+        sport,
+        athlete.position,
+        athlete.grad_year
       );
 
       if (!before) {
@@ -331,6 +347,7 @@ export async function runForCustomer(
           drafts: [],
           roster_size: after.roster.length,
           head_coach: headCoachOf(after),
+          position_note: outlook?.note ?? null,
         });
         continue;
       }
@@ -344,9 +361,21 @@ export async function runForCustomer(
       // overwrite) so next week diffs against clean data.
       const beforeSize = before.school.roster?.length || 0;
       const removed = rosterDiff.players_removed.length;
-      const badScrape = isDegradedRoster(beforeSize, removed, after.roster.length);
+      const badScrape = isDegradedRoster(
+        beforeSize,
+        removed,
+        after.roster.length,
+        sport.minRoster
+      );
 
       if (badScrape) {
+        // Position note from the last GOOD snapshot, not the degraded read.
+        const lastGood = positionOutlook(
+          before.school,
+          sport,
+          athlete.position,
+          athlete.grad_year
+        );
         results.push({
           school_name: school.name || after.team,
           roster_url: school.roster_url,
@@ -355,6 +384,7 @@ export async function runForCustomer(
           drafts: [],
           roster_size: beforeSize,
           head_coach: headCoachOf(before.school),
+          position_note: lastGood?.note ?? null,
           error: `Roster page didn't read cleanly this week (${after.roster.length} of ~${beforeSize} players). Skipped to avoid false changes; will retry next run.`,
         });
         continue; // do NOT save snapshot — preserve the last good baseline
@@ -432,6 +462,7 @@ export async function runForCustomer(
           teamName: after.team,
           anthropic,
           model,
+          program: programName(sport, athlete.gender === "boys" ? "boys" : "girls"),
         });
         try {
           const draft = await generateDraft({
@@ -466,6 +497,7 @@ export async function runForCustomer(
         drafts,
         roster_size: after.roster.length,
         head_coach: headCoachOf(after),
+        position_note: outlook?.note ?? null,
       });
     } catch (e) {
       results.push({
@@ -608,6 +640,7 @@ export function toAthleteProfile(raw: Record<string, unknown>): AthleteProfile {
     first_name: String(raw.first_name ?? ""),
     last_name: String(raw.last_name ?? ""),
     grad_year: typeof raw.grad_year === "number" ? raw.grad_year : Number(raw.grad_year) || 0,
+    sport: isSportId(raw.sport) ? raw.sport : "soccer",
     position: String(raw.position ?? ""),
     gender: raw.gender === "boys" ? "boys" : "girls",
     current_league: raw.current_league ? String(raw.current_league) : undefined,

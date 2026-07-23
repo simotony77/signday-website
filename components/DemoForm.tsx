@@ -3,6 +3,18 @@
 import { useState, useEffect } from "react";
 import { BuyButton } from "@/components/BuyButton";
 import { gmailComposeUrl } from "@/lib/gmailCompose";
+import {
+  SPORTS,
+  SPORT_IDS,
+  clampGender,
+  programName,
+  positionLabel,
+  type SportId,
+} from "@/lib/agent/sports";
+
+function cap(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
 
 const SCHOOLS = [
   { slug: "williams", name: "Williams College" },
@@ -63,13 +75,6 @@ const DIVISIONS = [
   { value: "NAIA", label: "NAIA" },
 ];
 
-const POSITIONS = [
-  { value: "GK", label: "Goalkeeper" },
-  { value: "D", label: "Defender" },
-  { value: "M", label: "Midfielder" },
-  { value: "F", label: "Forward" },
-];
-
 type Status = "idle" | "loading" | "success" | "error";
 
 interface GameResult {
@@ -86,7 +91,9 @@ interface Monitoring {
   roster_size: number;
   head_coach: string | null;
   assistant_coaches: { name: string; title: string }[];
-  position_counts: { GK: number; D: number; M: number; F: number };
+  // Keyed by the sport's position values (e.g. GK/D/M/F for soccer,
+  // S/OH/MB/OPP/L for volleyball).
+  position_counts: Record<string, number>;
   graduating_seniors: { name: string; position: string; class_year: string }[];
   record?: string | null;
   recent_results?: GameResult[];
@@ -130,11 +137,24 @@ interface ApiResponse {
 export function DemoForm() {
   const [firstName, setFirstName] = useState("");
   const [gradYear, setGradYear] = useState(2027);
+  const [sport, setSport] = useState<SportId>("soccer");
   const [position, setPosition] = useState("M");
   const [club, setClub] = useState("");
   const [school, setSchool] = useState("williams");
   const [customSchool, setCustomSchool] = useState("");
   const [gender, setGender] = useState<"girls" | "boys">("girls");
+  const sportCfg = SPORTS[sport];
+
+  // Switching sport re-scopes positions and clamps gender for single-gender
+  // sports (volleyball/softball -> girls, baseball -> boys).
+  function handleSportChange(next: SportId) {
+    const cfg = SPORTS[next];
+    setSport(next);
+    setGender((g) => clampGender(cfg, g));
+    setPosition((p) =>
+      cfg.positions.some((pos) => pos.value === p) ? p : cfg.positions[0].value
+    );
+  }
   const [division, setDivision] = useState("D3");
   const [recruitType, setRecruitType] = useState<"high_school" | "transfer">(
     "high_school"
@@ -218,10 +238,10 @@ export function DemoForm() {
     }
   }
 
-  // Boys always run live (our cached demo data is women's programs). A typed
-  // custom school also routes to the live endpoint; otherwise the instant
-  // cached path is used for the popular girls programs.
-  const isLive = gender === "boys" || customSchool.trim().length > 0;
+  // The cached instant demos are women's SOCCER programs, so everything else
+  // runs live: any non-soccer sport, boys programs, or a typed custom school.
+  const isLive =
+    sport !== "soccer" || gender === "boys" || customSchool.trim().length > 0;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -242,9 +262,11 @@ export function DemoForm() {
     }
     if (isLive && !customSchool.trim()) {
       setError(
-        gender === "boys"
-          ? "Type a school name to run (boys programs run live)."
-          : "Type a school name to run live."
+        sport !== "soccer"
+          ? `Type a school name to run (${sportCfg.label.toLowerCase()} demos run live).`
+          : gender === "boys"
+            ? "Type a school name to run (boys programs run live)."
+            : "Type a school name to run live."
       );
       setStatus("error");
       return;
@@ -269,6 +291,7 @@ export function DemoForm() {
         JSON.stringify({
           first_name: firstName.trim(),
           grad_year: gradYear,
+          sport,
           position,
           club: club.trim(),
           gender,
@@ -302,6 +325,7 @@ export function DemoForm() {
             body: JSON.stringify({
               first_name: firstName.trim(),
               grad_year: gradYear,
+              sport,
               position,
               club: club.trim(),
               school_name: customSchool.trim(),
@@ -462,38 +486,69 @@ export function DemoForm() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Soccer program
+            Sport
           </label>
-          <div className="inline-flex rounded-xl border-2 border-gray-200 p-1">
-            <button
-              type="button"
-              onClick={() => setGender("girls")}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                gender === "girls"
-                  ? "bg-brand-600 text-white"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              Girls / Women&apos;s
-            </button>
-            <button
-              type="button"
-              onClick={() => setGender("boys")}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                gender === "boys"
-                  ? "bg-brand-600 text-white"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              Boys / Men&apos;s
-            </button>
+          <div className="flex flex-wrap gap-2">
+            {SPORT_IDS.map((id) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => handleSportChange(id)}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold border-2 transition-colors ${
+                  sport === id
+                    ? "bg-brand-600 border-brand-600 text-white"
+                    : "border-gray-200 text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                {SPORTS[id].label}
+              </button>
+            ))}
           </div>
-          {gender === "boys" && (
+          {sport !== "soccer" && (
             <p className="text-xs text-gray-500 mt-2">
-              Boys programs run live, so type the school below and the agent reads the men&apos;s roster on the spot.
+              {cap(sportCfg.label)} demos run live: type any school below and the
+              agent finds and reads the {programName(sportCfg, gender)} roster on
+              the spot.
             </p>
           )}
         </div>
+
+        {sportCfg.genders.length > 1 && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Program
+            </label>
+            <div className="inline-flex rounded-xl border-2 border-gray-200 p-1">
+              <button
+                type="button"
+                onClick={() => setGender("girls")}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                  gender === "girls"
+                    ? "bg-brand-600 text-white"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Girls / Women&apos;s
+              </button>
+              <button
+                type="button"
+                onClick={() => setGender("boys")}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                  gender === "boys"
+                    ? "bg-brand-600 text-white"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Boys / Men&apos;s
+              </button>
+            </div>
+            {sport === "soccer" && gender === "boys" && (
+              <p className="text-xs text-gray-500 mt-2">
+                Boys programs run live, so type the school below and the agent reads the men&apos;s roster on the spot.
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="grid sm:grid-cols-2 gap-5">
           <div>
@@ -556,7 +611,7 @@ export function DemoForm() {
               onChange={(e) => setPosition(e.target.value)}
               className="w-full rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
             >
-              {POSITIONS.map((p) => (
+              {sportCfg.positions.map((p) => (
                 <option key={p.value} value={p.value}>
                   {p.label}
                 </option>
@@ -644,27 +699,33 @@ export function DemoForm() {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Target school
           </label>
-          <select
-            value={school}
-            onChange={(e) => setSchool(e.target.value)}
-            disabled={gender === "boys"}
-            className="w-full rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white disabled:opacity-50"
-          >
-            {SCHOOLS.map((s) => (
-              <option key={s.slug} value={s.slug}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-          <p className="text-xs text-gray-500 mt-2">
-            {gender === "boys"
-              ? `These ${SCHOOLS.length} presets are women's programs. For boys, type any school below and the agent reads the men's roster live.`
-              : `These ${SCHOOLS.length} programs are pre-loaded so the demo runs in seconds. Or type any other college below and the agent will find and read it live.`}
-          </p>
+          {sport === "soccer" && (
+            <>
+              <select
+                value={school}
+                onChange={(e) => setSchool(e.target.value)}
+                disabled={gender === "boys"}
+                className="w-full rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white disabled:opacity-50"
+              >
+                {SCHOOLS.map((s) => (
+                  <option key={s.slug} value={s.slug}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-2">
+                {gender === "boys"
+                  ? `These ${SCHOOLS.length} presets are women's programs. For boys, type any school below and the agent reads the men's roster live.`
+                  : `These ${SCHOOLS.length} programs are pre-loaded so the demo runs in seconds. Or type any other college below and the agent will find and read it live.`}
+              </p>
+            </>
+          )}
 
-          <div className="mt-3">
+          <div className={sport === "soccer" ? "mt-3" : ""}>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Or type any college (runs live)
+              {sport === "soccer"
+                ? "Or type any college (runs live)"
+                : "Type any college (runs live)"}
             </label>
             <input
               type="text"
@@ -676,8 +737,11 @@ export function DemoForm() {
             {isLive && customSchool.trim() && (
               <p className="text-xs text-brand-700 mt-2">
                 Live mode: the agent will find {customSchool.trim()}&apos;s{" "}
-                {gender === "boys" ? "men's" : "women's"} roster and schedule and read them on the spot. Takes about 30-40 seconds.
-                {gender === "girls" && " Clear this box to use the pre-loaded list instead."}
+                {programName(sportCfg, gender)} roster and schedule and read
+                them on the spot. Takes about 30-40 seconds.
+                {sport === "soccer" &&
+                  gender === "girls" &&
+                  " Clear this box to use the pre-loaded list instead."}
               </p>
             )}
           </div>
@@ -751,18 +815,17 @@ export function DemoForm() {
                     Roster ({result.monitoring.roster_size} players)
                   </div>
                   <div className="flex flex-wrap gap-2 text-xs">
-                    <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
-                      {result.monitoring.position_counts.GK} GK
-                    </span>
-                    <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
-                      {result.monitoring.position_counts.D} D
-                    </span>
-                    <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
-                      {result.monitoring.position_counts.M} M
-                    </span>
-                    <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
-                      {result.monitoring.position_counts.F} F
-                    </span>
+                    {Object.entries(result.monitoring.position_counts).map(
+                      ([pos, count]) => (
+                        <span
+                          key={pos}
+                          className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full"
+                          title={positionLabel(sportCfg, pos)}
+                        >
+                          {count} {pos}
+                        </span>
+                      )
+                    )}
                   </div>
                 </div>
                 <div className="sm:col-span-2">
@@ -1081,7 +1144,7 @@ export function DemoForm() {
               Your athlete keeps playing, you keep being present at games, and the agent does the spreadsheet + email work in the background. Drafts land in your inbox. You approve and send via Gmail.
             </p>
             <div className="flex flex-wrap justify-center gap-2 mb-6 text-sm">
-              <span className="bg-white border border-brand-100 text-gray-700 px-3 py-1.5 rounded-full">$39/month</span>
+              <span className="bg-white border border-brand-100 text-gray-700 px-3 py-1.5 rounded-full">$19.99/month</span>
               <span className="bg-white border border-brand-100 text-gray-700 px-3 py-1.5 rounded-full">Cancel anytime, one click</span>
               <span className="bg-white border border-brand-100 text-gray-700 px-3 py-1.5 rounded-full">No contract</span>
               <span className="bg-white border border-brand-100 text-gray-700 px-3 py-1.5 rounded-full">First digest {upcomingSundayLabel()}</span>

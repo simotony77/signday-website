@@ -3,6 +3,13 @@ import Anthropic from "@anthropic-ai/sdk";
 import { findRosterUrl } from "@/lib/agent/findRosterUrl";
 import { scrapeSchool, scrapeSchedule } from "@/lib/agent/scrape";
 import { generateDraft } from "@/lib/agent/draft";
+import {
+  getSport,
+  matchesPosition,
+  positionLabel,
+  programName,
+  type SportConfig,
+} from "@/lib/agent/sports";
 import { rateLimit } from "@/lib/rateLimit";
 import { logDemoRun } from "@/lib/demoLog";
 import { signDemoDraft, signDemoLead, type DemoLeadPayload } from "@/lib/demoSign";
@@ -20,6 +27,7 @@ export const maxDuration = 60;
 interface LiveRequest {
   first_name?: string;
   grad_year?: number;
+  sport?: string;
   position?: string;
   club?: string;
   school_name?: string;
@@ -35,21 +43,6 @@ interface LiveRequest {
   source?: string;
 }
 
-const POSITION_LABEL: Record<string, string> = {
-  GK: "goalkeeper",
-  D: "defender",
-  M: "midfielder",
-  F: "forward",
-};
-
-function matchesPosition(athlete: string, p: string): boolean {
-  if (athlete === "GK") return /GK/i.test(p);
-  if (athlete === "D") return /D/i.test(p) && !/GK/i.test(p);
-  if (athlete === "M") return /M/i.test(p) && !/GK/i.test(p);
-  if (athlete === "F") return /F/i.test(p) && !/GK/i.test(p);
-  return false;
-}
-
 function mostRecentWin(schedule: ScheduleData | null): GameResult | null {
   if (!schedule?.recent_results?.length) return null;
   return schedule.recent_results.find((g) => g.is_win) ?? null;
@@ -57,6 +50,7 @@ function mostRecentWin(schedule: ScheduleData | null): GameResult | null {
 
 function buildTrigger(
   school: SchoolData,
+  sport: SportConfig,
   position: string,
   schedule: ScheduleData | null
 ): string {
@@ -65,13 +59,14 @@ function buildTrigger(
     ? `${school.team} won ${win.result} vs ${win.opponent}${win.date ? ` (${win.date})` : ""}. A recent win is a timely, specific reason to reach out now. `
     : "";
 
-  const label = POSITION_LABEL[position];
+  const known = sport.positions.some((p) => p.value === position);
+  const label = known ? positionLabel(sport, position).toLowerCase() : "";
   let rosterPart: string;
-  if (!label) {
-    rosterPart = `Class of introduction to ${school.team}.`;
+  if (!known) {
+    rosterPart = `Introduction to ${school.team}.`;
   } else {
     const gradAtPos = school.roster.filter(
-      (p) => p.graduating === true && matchesPosition(position, p.position)
+      (p) => p.graduating === true && matchesPosition(sport, position, p.position)
     );
     if (gradAtPos.length > 0) {
       const names = gradAtPos.map((p) => p.name).join(", ");
@@ -145,20 +140,23 @@ export async function POST(req: Request) {
 
   const model = process.env.CLAUDE_MODEL || "claude-sonnet-4-5";
   const anthropic = new Anthropic({ apiKey });
+  const sport = getSport(body.sport);
   const gender: "boys" | "girls" = body.gender === "boys" ? "boys" : "girls";
   const program = gender === "boys" ? "mens" : "womens";
+  const programWord = programName(sport, gender);
 
   // 1. Find the roster URL.
-  const found = await findRosterUrl({ schoolName, anthropic, model, program });
+  const found = await findRosterUrl({
+    schoolName,
+    anthropic,
+    model,
+    program,
+    sport: sport.id,
+  });
   if (!found.url) {
-    const word = gender === "boys" ? "men's" : "women's";
-    const boysHint =
-      gender === "boys"
-        ? " Heads up: many colleges field women's soccer but not men's, so this school may not have a men's team."
-        : "";
     return NextResponse.json(
       {
-        error: `I couldn't find a ${word} soccer roster page for "${schoolName}" automatically.${boysHint} Try the exact school name (e.g. "Amherst College"), or pick one of the popular schools above.`,
+        error: `I couldn't find a ${programWord} roster page for "${schoolName}" automatically. Heads up: not every school fields a ${programWord} program. Try the exact school name (e.g. "Amherst College").`,
       },
       { status: 422 }
     );
@@ -167,11 +165,11 @@ export async function POST(req: Request) {
   // 2. Scrape roster (required) + schedule (best effort).
   let school: SchoolData;
   try {
-    school = await scrapeSchool({ url: found.url, anthropic, model });
+    school = await scrapeSchool({ url: found.url, anthropic, model, sport });
   } catch {
     return NextResponse.json(
       {
-        error: `I found ${schoolName}'s page but couldn't read its roster (some athletics sites block automated reads). Try another school, or one of the popular ones above. In the full product, these get handled.`,
+        error: `I found ${schoolName}'s page but couldn't read its roster (some athletics sites block automated reads). Try another school. In the full product, these get handled.`,
       },
       { status: 422 }
     );
@@ -179,17 +177,17 @@ export async function POST(req: Request) {
 
   let schedule: ScheduleData | null = null;
   try {
-    schedule = await scrapeSchedule({ url: found.url, anthropic, model });
+    schedule = await scrapeSchedule({ url: found.url, anthropic, model, sport });
   } catch {
     schedule = null;
   }
 
   // 3. Trigger + draft.
-  const trigger = buildTrigger(school, position, schedule);
+  const trigger = buildTrigger(school, sport, position, schedule);
   const headCoach = school.coaching_staff.find((c) => /head coach/i.test(c.title));
   const coachLabel = headCoach
     ? `${headCoach.name} (${school.team} Head Coach)`
-    : `${school.team} Women's Soccer Coach`;
+    : `${school.team} coaching staff`;
 
   const athlete: AthleteProfile = {
     first_name: firstName,
@@ -198,6 +196,7 @@ export async function POST(req: Request) {
     // so default to 0 — the drafter's transferFraming uses year_in_college
     // instead and ignores grad_year for transfer drafts.
     grad_year: typeof gradYear === "number" ? gradYear : 0,
+    sport: sport.id,
     position,
     gender,
     club,
@@ -243,13 +242,14 @@ export async function POST(req: Request) {
     );
   }
 
-  // 4. Monitoring summary (same shape as /api/demo-draft).
-  const positionCounts = {
-    GK: school.roster.filter((p) => /GK/i.test(p.position)).length,
-    D: school.roster.filter((p) => /D/i.test(p.position) && !/GK/i.test(p.position)).length,
-    M: school.roster.filter((p) => /M/i.test(p.position) && !/GK/i.test(p.position)).length,
-    F: school.roster.filter((p) => /F/i.test(p.position) && !/GK/i.test(p.position)).length,
-  };
+  // 4. Monitoring summary (same shape as /api/demo-draft). Counts keyed by the
+  // sport's position values so the demo UI renders them generically.
+  const positionCounts: Record<string, number> = {};
+  for (const p of sport.positions) {
+    positionCounts[p.value] = school.roster.filter((r) =>
+      matchesPosition(sport, p.value, r.position)
+    ).length;
+  }
   const graduatingSeniors = school.roster
     .filter((p) => p.graduating === true)
     .map((p) => ({ name: p.name, position: p.position, class_year: p.class_year }));

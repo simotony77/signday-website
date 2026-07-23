@@ -6,7 +6,7 @@ const REF_STORAGE = "signday_ref";
 
 export function BuyButton({
   className,
-  label = "Get SignDay — $39/month",
+  label = "Get SignDay — $19.99/month",
 }: {
   className?: string;
   label?: string;

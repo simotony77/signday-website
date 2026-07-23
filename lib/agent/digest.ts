@@ -11,6 +11,9 @@ export interface SchoolResult {
   drafts: (Draft & { trigger: string; coach: string; coach_email?: string | null })[];
   roster_size?: number;
   head_coach?: string | null;
+  // Standing position-gap outlook at the athlete's position (e.g. "2 of 4
+  // setters graduate by spring 2027"). Rendered every week, quiet or not.
+  position_note?: string | null;
 }
 
 export interface DigestInput {
@@ -177,6 +180,14 @@ export function buildDigest(input: DigestInput): BuiltDigest {
     t.push(`\nI'll keep watching and ping you the moment something opens up.`);
   }
 
+  const positionNotes = ok.filter((r) => r.position_note);
+  if (positionNotes.length > 0) {
+    t.push(`\nPOSITION WATCH (your athlete's position, school by school):`);
+    for (const r of positionNotes) {
+      t.push(`  - ${r.school_name}: ${r.position_note}`);
+    }
+  }
+
   if (tracker_summary && tracker_summary.length > 0) {
     const resultByName = new Map<string, SchoolResult>();
     for (const r of results) resultByName.set(normSchool(r.school_name), r);
@@ -287,6 +298,22 @@ export function buildDigest(input: DigestInput): BuiltDigest {
     h.push(
       `<p style="color:#374151; font-size:14px;">I'll keep watching and ping you the moment something opens up.</p>`
     );
+  }
+
+  if (positionNotes.length > 0) {
+    h.push(
+      `<h3 style="margin-top:32px; font-size:15px; border-bottom:1px solid #E5E7EB; padding-bottom:6px;">Position watch</h3>`
+    );
+    h.push(
+      `<p style="color:#6B7280; font-size:12px; margin:6px 0 10px;">Where your athlete's position stands on each current roster, and when spots open.</p>`
+    );
+    h.push(`<ul style="line-height:1.7; padding-left:20px; color:#374151;">`);
+    for (const r of positionNotes) {
+      h.push(
+        `<li><b>${escapeHtml(r.school_name)}:</b> ${escapeHtml(r.position_note || "")}</li>`
+      );
+    }
+    h.push(`</ul>`);
   }
 
   if (tracker_summary && tracker_summary.length > 0) {

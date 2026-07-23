@@ -10,6 +10,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { isDegradedRoster, chooseOutreachTrigger } from "./run";
 import { dedupeRoster, normNameKey } from "./scrape";
+import { classToGradYear, positionOutlook } from "./positionGap";
+import { SPORTS } from "./sports";
 import type { SchoolData, DiffOutput } from "./types";
 
 // ---- helpers ----
@@ -132,4 +134,77 @@ test("chooseOutreachTrigger: player add/remove NEVER triggers a draft", () => {
     triggers: ["New player on roster...", "Player removed from roster..."],
   });
   assert.equal(chooseOutreachTrigger(diff, []), null);
+});
+
+// ---- positionOutlook: the position-gap flag (core of the weekly pitch) ----
+
+function rosterSchool(
+  roster: { position: string; class_year: string; graduating?: boolean }[]
+): SchoolData {
+  return {
+    team: "Test U",
+    season: 2026,
+    roster: roster.map((p, i) => ({ name: `Player ${i}`, ...p })),
+    coaching_staff: [],
+  };
+}
+
+test("classToGradYear: codes and years resolve against the season", () => {
+  assert.equal(classToGradYear("Sr", 2026), 2027);
+  assert.equal(classToGradYear("Jr", 2026), 2028);
+  assert.equal(classToGradYear("So", 2026), 2029);
+  assert.equal(classToGradYear("Fr", 2026), 2030);
+  assert.equal(classToGradYear("1st", 2026), 2030); // Williams-style
+  assert.equal(classToGradYear("R-So", 2026), 2029); // redshirt prefix ignored
+  assert.equal(classToGradYear("Gr", 2026), 2027);
+  assert.equal(classToGradYear("2028", 2026), 2028); // grad year printed directly
+  assert.equal(classToGradYear("", 2026), null);
+});
+
+test("positionOutlook: graduating players at the position flag an opening", () => {
+  // Two Sr setters (class of 2027) + one Fr, athlete is class of 2027.
+  const school = rosterSchool([
+    { position: "S", class_year: "Sr" },
+    { position: "S/DS", class_year: "Sr" },
+    { position: "S", class_year: "Fr" },
+    { position: "OH", class_year: "Sr" }, // different position: ignored
+  ]);
+  const out = positionOutlook(school, SPORTS.volleyball, "S", 2027);
+  assert.ok(out);
+  assert.equal(out!.leaving, 2);
+  assert.equal(out!.total, 3);
+  assert.match(out!.note, /2 of 3 setters/);
+});
+
+test("positionOutlook: all-underclassmen roster warns about competition", () => {
+  const school = rosterSchool([
+    { position: "GK", class_year: "Fr" },
+    { position: "GK", class_year: "So" },
+  ]);
+  const out = positionOutlook(school, SPORTS.soccer, "GK", 2027);
+  assert.ok(out);
+  assert.equal(out!.leaving, 0);
+  assert.match(out!.note, /underclassmen/);
+});
+
+test("positionOutlook: zero players at position is itself a signal", () => {
+  const school = rosterSchool([{ position: "OH", class_year: "Jr" }]);
+  const out = positionOutlook(school, SPORTS.volleyball, "S", 2027);
+  assert.ok(out);
+  assert.equal(out!.total, 0);
+  assert.match(out!.note, /No setters listed/);
+});
+
+test("positionOutlook: combined listings match via tokens", () => {
+  // "M/D" covers both a midfielder and a defender athlete.
+  const school = rosterSchool([{ position: "M/D", class_year: "Sr" }]);
+  assert.equal(positionOutlook(school, SPORTS.soccer, "M", 2027)!.leaving, 1);
+  assert.equal(positionOutlook(school, SPORTS.soccer, "D", 2027)!.leaving, 1);
+  assert.equal(positionOutlook(school, SPORTS.soccer, "F", 2027)!.total, 0);
+});
+
+test("positionOutlook: missing athlete data returns null", () => {
+  const school = rosterSchool([{ position: "S", class_year: "Sr" }]);
+  assert.equal(positionOutlook(school, SPORTS.volleyball, "", 2027), null);
+  assert.equal(positionOutlook(school, SPORTS.volleyball, "S", 0), null);
 });

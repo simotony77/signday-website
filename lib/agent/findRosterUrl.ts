@@ -1,14 +1,22 @@
 import Anthropic from "@anthropic-ai/sdk";
+import {
+  getSport,
+  programName,
+  type AthleteGender,
+  type SportConfig,
+} from "./sports";
 
 export type Program = "mens" | "womens";
 
-function systemPrompt(program: Program): string {
-  const word = program === "mens" ? "MEN'S" : "WOMEN'S";
-  const slug = program === "mens" ? "mens-soccer" : "womens-soccer";
-  const abbr = program === "mens" ? "msoc" : "wsoc";
-  return `You are a research agent. Your job is to find the official URL of the ${word} SOCCER ROSTER page for a US college.
+function systemPrompt(sport: SportConfig, gender: AthleteGender): string {
+  const program = programName(sport, gender); // e.g. "women's volleyball", "baseball"
+  const word = program.toUpperCase();
+  const slugs = sport.slugs[gender] ?? Object.values(sport.slugs)[0] ?? [];
+  const slug = slugs[0] ?? sport.label.toLowerCase();
+  const abbr = slugs[1] ?? slug;
+  return `You are a research agent. Your job is to find the official URL of the ${word} ROSTER page for a US college.
 
-The roster page is the page on the school's official athletics website that lists the current ${word.toLowerCase()} soccer team players (their names, positions, class years). It is NOT the schedule, news, coaching staff, or homepage. Make sure it is the ${word.toLowerCase()} team, not the other gender's team.
+The roster page is the page on the school's official athletics website that lists the current ${program} team players (their names, positions, class years). It is NOT the schedule, news, coaching staff, or homepage. Make sure it is the ${program} team, not another sport or the other gender's team.
 
 Common URL patterns:
 - https://athletics.<school>.edu/sports/${slug}/roster
@@ -64,25 +72,28 @@ export interface FindRosterOptions {
   anthropic: Anthropic;
   model: string;
   program?: Program; // defaults to womens
+  sport?: string; // SportId; defaults to soccer
 }
 
-// Find the men's/women's soccer roster URL for a school name, using Claude's
-// hosted web search tool. Returns { url: null } on failure rather than throwing.
+// Find the roster URL for a school's program (any tracked sport, either
+// gender), using Claude's hosted web search tool. Returns { url: null } on
+// failure rather than throwing.
 export async function findRosterUrl(
   opts: FindRosterOptions
 ): Promise<FindRosterResult> {
-  const program: Program = opts.program ?? "womens";
-  const word = program === "mens" ? "men's" : "women's";
+  const sport = getSport(opts.sport);
+  const gender: AthleteGender = opts.program === "mens" ? "boys" : "girls";
+  const program = programName(sport, gender);
   try {
     const response = await opts.anthropic.messages.create({
       model: opts.model,
       max_tokens: 2048,
-      system: systemPrompt(program),
+      system: systemPrompt(sport, gender),
       tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 4 }],
       messages: [
         {
           role: "user",
-          content: `Find the ${word} soccer roster URL for: ${opts.schoolName}`,
+          content: `Find the ${program} roster URL for: ${opts.schoolName}`,
         },
       ],
     });

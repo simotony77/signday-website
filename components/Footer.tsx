@@ -17,7 +17,7 @@ export function Footer() {
               />
             </Link>
             <p className="text-sm text-gray-500 mt-2 max-w-xs">
-              The college soccer recruiting companion for families.
+              The weekly college roster tracker for recruiting families.
             </p>
             <p className="text-xs text-gray-400 mt-4">
               Future Think LLC<br />

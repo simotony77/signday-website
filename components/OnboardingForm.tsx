@@ -1,13 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import {
+  SPORTS,
+  SPORT_IDS,
+  clampGender,
+  isSportId,
+  programName,
+  type SportId,
+} from "@/lib/agent/sports";
 
-const POSITIONS = [
-  { value: "GK", label: "Goalkeeper" },
-  { value: "D", label: "Defender" },
-  { value: "M", label: "Midfielder" },
-  { value: "F", label: "Forward" },
-];
+function cap(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
 
 // Youth leagues the athlete currently plays in. Coaches use league as a quick
 // signal of competitive level. The top leagues differ by gender: ECNL/GA for
@@ -95,8 +100,21 @@ export function OnboardingForm({
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [gradYear, setGradYear] = useState(2027);
+  const [sport, setSport] = useState<SportId>("soccer");
   const [position, setPosition] = useState("M");
   const [gender, setGender] = useState<"girls" | "boys">("girls");
+  const sportCfg = SPORTS[sport];
+
+  // Switching sport re-scopes the whole form: positions are sport-specific,
+  // and single-gender sports (volleyball, baseball, softball) force gender.
+  function handleSportChange(next: SportId) {
+    const cfg = SPORTS[next];
+    setSport(next);
+    setGender((g) => clampGender(cfg, g));
+    setPosition((p) =>
+      cfg.positions.some((pos) => pos.value === p) ? p : cfg.positions[0].value
+    );
+  }
   const [recruitType, setRecruitType] = useState<"high_school" | "transfer">(
     "high_school"
   );
@@ -146,6 +164,7 @@ export function OnboardingForm({
       const d = JSON.parse(raw);
       if (typeof d.first_name === "string" && d.first_name) setFirstName(d.first_name);
       if (typeof d.grad_year === "number") setGradYear(d.grad_year);
+      if (isSportId(d.sport)) setSport(d.sport);
       if (typeof d.position === "string" && d.position) setPosition(d.position);
       if (typeof d.club === "string" && d.club) setClub(d.club);
       if (d.gender === "boys" || d.gender === "girls") {
@@ -193,6 +212,7 @@ export function OnboardingForm({
         if (typeof a.first_name === "string") setFirstName(a.first_name);
         if (typeof a.last_name === "string") setLastName(a.last_name);
         if (typeof a.grad_year === "number") setGradYear(a.grad_year);
+        if (isSportId(a.sport)) setSport(a.sport);
         if (typeof a.position === "string") setPosition(a.position);
         if (a.gender === "boys" || a.gender === "girls") setGender(a.gender);
         if (a.recruit_type === "transfer" || a.recruit_type === "high_school")
@@ -277,7 +297,7 @@ export function OnboardingForm({
       const res = await fetch("/api/find-roster-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ school_name: name, gender }),
+        body: JSON.stringify({ school_name: name, gender, sport }),
       });
       const data = await res.json();
       if (res.ok && data.url) {
@@ -291,12 +311,9 @@ export function OnboardingForm({
             : "Found (low confidence). Please verify."
         );
       } else {
-        // Many schools field women's soccer but not men's, so a boys lookup
-        // can dead-end legitimately. Say so instead of a generic failure.
-        const fail =
-          gender === "boys"
-            ? "Couldn't find a men's program (many schools don't field men's soccer). Paste the URL or skip this one."
-            : "Couldn't find it. Paste the URL manually.";
+        // Not every school fields every program, so a lookup can dead-end
+        // legitimately. Say so instead of a generic failure.
+        const fail = `Couldn't find a ${programName(sportCfg, gender)} page (not every school fields one). Paste the URL or skip this one.`;
         setLookup(index, "failed", fail);
       }
     } catch {
@@ -358,9 +375,10 @@ export function OnboardingForm({
             first_name: firstName.trim(),
             last_name: lastName.trim(),
             grad_year: gradYear,
+            sport,
             position,
             gender,
-            current_league: currentLeague,
+            current_league: sport === "soccer" ? currentLeague : null,
             division,
             club: club.trim(),
             gpa: gpa.trim() ? parseFloat(gpa) : null,
@@ -471,11 +489,22 @@ export function OnboardingForm({
             </select>
           )}
           <select
+            value={sport}
+            onChange={(e) => handleSportChange(e.target.value as SportId)}
+            className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
+          >
+            {SPORT_IDS.map((id) => (
+              <option key={id} value={id}>
+                Sport: {SPORTS[id].label}
+              </option>
+            ))}
+          </select>
+          <select
             value={position}
             onChange={(e) => setPosition(e.target.value)}
             className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
           >
-            {POSITIONS.map((p) => (
+            {sportCfg.positions.map((p) => (
               <option key={p.value} value={p.value}>
                 Position: {p.label}
               </option>
@@ -492,8 +521,12 @@ export function OnboardingForm({
             }}
             className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 bg-white"
           >
-            <option value="girls">Plays: Girls / Women&apos;s soccer</option>
-            <option value="boys">Plays: Boys / Men&apos;s soccer</option>
+            {sportCfg.genders.map((g) => (
+              <option key={g} value={g}>
+                Plays: {g === "girls" ? "Girls" : "Boys"} /{" "}
+                {cap(programName(sportCfg, g))}
+              </option>
+            ))}
           </select>
           <select
             value={recruitType}
@@ -505,7 +538,7 @@ export function OnboardingForm({
             <option value="high_school">High school recruit</option>
             <option value="transfer">College transfer</option>
           </select>
-          {recruitType === "high_school" && (
+          {recruitType === "high_school" && sport === "soccer" && (
             <select
               value={currentLeague}
               onChange={(e) => setCurrentLeague(e.target.value)}
@@ -535,7 +568,7 @@ export function OnboardingForm({
                 type="text"
                 value={club}
                 onChange={(e) => setClub(e.target.value)}
-                placeholder="Club name (e.g. Connecticut FC)"
+                placeholder="Club / travel team name"
                 required={recruitType === "high_school"}
                 className="rounded-xl border-2 border-gray-200 focus:border-brand-600 focus:outline-none px-4 py-3 text-base text-gray-900 placeholder-gray-400"
               />
@@ -659,7 +692,9 @@ export function OnboardingForm({
       <section>
         <h2 className="text-lg font-bold text-gray-900 mb-1">Schools to track</h2>
         <p className="text-sm text-gray-500 mb-4">
-          Up to 12 to start. Just type the school name and tab out. The agent finds the women&apos;s soccer roster page for you. Empty rows ignored.
+          Up to 12 to start. Just type the school name and tab out. The agent
+          finds the {programName(sportCfg, gender)} roster page for you. Empty
+          rows ignored.
         </p>
 
         <div className="space-y-3">

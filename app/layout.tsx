@@ -4,15 +4,15 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://signdayapp.com"),
   title: {
-    default: "SignDay — College Soccer Recruiting Companion",
+    default: "SignDay — Weekly College Roster Tracker for Recruiting Families",
     template: "%s | SignDay",
   },
   description:
-    "AI-powered coach emails, school tracker, and your full timeline — all in one place. The recruiting companion for soccer families.",
+    "We watch every roster on your kid's list and flag when a spot is opening at their position. Soccer, volleyball, baseball, softball, lacrosse. One Sunday email, $19.99/mo.",
   openGraph: {
-    title: "SignDay — College Soccer Recruiting Companion",
+    title: "SignDay — Weekly College Roster Tracker for Recruiting Families",
     description:
-      "AI-powered coach emails, school tracker, and your full timeline. Built by a soccer parent.",
+      "We watch every roster on your kid's list and flag when a spot is opening at their position. Built by a recruiting parent.",
     url: "https://signdayapp.com",
     siteName: "SignDay",
     locale: "en_US",
@@ -20,8 +20,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "SignDay — College Soccer Recruiting Companion",
-    description: "AI-powered coach emails, school tracker, and timeline.",
+    title: "SignDay — Weekly College Roster Tracker",
+    description:
+      "Roster tracking and position-opening flags for recruiting families. One Sunday email.",
   },
 };
 

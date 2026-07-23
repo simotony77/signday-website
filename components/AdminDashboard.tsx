@@ -235,7 +235,7 @@ export function AdminDashboard() {
       <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Revenue</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <Stat label="Active subs" value={revenue.active_subscribers} />
-        <Stat label="Est. MRR" value={`$${revenue.est_mrr.toLocaleString()}`} sub="active × $39/mo" />
+        <Stat label="Est. MRR" value={`$${revenue.est_mrr.toLocaleString()}`} sub="active × $19.99/mo" />
         <Stat label="Cancelled" value={revenue.cancelled} />
         <Stat
           label="Onboarded"

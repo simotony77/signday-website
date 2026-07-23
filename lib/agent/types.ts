@@ -28,6 +28,9 @@ export interface AthleteProfile {
   first_name: string;
   last_name: string;
   grad_year: number;
+  // Which sport this athlete plays. Absent on records created before
+  // multi-sport support; readers default to "soccer" via getSport().
+  sport?: string;
   position: string;
   position_detail?: string;
   // "boys" tracks men's college programs; "girls" tracks women's. Defaults to

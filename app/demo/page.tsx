@@ -5,7 +5,7 @@ import { DemoForm } from "@/components/DemoForm";
 export const metadata = {
   title: "Try the SignDay agent",
   description:
-    "See what the SignDay AI agent would draft for your athlete. Real college soccer programs, real rosters, real personalized coach emails.",
+    "See what SignDay finds for your athlete: real college rosters, position openings by grad year, and a personalized coach email. Soccer, volleyball, baseball, softball, lacrosse.",
 };
 
 export default function DemoPage() {
@@ -22,7 +22,11 @@ export default function DemoPage() {
             See exactly what the agent does for your athlete every Sunday.
           </h1>
           <p className="text-base md:text-lg text-gray-600 mt-4 max-w-2xl mx-auto leading-relaxed">
-            Tell us about your athlete and pick a target school. The agent walks you through the full pipeline: monitoring the program, detecting what changed, drafting the outreach, and delivering it in your Sunday digest. Real roster data, real coaches, no placeholders.
+            Pick your sport, tell us about your athlete, and choose a target
+            school. The agent reads the real roster, shows who&apos;s graduating at
+            your athlete&apos;s position, and drafts the outreach — the same thing it
+            does for every school on your list, every week. Soccer, volleyball,
+            baseball, softball, or lacrosse.
           </p>
         </div>
       </section>
@@ -38,14 +42,14 @@ export default function DemoPage() {
                 <div className="text-2xl mb-1">👀</div>
                 <div className="text-xs font-semibold text-gray-900">1. Monitoring</div>
                 <div className="text-xs text-gray-500 leading-snug mt-1">
-                  Roster, coaches, graduating seniors, and recent results
+                  Roster, coaches, graduating players, and recent results
                 </div>
               </div>
               <div>
-                <div className="text-2xl mb-1">⚡</div>
-                <div className="text-xs font-semibold text-gray-900">2. Detection</div>
+                <div className="text-2xl mb-1">🎯</div>
+                <div className="text-xs font-semibold text-gray-900">2. Position watch</div>
                 <div className="text-xs text-gray-500 leading-snug mt-1">
-                  A roster change or a recent win the agent surfaced
+                  Who&apos;s leaving at your athlete&apos;s position, and when a spot opens
                 </div>
               </div>
               <div>

@@ -79,7 +79,7 @@ To monitor the schools you choose, the Service reads publicly available college 
 You may use the free demo on our website without an account or payment.
 
 ### 5.2 Subscription
-Full access to the Service requires a paid subscription of **$39 per month**. Prices are subject to change; we will notify you in advance of any price change that would affect you.
+Full access to the Service requires a paid subscription of **$19.99 per month** (or **$149 per year**). Prices are subject to change; we will notify you in advance of any price change that would affect you.
 
 ### 5.3 Auto-renewal
 Your subscription **automatically renews** each month at the then-current price until you cancel. 

@@ -1,8 +1,10 @@
 import Anthropic from "@anthropic-ai/sdk";
 import TurndownService from "turndown";
 import type { SchoolData, ScheduleData } from "./types";
+import { SPORTS, type SportConfig } from "./sports";
 
-const EXTRACTION_PROMPT = `You are extracting a college soccer team roster from the page content below. The page may be a men's or a women's program; extract whichever roster is shown.
+function extractionPrompt(sport: SportConfig): string {
+  return `You are extracting a college ${sport.label.toLowerCase()} team roster from the page content below. The page may be a men's or a women's program; extract whichever roster is shown.
 
 Return a single JSON object with this exact shape:
 
@@ -13,7 +15,7 @@ Return a single JSON object with this exact shape:
     {
       "name": "<full name>",
       "jersey_number": <number or null>,
-      "position": "<GK | D | M | F | combinations like M/D>",
+      "position": "<${sport.positionWord}>",
       "class_year": "<Fr | So | Jr | Sr | grad year like 2027>",
       "graduating": <true if this player is in their final season, otherwise false>,
       "captain": <true if explicitly noted, otherwise omit>
@@ -28,15 +30,16 @@ Return a single JSON object with this exact shape:
 Rules:
 - "graduating" = true for seniors (Sr) or anyone whose listed class year matches the season year + 0 (about to finish).
 - For Williams-style listings ("1st" / "So" / "Jr" / "Sr"), "1st" = freshman (Fr).
-- If the page lists no goalkeepers, still include the field.
+- Keep position notation as printed on the page (do not translate to another sport's vocabulary).
 - If jersey numbers are not shown, set to null.
-- If position uses combinations (e.g. "M/D" or "F/M"), keep them as-is.
+- If position uses combinations (e.g. "M/D" or "OH/DS"), keep them as-is.
 - "email": include a coach's email address ONLY if it appears verbatim on the page (e.g. in a staff directory). NEVER guess, construct, or infer an email from a name or pattern. If no email is shown for that coach, set it to null.
 - Return ONLY the JSON object, no markdown fences, no commentary.
 
 Page content:
 ---
 `;
+}
 
 // Full set of headers a real Chrome request sends. Gets past UA-only blocks.
 const BROWSER_HEADERS: Record<string, string> = {
@@ -57,18 +60,26 @@ const BROWSER_HEADERS: Record<string, string> = {
 };
 
 // Generate alternate URLs to try if the given one fails (wrong season path,
-// wsoc vs womens-soccer naming, etc.).
-function altUrls(url: string): string[] {
+// wsoc vs womens-soccer naming, etc.). Slug spellings come from the sport
+// registry, so the same retry logic covers every sport we track.
+function altUrls(url: string, sport: SportConfig): string[] {
   const out = new Set<string>();
   // Drop a season segment like /2025-26/ or /2025/
   const noSeason = url.replace(/\/(19|20)\d{2}(-\d{2})?(?=\/)/g, "");
   if (noSeason !== url) out.add(noSeason);
-  // Swap common sport-slug spellings, with and without season.
+  // Swap among the sport's known slug spellings, with and without season.
+  const slugGroups = Object.values(sport.slugs).filter(
+    (g): g is string[] => Array.isArray(g) && g.length > 1
+  );
   for (const base of [url, noSeason]) {
-    if (base.includes("/wsoc/"))
-      out.add(base.replace("/wsoc/", "/womens-soccer/"));
-    if (base.includes("/womens-soccer/"))
-      out.add(base.replace("/womens-soccer/", "/wsoc/"));
+    for (const group of slugGroups) {
+      for (const slug of group) {
+        if (!base.includes(`/${slug}/`)) continue;
+        for (const other of group) {
+          if (other !== slug) out.add(base.replace(`/${slug}/`, `/${other}/`));
+        }
+      }
+    }
   }
   out.delete(url);
   return [...out];
@@ -186,9 +197,9 @@ async function firecrawlAsMarkdown(url: string): Promise<string> {
 // Get roster page content as markdown. Tries the URL and a few sensible
 // variants with plain fetch, then falls back to Firecrawl rendering (if a
 // key is configured) for JS-protected sites.
-async function getPageMarkdown(url: string): Promise<string> {
+async function getPageMarkdown(url: string, sport: SportConfig): Promise<string> {
   assertSafeUrl(url); // also covers the Firecrawl fallback below
-  const candidates = [url, ...altUrls(url)];
+  const candidates = [url, ...altUrls(url, sport)];
   let lastErr: unknown;
 
   for (const candidate of candidates) {
@@ -211,7 +222,8 @@ async function getPageMarkdown(url: string): Promise<string> {
   throw lastErr instanceof Error ? lastErr : new Error(String(lastErr));
 }
 
-const SCHEDULE_PROMPT = `You are extracting a college soccer team's SCHEDULE and RESULTS from the page content below. The page may be a men's or a women's program.
+function schedulePrompt(sport: SportConfig): string {
+  return `You are extracting a college ${sport.label.toLowerCase()} team's SCHEDULE and RESULTS from the page content below. The page may be a men's or a women's program.
 
 Return a single JSON object with this exact shape:
 
@@ -244,6 +256,7 @@ Rules:
 Page content:
 ---
 `;
+}
 
 // Derive likely schedule-page URLs from a roster URL. Most college athletics
 // sites mirror the path: /sports/womens-soccer/roster -> /.../schedule.
@@ -265,12 +278,15 @@ export interface ScrapeOptions {
   url: string;
   anthropic: Anthropic;
   model: string;
+  // Which sport's roster this is. Omitted = soccer (all pre-multi-sport data).
+  sport?: SportConfig;
 }
 
 // Scrape a school's schedule/results. Derives the schedule URL from the
 // roster URL. Returns null-throwing on failure so callers can treat schedule
 // as best-effort (roster monitoring still works without it).
 export async function scrapeSchedule(opts: ScrapeOptions): Promise<ScheduleData> {
+  const sport = opts.sport ?? SPORTS.soccer;
   const candidates = scheduleUrlCandidates(opts.url);
   if (candidates.length === 0) {
     throw new Error("could not derive a schedule URL from roster URL");
@@ -280,7 +296,7 @@ export async function scrapeSchedule(opts: ScrapeOptions): Promise<ScheduleData>
   let lastErr: unknown;
   for (const url of candidates) {
     try {
-      markdown = trimContent(await getPageMarkdown(url));
+      markdown = trimContent(await getPageMarkdown(url, sport));
       break;
     } catch (e) {
       lastErr = e;
@@ -294,7 +310,7 @@ export async function scrapeSchedule(opts: ScrapeOptions): Promise<ScheduleData>
     model: opts.model,
     max_tokens: 3000,
     temperature: 0,
-    messages: [{ role: "user", content: SCHEDULE_PROMPT + markdown }],
+    messages: [{ role: "user", content: schedulePrompt(sport) + markdown }],
   });
   const firstBlock = response.content[0];
   if (firstBlock.type !== "text") {
@@ -337,12 +353,15 @@ export function dedupeRoster(data: SchoolData): SchoolData {
   return { ...data, roster, coaching_staff };
 }
 
-// A real college soccer roster is ~18-30 players. Below this we treat the read
-// as degraded (partial/blocked page) rather than a real, shrunken roster.
+// Generic floor: below this many players we treat the read as degraded
+// (partial/blocked page) rather than a real, shrunken roster. Each sport
+// carries its own threshold in the registry (a full baseball roster is ~35,
+// a volleyball roster ~14); this constant is the soccer/back-compat default.
 export const MIN_ROSTER = 12;
 
 async function extractRosterOnce(
   opts: ScrapeOptions,
+  sport: SportConfig,
   markdown: string
 ): Promise<SchoolData> {
   const response = await opts.anthropic.messages.create({
@@ -353,7 +372,7 @@ async function extractRosterOnce(
     // run (middle initials, position notation), which the diff then reports
     // as phantom roster changes.
     temperature: 0,
-    messages: [{ role: "user", content: EXTRACTION_PROMPT + markdown }],
+    messages: [{ role: "user", content: extractionPrompt(sport) + markdown }],
   });
   const firstBlock = response.content[0];
   if (firstBlock.type !== "text") {
@@ -368,13 +387,14 @@ async function extractRosterOnce(
 // If we never get a plausibly-complete roster, we throw so the caller skips the
 // school this week instead of inventing roster changes.
 export async function scrapeSchool(opts: ScrapeOptions): Promise<SchoolData> {
+  const sport = opts.sport ?? SPORTS.soccer;
   let best: SchoolData | null = null;
   let lastErr: unknown;
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
-      const markdown = trimContent(await getPageMarkdown(opts.url));
-      const data = await extractRosterOnce(opts, markdown);
-      if (data.roster.length >= MIN_ROSTER) return data;
+      const markdown = trimContent(await getPageMarkdown(opts.url, sport));
+      const data = await extractRosterOnce(opts, sport, markdown);
+      if (data.roster.length >= sport.minRoster) return data;
       if (!best || data.roster.length > best.roster.length) best = data;
     } catch (e) {
       lastErr = e;

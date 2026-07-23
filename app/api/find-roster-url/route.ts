@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 interface FindRequest {
   school_name?: string;
   gender?: "boys" | "girls";
+  sport?: string;
 }
 
 export async function POST(req: Request) {
@@ -49,6 +50,12 @@ export async function POST(req: Request) {
   const model = process.env.CLAUDE_MODEL || "claude-sonnet-4-5";
   const anthropic = new Anthropic({ apiKey });
   const program = body.gender === "boys" ? "mens" : "womens";
-  const result = await findRosterUrl({ schoolName, anthropic, model, program });
+  const result = await findRosterUrl({
+    schoolName,
+    anthropic,
+    model,
+    program,
+    sport: typeof body.sport === "string" ? body.sport : undefined,
+  });
   return NextResponse.json(result);
 }

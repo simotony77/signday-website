@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { ResearchData } from "./types";
 
-const SYSTEM_PROMPT = `You are a research assistant for a college soccer recruiting tool. Given a women's college soccer program, find RECENT, FACTUAL, citable news about it that an athlete could credibly reference in an outreach email to the coach.
+const SYSTEM_PROMPT = `You are a research assistant for a college sports recruiting tool. Given a college athletic program, find RECENT, FACTUAL, citable news about it that an athlete could credibly reference in an outreach email to the coach.
 
 Good material: recent game results or notable wins, recent commits the program announced, coaching staff news, conference honors, tournament runs, program milestones. All from roughly the last few weeks.
 
@@ -46,6 +46,9 @@ export interface ResearchOptions {
   teamName?: string;
   anthropic: Anthropic;
   model: string;
+  // Program descriptor for the search, e.g. "women's volleyball" or
+  // "baseball". Defaults to women's soccer (pre-multi-sport behavior).
+  program?: string;
 }
 
 // Best-effort recent-news research for one program. Used to enrich a draft we
@@ -69,7 +72,7 @@ export async function researchSchool(
       messages: [
         {
           role: "user",
-          content: `Find recent, citable news about the women's soccer program at: ${target}`,
+          content: `Find recent, citable news about the ${opts.program || "women's soccer"} program at: ${target}`,
         },
       ],
     });
